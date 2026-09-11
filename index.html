@@ -908,6 +908,68 @@
       background: var(--surface-warm);
     }
 
+    #deploy .source-selector {
+      width: max-content;
+    }
+
+    #deploy .label-help {
+      display: inline-grid;
+      place-items: center;
+      position: relative;
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--fill-pressed);
+      color: var(--meta);
+      font-size: 11px;
+      line-height: 1;
+      cursor: help;
+      font-style: normal;
+    }
+
+    #deploy .label-help::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      z-index: 30;
+      width: max-content;
+      max-width: 240px;
+      transform: translateX(-50%);
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: var(--fg);
+      color: var(--surface);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: normal;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--motion-fast);
+    }
+
+    #deploy .label-help:hover::after,
+    #deploy .label-help:focus-visible::after {
+      opacity: 1;
+    }
+
+    #deploy .resource-advanced {
+      margin: 16px 0 0 128px;
+      max-width: 760px;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    #deploy .resource-advanced > h3 {
+      margin: 0 0 12px;
+      color: var(--fg-2);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
     #deploy .advanced-stack {
       width: min(760px, 100%);
       display: grid;
@@ -3903,6 +3965,22 @@
     td br + .tag, td br + .mono, td br + .muted { display: inline-block; margin-top: 4px; }
     .row-actions { gap: 12px; }
     #detail table th, .shell.immersive-detail #detail table th, #detail .detail-tab-pane.active table th { height: 30px; padding: 0 12px; background: var(--surface-warm); color: var(--meta); font-size: 13px; font-weight: 600; border-bottom-color: var(--border); }
+    #detail table th[data-dev-note]::after,
+    .shell.immersive-detail #detail table th[data-dev-note]::after,
+    #detail .detail-tab-pane.active table th[data-dev-note]::after {
+      content: "开发备注：" attr(data-dev-note);
+      display: inline-block;
+      margin-left: 8px;
+      padding: 0 6px;
+      border: 1px dashed var(--warn);
+      border-radius: 3px;
+      background: var(--warn-soft);
+      color: var(--fg-2);
+      font-size: 11px;
+      line-height: 18px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
     #detail table td, .shell.immersive-detail #detail table td, #detail .detail-tab-pane.active table td { padding: 12px; color: var(--fg); border-bottom-color: var(--border-row); font-size: 13px; }
     #detail table tbody tr:hover, #detail .detail-tab-pane.active table tbody tr:hover { background: var(--surface-warm); }
     .shell.immersive-detail #detailConfig.config-groups th { height: 30px !important; padding: 0 20px !important; background: var(--surface-warm) !important; color: var(--meta) !important; font-size: 13px !important; font-weight: 600 !important; border-bottom-color: var(--border) !important; }
@@ -4244,7 +4322,7 @@
     .kvr-v.mono { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
     @media (max-width: 1200px) { .shell.immersive-detail #detailConfig.config-cards { grid-template-columns: 1fr !important; } .cfg-sub--access .kv-list { grid-template-columns: 1fr; } }
 
-    /* ---- 更新服务弹窗：当前配置摘要 + 推理镜像 + 更新策略 ---- */
+    /* ---- 操作弹窗：摘要 + 结果反馈 ---- */
     .modal-shell.update-modal { width: min(860px, calc(100vw - 56px)); }
     .modal-shell.test-modal { width: min(900px, calc(100vw - 56px)); }
     .scale-role-list { display: grid; gap: 10px; margin-top: 16px; }
@@ -4266,7 +4344,6 @@
     .update-summary-item { min-width: 0; display: grid; gap: 4px; }
     .update-summary-item span { color: var(--meta); font-size: 12px; line-height: 16px; }
     .update-summary-item strong { color: var(--fg); font-size: 13px; line-height: 20px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .update-grid { display: grid; gap: 16px; }
     .update-result {
       min-height: 34px;
       display: flex;
@@ -4621,97 +4698,19 @@
 
                   <input id="modelPathInput" type="hidden" value="/mnt/data">
 
-                  <div class="form-grid source-pane active" data-source="market">
+                  <div class="form-grid source-pane active" data-source="pvc">
                     <label class="field">
                       <span class="label"><span class="required">*</span> 模型来源</span>
-                      <select id="modelSourceSelect">
-                        <option value="market">模型广场</option>
-                        <option value="custom">自定义模型</option>
-                        <option value="pvc">文件存储</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型名称</span>
-                      <select>
-                        <option>DeepSeek-V4-Flash-0731</option>
-                        <option>Qwen3-235B-A22B-FP8</option>
-                        <option>Llama-4-Scout</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型权重文件</span>
-                      <select>
-                        <option>deepseek-v4-flash-0731-fp8</option>
-                        <option>deepseek-v4-flash-0731-bf16</option>
-                        <option>deepseek-v4-flash-0731-awq</option>
-                      </select>
-                    </label>
-                  </div>
-
-                  <div class="form-grid source-pane" data-source="custom">
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型来源</span>
-                      <select data-source-switch>
-                        <option value="market">模型广场</option>
-                        <option value="custom" selected>自定义模型</option>
-                        <option value="pvc">文件存储</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型名称</span>
-                      <select>
-                        <option>deepseek-v4-flash-prod</option>
-                        <option>qwen3-235b-custom</option>
-                        <option>llama4-scout-lab</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型权重文件</span>
-                      <span class="segmented" id="customWeightModeSelect">
-                        <button type="button" class="active" data-custom-weight-mode="version">版本标识</button>
-                        <button type="button" data-custom-weight-mode="storage">存储目录</button>
+                      <span class="segmented source-selector" aria-label="模型来源">
+                        <button type="button" class="active">PVC</button>
                       </span>
-                    </label>
-                    <label class="field" data-custom-weight-field="version">
-                      <span class="label"><span class="required">*</span> 版本标识</span>
-                      <select>
-                        <option>v2026.09.01-fp8</option>
-                        <option>v2026.08.24-bf16</option>
-                        <option>latest</option>
-                      </select>
-                    </label>
-                    <label class="field" data-custom-weight-field="storage" hidden>
-                      <span class="label"><span class="required">*</span> 存储目录</span>
-                      <select>
-                        <option>/models/deepseek-v4-flash-0731</option>
-                        <option>/models/qwen3-235b-a22b-fp8</option>
-                        <option>/models/llama4-scout</option>
-                      </select>
-                    </label>
-                    <label class="field" data-custom-weight-field="storage" hidden>
-                      <span class="label">挂载路径</span>
-                      <input value="/mnt/data" disabled>
-                    </label>
-                  </div>
-
-                  <div class="form-grid source-pane" data-source="pvc">
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型来源</span>
-                      <select data-source-switch>
-                        <option value="market">模型广场</option>
-                        <option value="custom">自定义模型</option>
-                        <option value="pvc" selected>文件存储</option>
+                      <select id="modelSourceSelect" class="hidden-control" aria-hidden="true" tabindex="-1">
+                        <option value="pvc" selected>PVC</option>
                       </select>
                     </label>
                     <label class="field">
-                      <span class="label"><span class="required">*</span> 模型名称</span>
+                      <span class="label"><span class="required">*</span> 模型访问名称 <i class="label-help" tabindex="0" data-tooltip="模型访问ID，建议使用模型官方名称" aria-label="模型访问名称说明">?</i></span>
                       <input value="deepseek-v4-flash-0731">
-                    </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 模型权重文件</span>
-                      <select disabled>
-                        <option>存储目录</option>
-                      </select>
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 存储目录</span>
@@ -4751,7 +4750,7 @@
                     <strong>部署清单</strong>
                     <ul id="deployChecklist">
                       <li>组件：llm-d、inferencepool、gateway、nvidia-device-plugin、rdma-device-plugin、prometheus-agent</li>
-                      <li>角色：prefill 与 decode 独立配置，可分别扩缩容和选择 GPU 类型</li>
+                      <li>角色：prefill、decode 与 gateway 独立配置，gateway 配置项与 frontend 一致</li>
                     </ul>
                   </div>
                 </div>
@@ -4777,24 +4776,24 @@
                       <span class="label"><span class="required">*</span> 实例数</span>
                       <input id="replicasInput" type="number" min="0" value="2">
                     </label>
-                    <label class="field" data-resource-field="gpus">
-                      <span class="label"><span class="required">*</span> 单实例卡数</span>
-                      <input id="gpusInput" type="number" min="0" value="4">
-                    </label>
                     <label class="field" data-resource-field="gpu-type">
-                      <span class="label">GPU 类型</span>
+                      <span class="label">GPU型号</span>
                       <select id="nodePoolSelect">
                         <option>NVIDIA H800</option>
                         <option>NVIDIA H20</option>
                         <option>Ascend 910B</option>
                       </select>
                     </label>
+                    <label class="field" data-resource-field="gpus">
+                      <span class="label"><span class="required">*</span> 单实例卡数</span>
+                      <input id="gpusInput" type="number" min="0" value="4">
+                    </label>
                     <label class="field">
-                      <span class="label">CPU</span>
+                      <span class="label">单实例CPU</span>
                       <input id="cpuInput" value="64 core">
                     </label>
                     <label class="field">
-                      <span class="label">内存</span>
+                      <span class="label">单实例内存</span>
                       <input id="memoryInput" value="600Gi">
                     </label>
                   </div>
@@ -4818,15 +4817,6 @@
                         </label>
                       </div>
                     </div>
-                    <div class="role-command" data-command-role="gateway" hidden>
-                      <h3>gateway 启动命令</h3>
-                      <div class="form-grid">
-                        <label class="field wide">
-                          <span class="label">启动命令</span>
-                          <textarea>model-gateway --service-name ${SERVICE_NAME} --prefill-service ${PREFILL_SERVICE} --decode-service ${DECODE_SERVICE} --port 8080</textarea>
-                        </label>
-                      </div>
-                    </div>
                     <div class="role-command" data-command-role="server" hidden>
                       <h3>model-server 启动命令</h3>
                       <div class="form-grid">
@@ -4841,29 +4831,24 @@
                       <div class="form-grid">
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>dynamo-frontend --service-name ${SERVICE_NAME} --planner ${DYNAMO_PLANNER} --gateway ${GATEWAY_SERVICE} --port 8080</textarea>
+                          <textarea>dynamo-frontend --service-name ${SERVICE_NAME} --worker-pool ${WORKER_POOL} --port 8080</textarea>
                         </label>
                       </div>
                     </div>
-                    <div class="role-command" data-command-role="planner" hidden>
-                      <h3>dynamo-planner 启动命令</h3>
+                    <div class="role-command" data-command-role="gateway" hidden>
+                      <h3>gateway 启动命令</h3>
                       <div class="form-grid">
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>dynamo-planner --namespace ${NAMESPACE} --prefill-pool ${PREFILL_POOL} --decode-pool ${DECODE_POOL} --nats ${NATS_ENDPOINT}</textarea>
+                          <textarea>llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         </label>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div class="panel">
-                <div class="panel-head">
-                  <h2>高级配置</h2>
-                </div>
-                <div class="panel-body">
-                  <div class="advanced-stack">
+                  <div class="resource-advanced">
+                    <h3>高级配置</h3>
+                    <div class="advanced-stack">
                     <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
                     <div class="adv-item" data-adv>
                       <div class="nest-head"><span class="adv-title">KV Cache Offload</span><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
@@ -5078,9 +5063,6 @@
                       </div>
                     </div>
 
-                    <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
-                    <div class="adv-item" data-adv>
-                      <div class="nest-head"><span class="adv-title">监控采集</span><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
                     </div>
                   </div>
                 </div>
@@ -5090,7 +5072,6 @@
           <div class="deploy-bottom-bar">
             <button class="btn" id="deployPreviewButton" data-open-values>预览 YAML</button>
             <button class="btn" id="deployCancelButton" data-cancel-deploy hidden>取消</button>
-            <button class="btn" id="gitopsDeployButton" data-open-gitops-deploy>使用 GitOps 托管部署</button>
             <button class="btn primary" id="deploySubmitButton" data-submit-deploy>提交并部署</button>
           </div>
         </section>
@@ -5451,7 +5432,8 @@
                   <button type="button" data-open-values>查看 YAML</button>
                   <button type="button" data-detail-jump="tests">模型测试</button>
                   <button type="button">导出模板</button>
-                  <button type="button" data-open-update-service>更新服务</button>
+                  <button type="button">更新服务</button>
+                  <button type="button" data-open-scale-service>扩缩容</button>
                   <button type="button" class="danger">删除服务</button>
                 </span>
               </span>
@@ -5494,7 +5476,7 @@
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
-                    <tr><td>模型来源</td><td>模型广场 / 权重文件：deepseek-v4-flash-0731-fp8</td></tr>
+                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/deepseek-v4-flash-0731 / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
                     <tr><td>端口</td><td>8200</td></tr>
                   </table>
@@ -5752,37 +5734,6 @@
             </div>
         </section>
 
-        <section id="gitopsDeployModal" class="modal" aria-hidden="true">
-          <div class="modal-backdrop" data-close-modal></div>
-          <div class="modal-shell compact update-modal" role="dialog" aria-modal="true" aria-labelledby="gitopsDeployTitle">
-            <div class="modal-head">
-              <div>
-                <h1 id="gitopsDeployTitle">GitOps 托管部署</h1>
-                <p class="modal-sub">启用 GitOps 托管后，后续部署变更和运维操作需通过 Git 提交发起，页面上的直接操作将不再生效。</p>
-              </div>
-              <button class="btn" data-close-modal>关闭</button>
-            </div>
-            <div class="form-grid">
-              <label class="field wide">
-                <span class="label"><span class="required">*</span> Git 仓库地址</span>
-                <input id="gitopsRepoInput" placeholder="https://git.example.com/team/model-services.git">
-              </label>
-              <label class="field">
-                <span class="label">分支</span>
-                <input value="main">
-              </label>
-              <label class="field">
-                <span class="label">配置路径</span>
-                <input value="model-services/deepseek-v4-flash-h800-prod">
-              </label>
-            </div>
-            <div class="modal-actions">
-              <button class="btn" type="button" data-close-modal>取消</button>
-              <button class="btn primary" type="button" data-submit-deploy>确定托管部署</button>
-            </div>
-          </div>
-        </section>
-
         <section id="serviceSwitchModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal></div>
           <div class="modal-shell compact switch-modal" role="dialog" aria-modal="true" aria-labelledby="serviceSwitchTitle">
@@ -5929,57 +5880,6 @@
             <div class="footer-actions">
               <button class="btn" type="button" data-close-modal>取消</button>
               <button class="btn primary" type="button" id="submitNewTest">确定</button>
-            </div>
-          </div>
-        </section>
-
-        <section id="updateServiceModal" class="modal" aria-hidden="true">
-          <div class="modal-backdrop" data-close-modal></div>
-          <div class="modal-shell compact update-modal" role="dialog" aria-modal="true" aria-labelledby="updateServiceTitle">
-            <div class="modal-head">
-              <div>
-                <h1 id="updateServiceTitle">更新服务</h1>
-                <p class="modal-sub">选择新的推理引擎版本并确认更新策略，提交后将生成新的服务版本记录。</p>
-              </div>
-              <button class="btn" data-close-modal>关闭</button>
-            </div>
-
-            <div class="update-summary" aria-label="当前服务摘要">
-              <div class="update-summary-item">
-                <span>服务名称</span>
-                <strong id="updateServiceName">deepseek-v4-flash-h800-prod</strong>
-              </div>
-              <div class="update-summary-item">
-                <span>当前推理引擎</span>
-                <strong id="updateCurrentEngine">vLLM OpenAI nightly</strong>
-              </div>
-            </div>
-
-            <div class="update-grid">
-              <label class="field">
-                <span class="label"><span class="required">*</span> 更新方式</span>
-                <select id="updateStrategySelect">
-                  <option>滚动更新</option>
-                  <option>灰度更新</option>
-                  <option>替换更新</option>
-                </select>
-                <div class="hint">滚动更新会按角色逐步替换实例；灰度更新适合先验证少量流量。</div>
-              </label>
-
-              <label class="field">
-                <span class="label"><span class="required">*</span> 推理镜像</span>
-                <span class="combo-row">
-                  <select id="updateImagePresetSelect" aria-label="选择推理镜像"></select>
-                  <input id="updateImageInput" aria-label="推理镜像地址">
-                </span>
-                <div class="hint">与新建部署中的推理镜像配置一致，可从预置版本选择，也可输入自定义镜像地址。</div>
-              </label>
-            </div>
-
-            <div class="update-result" id="updateResult" hidden></div>
-            <div class="footer-actions">
-              <button class="btn" type="button" data-close-modal>取消</button>
-              <button class="btn primary" type="button" id="submitServiceUpdate">确定</button>
             </div>
           </div>
         </section>
@@ -6132,7 +6032,6 @@ llm-d-modelservice:
     const crumbLabel = document.querySelector("#crumbLabel");
     const valuesModal = document.querySelector("#valuesModal");
     const deployChoiceModal = document.querySelector("#deployChoiceModal");
-    const gitopsDeployModal = document.querySelector("#gitopsDeployModal");
     const valuesTitle = document.querySelector("#valuesTitle");
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
@@ -6170,12 +6069,11 @@ llm-d-modelservice:
     const templateSelect = document.querySelector("#templateSelect");
     const deployHint = document.querySelector("#deployHint");
     const modelSourceSelect = document.querySelector("#modelSourceSelect");
-    const customWeightModeSelect = document.querySelector("#customWeightModeSelect");
     const imagePresetSelect = document.querySelector("#imagePresetSelect");
     const sourcePanes = Array.from(document.querySelectorAll("[data-source]"));
-    const sourceSwitches = Array.from(document.querySelectorAll("[data-source-switch]"));
     const deployChecklist = document.querySelector("#deployChecklist");
     const roleTabs = document.querySelector("#roleTabs");
+    const resourceAdvanced = document.querySelector(".resource-advanced");
     const serviceNameInput = document.querySelector("#serviceNameInput");
     const imageInput = document.querySelector("#imageInput");
     const modelPathInput = document.querySelector("#modelPathInput");
@@ -6212,14 +6110,6 @@ llm-d-modelservice:
     const performanceConfigField = document.querySelector("#performanceConfigField");
     const submitNewTest = document.querySelector("#submitNewTest");
     const detailTestRows = document.querySelector("#detailTestRows");
-    const updateServiceModal = document.querySelector("#updateServiceModal");
-    const updateServiceName = document.querySelector("#updateServiceName");
-    const updateCurrentEngine = document.querySelector("#updateCurrentEngine");
-    const updateStrategySelect = document.querySelector("#updateStrategySelect");
-    const updateImagePresetSelect = document.querySelector("#updateImagePresetSelect");
-    const updateImageInput = document.querySelector("#updateImageInput");
-    const updateResult = document.querySelector("#updateResult");
-    const submitServiceUpdate = document.querySelector("#submitServiceUpdate");
     const scaleServiceModal = document.querySelector("#scaleServiceModal");
     const scaleServiceName = document.querySelector("#scaleServiceName");
     const scaleServiceFramework = document.querySelector("#scaleServiceFramework");
@@ -6245,6 +6135,9 @@ llm-d-modelservice:
     let activeTemplate = "deepseek";
     let activeDeployTemplateMode = "preset";
     let activeServiceType = "llm-d";
+    let activeResourceRole = "prefill";
+    const roleAdvancedStates = {};
+    const defaultRoleAdvancedMarkup = resourceAdvanced ? resourceAdvanced.innerHTML : "";
 
     function setPlatformMenu(open) {
       shell.classList.toggle("platform-menu-open", open);
@@ -6291,17 +6184,29 @@ llm-d-modelservice:
       detailResources.querySelectorAll("table").forEach(table => {
         const headers = Array.from(table.querySelectorAll("thead th"));
         const namespaceIndex = headers.findIndex(th => th.textContent.trim() === "命名空间");
+        const statusHeader = headers.find(th => th.textContent.trim() === "状态");
         const nodeHeader = headers.find(th => th.textContent.trim() === "节点 / 选择器");
+        if (statusHeader) {
+          // 开发备注：资源状态与 kpanda 状态保持一致。
+          statusHeader.setAttribute("data-dev-note", "与 kpanda 状态保持一致");
+        }
         if (nodeHeader) nodeHeader.textContent = "所属节点";
         if (namespaceIndex >= 0) {
           table.querySelectorAll("tr").forEach(row => {
             row.children[namespaceIndex]?.remove();
           });
         }
+        const normalizedHeaders = Array.from(table.querySelectorAll("thead th"));
+        const nodeIndex = normalizedHeaders.findIndex(th => th.textContent.trim() === "所属节点");
         table.querySelectorAll("tbody tr").forEach(row => {
           const cell = row.children[0];
           if (cell && !cell.querySelector(".resource-type-link")) {
             cell.innerHTML = `<span class="resource-type-link">${escapeHtml(cell.textContent.trim())}</span>`;
+          }
+          const resourceType = cell?.textContent.trim() || "";
+          const nodeCell = nodeIndex >= 0 ? row.children[nodeIndex] : null;
+          if (nodeCell && resourceType !== "Pod") {
+            nodeCell.textContent = "-";
           }
         });
       });
@@ -6347,7 +6252,7 @@ llm-d-modelservice:
                     <tr><td>编排框架</td><td>llm-d</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
                     <tr><td>model-server</td><td>1 副本，每副本 8 GPU</td></tr>
-                    <tr><td>GPU 类型</td><td>NVIDIA H800</td></tr>
+                    <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
                   <table>
@@ -6385,7 +6290,7 @@ llm-d-modelservice:
         eventRows: `
                       <tr><td>15:58:30</td><td>Argo CD</td><td><span class="tag amber">Warn</span></td><td>Service type 与 GitOps 目标不一致，应用处于 OutOfSync</td><td><button class="btn text">日志</button></td></tr>
                       <tr><td>16:03:18</td><td>model-server-0</td><td><span class="tag green">Info</span></td><td>vLLM model-server ready, metrics endpoint started</td><td><button class="btn text">日志</button></td></tr>
-                      <tr><td>16:18:42</td><td>controller</td><td><span class="tag red">Error</span></td><td>手工修改 Service type，需要更新服务或回滚配置</td><td><button class="btn text">日志</button></td></tr>
+                      <tr><td>16:18:42</td><td>controller</td><td><span class="tag red">Error</span></td><td>手工修改 Service type，需要通过 GitOps 恢复或回滚配置</td><td><button class="btn text">日志</button></td></tr>
         `,
         versionRows: `
                       <tr><td>通用模板</td><td class="mono">8f6b0ee</td><td>Qwen3-235B / H800</td><td>PD 共置，model-server 1 副本，单实例 8 GPU</td><td><span class="tag amber">当前版本</span></td><td>2026-08-31 15:58</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
@@ -6536,7 +6441,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>Qwen3-32B</td></tr>
-                    <tr><td>模型来源</td><td>模型广场 / 权重文件：qwen3-32b-fp8</td></tr>
+                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-32b / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1</td></tr>
                     <tr><td>端口</td><td>8000</td></tr>
                   </table>
@@ -6545,7 +6450,7 @@ llm-d-modelservice:
                     <tr><td>编排框架</td><td>dynamo</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
                     <tr><td>model-server</td><td>2 副本，每副本 4 GPU</td></tr>
-                    <tr><td>GPU 类型</td><td>NVIDIA H800</td></tr>
+                    <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
                   <table>
@@ -6597,19 +6502,12 @@ llm-d-modelservice:
     };
 
     const serviceRowsData = [
-      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "gateway", current: 1, target: 1 }], selected: true },
+      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
       { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "", status: ["Degraded", "red"], sync: ["OutOfSync", "amber"], note: "手工修改 Service type", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "violet", status: ["Progressing", "amber"], sync: ["Synced", "green"], note: "prefill workers 扩容中", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 4, target: 4 }, { name: "decode", current: 2, target: 2 }, { name: "gateway", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }, { name: "planner", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "violet", status: ["Progressing", "amber"], sync: ["Synced", "green"], note: "prefill workers 扩容中", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 4, target: 4 }, { name: "decode", current: 2, target: 2 }, { name: "frontend", current: 1, target: 1 }] },
       { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], sync: ["Synced", "green"], note: "model-server 2/2", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "model-server", current: 2, target: 2 }] }
     ];
 
-    const updateImagePresets = [
-      { label: "vLLM OpenAI nightly", image: "docker.m.daocloud.io/vllm/vllm-openai:nightly" },
-      { label: "vLLM OpenAI v0.8.5", image: "docker.m.daocloud.io/vllm/vllm-openai:v0.8.5" },
-      { label: "SGLang v0.5.17", image: "ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17.iaas.dev.202608251235" }
-    ];
-    let selectedEngineVersion = "";
-    let selectedEngineImage = "";
     let activeScaleService = "";
 
     let activeDetailService = "deepseek-v4-flash-h800-prod";
@@ -6619,7 +6517,7 @@ llm-d-modelservice:
         serviceType: "llm-d",
         version: "v1.3.2 生产推荐",
         service: "deepseek-v4-flash-h800-prod",
-        source: "market",
+        source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/vllm/vllm-openai:nightly",
         mode: "split",
@@ -6636,7 +6534,7 @@ llm-d-modelservice:
         serviceType: "dynamo",
         version: "v0.4.1 生产可用",
         service: "dynamo-qwen3-colocated-prod",
-        source: "market",
+        source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1",
         mode: "colocated",
@@ -6687,7 +6585,7 @@ llm-d-modelservice:
         serviceType: "llm-d",
         version: "未绑定模板版本",
         service: "",
-        source: "market",
+        source: "pvc",
         path: "/mnt/data",
         image: "",
         mode: "colocated",
@@ -6899,72 +6797,6 @@ llm-d-modelservice:
       return serviceRowsData.find(item => item.id === serviceId) || serviceRowsData.find(item => item.id === activeDetailService) || serviceRowsData[0];
     }
 
-    function updateSelectedImageFromInput() {
-      selectedEngineImage = updateImageInput?.value || "";
-      const selectedOption = updateImagePresetSelect?.selectedOptions?.[0];
-      selectedEngineVersion = selectedOption && selectedOption.value !== "custom" ? selectedOption.textContent.trim() : selectedEngineImage;
-      if (updateImageInput && updateImagePresetSelect) updateImageInput.disabled = updateImagePresetSelect.value !== "custom";
-    }
-
-    function renderUpdateImageOptions(service) {
-      if (!updateImagePresetSelect || !updateImageInput || !service) return;
-      const currentPreset = updateImagePresets.find(item => item.label === service.engine || item.image === service.image);
-      const preferred = currentPreset || updateImagePresets[0];
-      selectedEngineVersion = preferred.label;
-      selectedEngineImage = preferred.image;
-      updateImagePresetSelect.innerHTML = updateImagePresets.map(item => `
-        <option value="${escapeHtml(item.image)}">${escapeHtml(item.label)}</option>
-      `).join("") + `<option value="custom">自定义镜像</option>`;
-      updateImagePresetSelect.value = currentPreset ? selectedEngineImage : "custom";
-      updateImageInput.value = selectedEngineImage;
-      updateImageInput.disabled = updateImagePresetSelect.value !== "custom";
-    }
-
-    function openUpdateService(serviceId) {
-      const service = serviceById(serviceId);
-      if (!service || !updateServiceModal) return;
-      activeDetailService = service.id;
-      if (updateServiceName) updateServiceName.textContent = service.id;
-      if (updateCurrentEngine) updateCurrentEngine.textContent = service.engine || "未记录";
-      if (updateStrategySelect) updateStrategySelect.value = service.status[0] === "Degraded" ? "灰度更新" : "滚动更新";
-      if (updateResult) {
-        updateResult.hidden = true;
-        updateResult.textContent = "";
-      }
-      renderUpdateImageOptions(service);
-      openModal(updateServiceModal);
-    }
-
-    function submitUpdateService() {
-      updateSelectedImageFromInput();
-      const service = serviceById(activeDetailService);
-      if (!service || !selectedEngineVersion) return;
-      const nextVersion = selectedEngineVersion.match(/v[\d.]+/)?.[0] || "v1.4.0";
-      service.engine = selectedEngineVersion;
-      service.version = `${service.framework === "dynamo" ? "Dynamo 模板" : "模板"} ${nextVersion}`;
-      service.commit = "pending";
-      service.status = ["Progressing", "amber"];
-      service.sync = ["OutOfSync", "amber"];
-      service.note = `${updateStrategySelect?.value || "滚动更新"}准备中`;
-      const profile = detailProfiles[service.id];
-      if (profile) {
-        profile.health = ["Progressing", "amber"];
-        profile.sync = ["OutOfSync", "amber"];
-        profile.commit = "commit pending";
-        profile.lead = `${profile.lead.split(" / ")[0]} / Argo CD Health: Progressing / Sync: OutOfSync / 推理引擎 ${selectedEngineVersion}`;
-        profile.versionRows = `
-                      <tr><td>${escapeHtml(nextVersion)}</td><td class="mono">pending</td><td>${escapeHtml(service.model)} / ${escapeHtml(selectedEngineVersion)}</td><td>${escapeHtml(updateStrategySelect?.value || "滚动更新")}，镜像更新为 ${escapeHtml(selectedEngineImage)}</td><td><span class="tag amber">更新中</span></td><td>刚刚</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                      ${profile.versionRows || splitDetailSnapshot.versionRows}
-        `;
-      }
-      renderServiceRows();
-      if (document.querySelector("#detail").classList.contains("active")) renderDetail(service.id);
-      if (updateResult) {
-        updateResult.hidden = false;
-        updateResult.textContent = `已提交 ${service.id} 的更新：${selectedEngineVersion}，策略为 ${updateStrategySelect?.value || "滚动更新"}。`;
-      }
-    }
-
     function openScaleService(serviceId) {
       const service = serviceById(serviceId);
       if (!service || !scaleServiceModal || !scaleRoleList) return;
@@ -7097,8 +6929,8 @@ llm-d-modelservice:
                   <button type="button" data-sync-service="${escapeHtml(item.id)}"${canSync ? "" : " disabled"}>Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">模型测试</button>
                   <button type="button">导出模板</button>
+                  <button type="button">更新服务</button>
                   <button type="button" data-open-scale-service>扩缩容</button>
-                  <button type="button" data-open-update-service>更新服务</button>
                   <button type="button" class="danger">删除服务</button>
                 </span>
               </span>
@@ -7327,15 +7159,6 @@ llm-d-modelservice:
     function updateSource(source) {
       sourcePanes.forEach(pane => pane.classList.toggle("active", pane.dataset.source === source));
       if (modelSourceSelect) modelSourceSelect.value = source;
-      sourceSwitches.forEach(select => { select.value = source; });
-      updateCustomWeightMode();
-    }
-
-    function updateCustomWeightMode() {
-      const mode = customWeightModeSelect?.querySelector("[data-custom-weight-mode].active")?.dataset.customWeightMode || "version";
-      document.querySelectorAll("[data-custom-weight-field]").forEach(field => {
-        field.hidden = field.dataset.customWeightField !== mode;
-      });
     }
 
     function syncImagePreset(keepCustomSelection = false) {
@@ -7366,13 +7189,8 @@ llm-d-modelservice:
 
     function normalizeSource(source) {
       const value = source.toLowerCase();
-      if (value.includes("market") || value.includes("square") || value.includes("广场")) return "market";
-      if (value.includes("custom") || value.includes("自定义")) return "custom";
-      if (value.includes("pvc") || value.includes("file")) return "pvc";
-      if (value.includes("hostpath") || value.includes("host")) return "pvc";
-      if (value.includes("object") || value.includes("s3")) return "custom";
-      if (value.includes("repo") || value.includes("huggingface")) return "market";
-      return "";
+      if (!value) return "";
+      return "pvc";
     }
 
     function normalizeInferenceMode(mode) {
@@ -7446,32 +7264,71 @@ llm-d-modelservice:
       }
       if (gpus) {
         gpusInput.value = gpus;
-        updates.push("GPU/NPU 数");
+        updates.push("单实例卡数");
       }
       if (gpuType) {
         nodePoolSelect.value = gpuType;
-        updates.push("GPU 类型");
+        updates.push("GPU型号");
       }
       if (cpu) {
         cpuInput.value = cpu;
-        updates.push("CPU");
+        updates.push("单实例CPU");
       }
       if (memory) {
         memoryInput.value = memory;
-        updates.push("内存");
+        updates.push("单实例内存");
       }
 
       yamlImportStatus.textContent = updates.length ? `已解析：${updates.join("、")}` : "未找到可解析字段。";
     }
 
+    function syncFormStateAttributes(root) {
+      if (!root) return;
+      root.querySelectorAll("input").forEach(input => {
+        if (input.type === "checkbox" || input.type === "radio") {
+          input.toggleAttribute("checked", input.checked);
+        } else {
+          input.setAttribute("value", input.value);
+        }
+      });
+      root.querySelectorAll("select").forEach(select => {
+        Array.from(select.options).forEach(option => {
+          option.toggleAttribute("selected", option.selected);
+        });
+      });
+      root.querySelectorAll("textarea").forEach(textarea => {
+        textarea.textContent = textarea.value;
+      });
+      root.querySelectorAll("[hidden]").forEach(element => {
+        element.setAttribute("hidden", "");
+      });
+    }
+
+    function saveRoleAdvancedState(role) {
+      if (!resourceAdvanced || !role) return;
+      syncFormStateAttributes(resourceAdvanced);
+      roleAdvancedStates[role] = resourceAdvanced.innerHTML;
+    }
+
+    function restoreRoleAdvancedState(role) {
+      if (!resourceAdvanced || !role) return;
+      if (!roleAdvancedStates[role]) {
+        roleAdvancedStates[role] = defaultRoleAdvancedMarkup;
+      }
+      resourceAdvanced.innerHTML = roleAdvancedStates[role];
+    }
+
     function setRole(role) {
+      if (activeResourceRole && activeResourceRole !== role) {
+        saveRoleAdvancedState(activeResourceRole);
+      }
       document.querySelectorAll("#roleTabs button").forEach(item => {
         item.classList.toggle("active", item.dataset.role === role);
       });
       document.querySelectorAll("[data-command-role]").forEach(card => {
         card.hidden = card.dataset.commandRole !== role;
       });
-      const noGpuRole = ["gateway", "frontend", "planner"].includes(role);
+      const noGpuRole = role === "frontend" || role === "gateway";
       document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='gpus'], [data-resource-field='gpu-type']").forEach(field => {
         field.hidden = noGpuRole;
       });
@@ -7488,25 +7345,13 @@ llm-d-modelservice:
         cpuInput.value = "64 core";
         memoryInput.value = "600Gi";
       }
-      if (role === "gateway") {
-        replicasInput.value = "1";
-        gpusInput.value = "0";
-        cpuInput.value = "2 core";
-        memoryInput.value = "4Gi";
-      }
       if (role === "server") {
         replicasInput.value = "1";
         gpusInput.value = "8";
         cpuInput.value = "96 core";
         memoryInput.value = "800Gi";
       }
-      if (role === "frontend") {
-        replicasInput.value = "1";
-        gpusInput.value = "0";
-        cpuInput.value = "4 core";
-        memoryInput.value = "8Gi";
-      }
-      if (role === "planner") {
+      if (role === "frontend" || role === "gateway") {
         replicasInput.value = "1";
         gpusInput.value = "0";
         cpuInput.value = "4 core";
@@ -7518,6 +7363,8 @@ llm-d-modelservice:
         cpuInput.value = "32 core";
         memoryInput.value = "300Gi";
       }
+      restoreRoleAdvancedState(role);
+      activeResourceRole = role;
     }
 
     function bindRoleTabs() {
@@ -7534,14 +7381,12 @@ llm-d-modelservice:
         if (mode === "split") {
           deployChecklist.innerHTML = `
             <li>组件：dynamo、dynamo-operator、nats、etcd、device-plugin、prometheus-agent</li>
-            <li>角色：Prefill worker pool、Decode worker pool、gateway、dynamo-frontend、dynamo-planner 独立配置</li>
+            <li>角色：prefill、decode、frontend 独立配置</li>
           `;
           roleTabs.innerHTML = `
             <button type="button" class="active" data-role="prefill">prefill</button>
             <button type="button" data-role="decode">decode</button>
-            <button type="button" data-role="gateway">gateway</button>
             <button type="button" data-role="frontend">frontend</button>
-            <button type="button" data-role="planner">planner</button>
           `;
           bindRoleTabs();
           setRole("prefill");
@@ -7549,12 +7394,11 @@ llm-d-modelservice:
         }
         deployChecklist.innerHTML = `
           <li>组件：dynamo、dynamo-operator、nats、etcd、device-plugin、prometheus-agent</li>
-          <li>角色：frontend、planner 与 worker 池独立配置，worker 支持按队列和吞吐动态扩缩容</li>
+          <li>角色：worker pool 与 frontend 独立配置，worker 支持按队列和吞吐动态扩缩容</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="worker">worker pool</button>
           <button type="button" data-role="frontend">frontend</button>
-          <button type="button" data-role="planner">planner</button>
         `;
         bindRoleTabs();
         setRole("worker");
@@ -7563,7 +7407,7 @@ llm-d-modelservice:
       if (mode === "split") {
         deployChecklist.innerHTML = `
           <li>组件：llm-d、inferencepool、gateway、device-plugin、rdma-device-plugin、prometheus-agent</li>
-          <li>角色：prefill 与 decode 独立配置，可分别扩缩容和选择 GPU 类型</li>
+          <li>角色：prefill、decode 与 gateway 独立配置，gateway 配置项与 frontend 一致</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="prefill">prefill</button>
@@ -7679,34 +7523,11 @@ llm-d-modelservice:
     if (submitNewTest) submitNewTest.addEventListener("click", submitNewTestTask);
 
     document.addEventListener("click", event => {
-      const button = event.target.closest("[data-open-update-service]");
-      if (!button) return;
-      const row = button.closest("[data-service-row]");
-      openUpdateService(row?.dataset.serviceRow || activeDetailService);
-    });
-
-    document.addEventListener("click", event => {
       const button = event.target.closest("[data-open-scale-service]");
       if (!button) return;
       const row = button.closest("[data-service-row]");
       openScaleService(row?.dataset.serviceRow || activeDetailService);
     });
-
-    if (updateImagePresetSelect && updateImageInput) {
-      updateImagePresetSelect.addEventListener("change", () => {
-        if (updateImagePresetSelect.value !== "custom") updateImageInput.value = updateImagePresetSelect.value;
-        updateSelectedImageFromInput();
-      });
-      updateImageInput.addEventListener("input", () => {
-        const matched = Array.from(updateImagePresetSelect.options).some(option => option.value === updateImageInput.value);
-        updateImagePresetSelect.value = matched ? updateImageInput.value : "custom";
-        updateSelectedImageFromInput();
-      });
-    }
-
-    if (submitServiceUpdate) {
-      submitServiceUpdate.addEventListener("click", submitUpdateService);
-    }
 
     if (submitScaleService) {
       submitScaleService.addEventListener("click", submitScaleServiceChange);
@@ -7725,11 +7546,6 @@ llm-d-modelservice:
     document.addEventListener("click", event => {
       const button = event.target.closest("[data-open-deploy-choice]");
       if (button) openModal(deployChoiceModal);
-    });
-
-    document.addEventListener("click", event => {
-      const button = event.target.closest("[data-open-gitops-deploy]");
-      if (button) openModal(gitopsDeployModal);
     });
 
     document.querySelectorAll("[data-start-deploy]").forEach(button => {
@@ -7839,20 +7655,6 @@ llm-d-modelservice:
     templateSelect.addEventListener("change", () => selectTemplate(templateSelect.value));
 
     modelSourceSelect.addEventListener("change", () => updateSource(modelSourceSelect.value));
-    sourceSwitches.forEach(select => {
-      select.addEventListener("change", () => updateSource(select.value));
-    });
-    if (customWeightModeSelect) {
-      customWeightModeSelect.addEventListener("click", event => {
-        const button = event.target.closest("[data-custom-weight-mode]");
-        if (!button) return;
-        customWeightModeSelect.querySelectorAll("[data-custom-weight-mode]").forEach(item => {
-          item.classList.toggle("active", item === button);
-        });
-        updateCustomWeightMode();
-      });
-      updateCustomWeightMode();
-    }
 
     imagePresetSelect.addEventListener("change", () => {
       if (imagePresetSelect.value !== "custom") {
