@@ -727,10 +727,13 @@
     }
 
     #deploy .panel-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       min-height: 42px;
       border-bottom: 0;
       padding: 14px 18px 6px;
-      justify-content: flex-start;
+      justify-content: space-between;
     }
 
     #deploy .panel-head h2 {
@@ -855,6 +858,58 @@
       min-height: 92px;
       padding: 11px 12px;
       background: var(--surface);
+      cursor: pointer;
+    }
+
+    #deploy .template-card strong,
+    #deploy .template-card > span:not(.template-detail) {
+      padding-right: 92px;
+    }
+
+    #deploy .template-edit-btn {
+      position: absolute;
+      top: 9px;
+      right: 10px;
+      min-height: 24px;
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--accent);
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 22px;
+      z-index: 2;
+    }
+
+    #deploy .template-edit-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    #deploy .template-edit-inline {
+      margin-left: auto;
+      min-height: 26px;
+      padding: 0 4px;
+    }
+
+    #deploy .is-template-locked .panel-body {
+      background: var(--bg-subtle);
+    }
+
+    #deploy .is-template-locked .segmented,
+    #deploy .is-template-locked .role-tabs,
+    #deploy .is-template-locked .role-command,
+    #deploy .is-template-locked .resource-advanced,
+    #deploy .is-template-locked .notice {
+      opacity: .62;
+    }
+
+    #deploy .is-template-locked button:not([data-edit-from-template]),
+    #deploy .is-template-locked input,
+    #deploy .is-template-locked select,
+    #deploy .is-template-locked textarea {
+      cursor: not-allowed;
     }
 
     #deploy .notice {
@@ -1325,6 +1380,41 @@
     .yaml-entry textarea { min-height: 220px; }
     .yaml-entry textarea::placeholder { color: var(--subtle); opacity: 1; }
     .helm-values-editor { min-height: 360px !important; background: var(--fg) !important; color: var(--bg) !important; border-color: var(--icon-pressed) !important; font-family: var(--font-mono); line-height: 1.6 !important; }
+    #helmDeployPanel:not([hidden]) {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 180px);
+      margin-bottom: 74px;
+    }
+    #helmDeployPanel .panel-body {
+      flex: 1;
+      min-height: 0;
+    }
+    #helmDeployPanel .form-grid {
+      height: 100%;
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+    #helmDeployPanel .field.wide {
+      display: grid;
+      grid-template-columns: 128px minmax(320px, 620px) minmax(0, 1fr);
+      grid-column: 1 / -1;
+      min-height: 0;
+      align-items: stretch;
+    }
+    #helmDeployPanel .field.wide > .label {
+      grid-column: 1;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-top: 9px;
+    }
+    #helmDeployPanel .field.wide > .helm-values-editor {
+      grid-column: 2 / 4;
+      width: 100%;
+      max-width: 720px !important;
+      height: 100%;
+      min-height: 0 !important;
+      resize: none;
+    }
     .yaml-import-toggle {
       width: 100%;
       border: 0;
@@ -1385,6 +1475,11 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-top: 2px;
+    }
+    #deploy #yamlImportPanel .yaml-import-actions {
+      grid-column: auto;
+      max-width: none;
+      margin-top: 12px;
     }
     .yaml-import-file { display: none; }
 
@@ -3933,6 +4028,11 @@
     .tag.red::before { background: var(--danger); }
     .dt-right .tag { height: 20px; padding: 0 8px; }
     .dt-right .tag.green, .dt-right .tag.amber, .dt-right .tag.red { padding: 0; }
+    .dt-right .detail-issue-tags { display: inline-flex; align-items: center; gap: 6px; }
+    .dt-right .detail-issue-tags:empty, .dt-right .detail-issue-tags[hidden] { display: none; }
+    .dt-right .detail-issue-tags .tag.amber { padding: 0 8px; background: var(--lt-yellow-bg); color: var(--lt-yellow-fg); font-weight: 600; }
+    .dt-right .detail-issue-tags .tag.red { padding: 0 8px; background: var(--lt-red-bg); color: var(--lt-red-fg); font-weight: 600; }
+    .dt-right .detail-issue-tags .tag.amber::before, .dt-right .detail-issue-tags .tag.red::before { display: none; }
     .si-status { width: 10px; height: 10px; background: var(--icon); }
     /* ---- 消息条：r4 padding 10 15；info / warning 边框用 --msg-border-* ---- */
     .notice { border: 1px solid var(--msg-border-info); background: var(--info-soft); border-radius: 4px; padding: 10px 15px; color: var(--muted); line-height: 20px; }
@@ -4123,7 +4223,6 @@
     .svc-ic { width: 20px; height: 20px; display: inline-grid; place-items: center; color: var(--nav-icon-selected); font-size: 18px; line-height: 1; }
     .svc-card-head .service-name { font-size: 13px; font-weight: 600; color: var(--fg-2); }
     .svc-card-head .service-name:hover { color: var(--accent); }
-    .svc-card-head .state { margin-left: 8px; }
     .svc-ops { margin-left: auto; }
     .state { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); font-size: 13px; line-height: 20px; white-space: nowrap; }
     .state-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--icon); flex: 0 0 auto; }
@@ -4145,12 +4244,15 @@
     .svc-copy:hover { background: var(--fill-hover); color: var(--accent); }
     .svc-commit { color: var(--meta); font-weight: 400; margin-left: 6px; }
     .svc-side { display: grid; justify-items: center; align-content: center; gap: 6px; padding: 0 20px; border-left: 1px solid var(--border); min-height: 80px; text-align: center; }
+    .svc-issue-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-height: 20px; }
+    .svc-issue-tags:empty { display: none; }
+    .svc-issue-tags .tag.amber { padding: 0 8px; background: var(--lt-yellow-bg); color: var(--lt-yellow-fg); font-weight: 600; }
+    .svc-issue-tags .tag.red { padding: 0 8px; background: var(--lt-red-bg); color: var(--lt-red-fg); font-weight: 600; }
+    .svc-issue-tags .tag.amber::before, .svc-issue-tags .tag.red::before { display: none; }
     .svc-note { color: var(--muted); font-size: 12px; line-height: 16px; }
-    .svc-side-label { color: var(--meta); font-size: 12px; line-height: 16px; margin-top: 6px; }
     .svc-metric { display: grid; justify-items: center; align-content: center; gap: 4px; text-align: center; }
     .svc-metric-v { display: inline-flex; align-items: baseline; gap: 6px; color: var(--fg); }
     .svc-metric-v strong { font-family: var(--font-display); font-size: 28px; line-height: 36px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--fg-2); }
-    .svc-metric-v.state--err strong { color: var(--danger); }
     .svc-metric-v span { color: var(--muted); font-size: 13px; }
     .svc-metric-l { color: var(--meta); font-size: 12px; line-height: 16px; font-family: var(--font-mono); }
     .pager--card { margin-top: 20px; border-radius: 8px; box-shadow: var(--elev-raised); }
@@ -4311,7 +4413,25 @@
       background: var(--surface-2);
       color: var(--muted);
     }
-    @media (max-width: 760px) { .adv-item { padding-left: 0; } #deploy .nest--compact .form-grid { grid-template-columns: 1fr !important; } #deploy .nest--compact .field > input, #deploy .nest--compact .field > select, #deploy .nest--compact .hint { grid-column: auto; } }
+    /* ---- 高级配置 · 折叠行（参考图样式）：白底描边行 + › 箭头 + 标题 + 「选填」标签，默认收起，展开后编辑 ---- */
+    #deploy .resource-advanced .advanced-stack { display: grid; gap: 10px; }
+    #deploy .adv-acc { padding-left: 0; border: 1px solid var(--line-2); border-radius: 6px; background: var(--surface); }
+    #deploy .adv-acc-head { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 0 16px 0 14px; border: 0; border-radius: 6px; background: transparent; color: var(--fg-2); font: inherit; text-align: left; cursor: pointer; }
+    #deploy .adv-acc-head:hover { background: var(--bg-subtle); }
+    #deploy .adv-acc-head:focus-visible { outline: none; box-shadow: var(--focus-ring-accent); }
+    #deploy .adv-acc.is-open > .adv-acc-head { border-radius: 6px 6px 0 0; }
+    #deploy .adv-acc-chevron { flex: none; width: 16px; height: 16px; color: var(--icon); transition: transform var(--motion-fast) ease-out; }
+    #deploy .adv-acc.is-open > .adv-acc-head .adv-acc-chevron { transform: rotate(90deg); }
+    #deploy .adv-acc-title { color: var(--fg-2); font-size: 13px; line-height: 20px; font-weight: 700; }
+    #deploy .adv-acc-state { margin-left: auto; color: var(--meta); font-size: 12px; line-height: 16px; white-space: nowrap; }
+    #deploy .adv-acc-state:empty { display: none; }
+    #deploy .adv-acc-panel { padding: 16px 16px 18px 42px; border-top: 1px solid var(--line-2); }
+    #deploy .adv-acc-panel .nest-head { margin-bottom: 10px; }
+    #deploy .adv-acc-panel .nest--compact { max-width: none; }
+    #deploy .adv-acc-panel .health-checks { display: grid; gap: 18px; }
+    #deploy .adv-acc-panel .probe-config { max-width: none; }
+    @media (prefers-reduced-motion: reduce) { #deploy .adv-acc-chevron { transition: none; } }
+    @media (max-width: 760px) { .adv-item { padding-left: 0; } #deploy .adv-acc-panel { padding-left: 16px; } #deploy .nest--compact .form-grid { grid-template-columns: 1fr !important; } #deploy .nest--compact .field > input, #deploy .nest--compact .field > select, #deploy .nest--compact .hint { grid-column: auto; } }
 
     /* 结构化配置 · 竖排键值（标签右对齐 --meta，值 600）参照 节点信息 */
     .kv-list { display: grid; gap: 0; }
@@ -4382,6 +4502,30 @@
     .dataset-desc { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 18px; }
     @media (max-width: 760px) {
       .test-form-grid, .dataset-grid { grid-template-columns: 1fr; }
+    }
+
+    #helmDeployPanel:not([hidden]) {
+      min-height: auto;
+      margin-bottom: 74px;
+    }
+
+    #helmDeployPanel .form-grid {
+      height: auto;
+      grid-template-rows: none;
+    }
+
+    #helmDeployPanel .field.wide > .helm-values-editor {
+      height: calc(100vh - 300px) !important;
+      min-height: 420px !important;
+      max-width: 720px !important;
+      resize: vertical;
+    }
+
+    @media (max-width: 760px) {
+      #helmDeployPanel .field.wide > .helm-values-editor {
+        height: calc(100vh - 330px) !important;
+        min-height: 360px !important;
+      }
     }
   </style>
 </head>
@@ -4497,7 +4641,7 @@
           </div>
           <div class="panel deploy-mode-panel" id="helmDeployPanel" hidden>
             <div class="panel-head">
-              <h2>Helm 部署</h2>
+              <h2>自定义部署</h2>
             </div>
             <div class="panel-body">
               <div class="form-grid">
@@ -4515,21 +4659,6 @@
                     <option>inferx-prod</option>
                     <option>model-serving</option>
                     <option>default</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span class="label"><span class="required">*</span> Helm 模板</span>
-                  <select>
-                    <option>llm-d-modelservice</option>
-                    <option>通用模型服务模板</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span class="label"><span class="required">*</span> 版本</span>
-                  <select>
-                    <option>v1.3.2</option>
-                    <option>v1.2.8</option>
-                    <option>v0.9.0</option>
                   </select>
                 </label>
                 <label class="field wide">
@@ -4600,34 +4729,38 @@
                           </select>
                         </span>
                         <span class="template-grid">
-                          <button type="button" class="template-card active" data-template-card="deepseek" data-model="DeepSeek-V4-Flash DeepSeek-V4-Flash-0731" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 分离">
+                          <span role="button" tabindex="0" class="template-card active" data-template-card="deepseek" data-model="DeepSeek-V4-Flash DeepSeek-V4-Flash-0731" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 分离">
+                          <button type="button" class="template-edit-btn" data-edit-from-template aria-label="编辑 DeepSeek-V4-Flash 部署">编辑部署</button>
                           <strong>DeepSeek-V4-Flash</strong>
                           <span>编排框架：llm-d</span>
                           <span>H800 / vLLM / PD 分离</span>
                           <small>生产推荐</small>
                           <span class="template-detail">编排框架：llm-d<br>模型：DeepSeek-V4-Flash-0731<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 分离</span>
-                          </button>
-                          <button type="button" class="template-card" data-template-card="glm" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置">
+                          </span>
+                          <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置">
+                          <button type="button" class="template-edit-btn" data-edit-from-template aria-label="编辑 Qwen3-32B 部署">编辑部署</button>
                           <strong>Qwen3-32B</strong>
                           <span>编排框架：dynamo</span>
                           <span>H800 / Dynamo / PD 共置</span>
                           <small>生产可用</small>
                           <span class="template-detail">编排框架：dynamo<br>模型：Qwen3-32B<br>硬件：H800 8卡节点<br>推理引擎：Dynamo Runtime<br>部署方式：PD 共置</span>
-                          </button>
-                          <button type="button" class="template-card" data-template-card="qwen" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 共置">
+                          </span>
+                          <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 共置">
+                          <button type="button" class="template-edit-btn" data-edit-from-template aria-label="编辑 Qwen3-235B 部署">编辑部署</button>
                           <strong>Qwen3-235B</strong>
                           <span>编排框架：llm-d</span>
                           <span>H800 / vLLM / PD 共置</span>
                           <small>生产可用</small>
                           <span class="template-detail">编排框架：llm-d<br>模型：Qwen3-235B-A22B-FP8<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 共置</span>
-                          </button>
-                          <button type="button" class="template-card" data-template-card="dynamoScout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离">
+                          </span>
+                          <span role="button" tabindex="0" class="template-card" data-template-card="dynamoScout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离">
+                          <button type="button" class="template-edit-btn" data-edit-from-template aria-label="编辑 Llama-4-Scout 部署">编辑部署</button>
                           <strong>Llama-4-Scout</strong>
                           <span>编排框架：dynamo</span>
                           <span>H800 / Dynamo / PD 分离</span>
                           <small>实验环境</small>
                           <span class="template-detail">编排框架：dynamo<br>模型：Llama-4-Scout<br>硬件：H800 8卡节点<br>分布式框架：dynamo<br>部署方式：PD 分离</span>
-                          </button>
+                          </span>
                         </span>
                         <span class="template-empty" id="templateEmpty">暂无匹配模板</span>
                       </span>
@@ -4643,7 +4776,7 @@
                           <span class="muted" id="yamlImportStatus"></span>
                         </div>
                       </div>
-                      <div class="hint" id="deployHint">当前使用模板预填表单，交付人员可以继续修改任意字段。</div>
+                      <div class="hint" id="deployHint">当前使用预置模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
                       <select id="templateSelect" class="hidden-control" aria-hidden="true" tabindex="-1">
                         <option value="deepseek">llm-d / DeepSeek-V4-Flash / H800 / vLLM / PD 分离</option>
                         <option value="glm">dynamo / Qwen3-32B / H800 / Dynamo / PD 共置</option>
@@ -4654,10 +4787,11 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 目标集群</span>
-                      <select>
+                      <select id="deployClusterSelect">
                         <option>prod-gpu-beijing-01</option>
                         <option>delivery-h800-lab</option>
                         <option>ascend-910b-site-a</option>
+                        <option data-preset-only-disabled disabled>muxi-gpu-shanghai-01（GPU型号不匹配）</option>
                       </select>
                     </label>
                     <label class="field">
@@ -4710,11 +4844,11 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 模型访问名称 <i class="label-help" tabindex="0" data-tooltip="模型访问ID，建议使用模型官方名称" aria-label="模型访问名称说明">?</i></span>
-                      <input value="deepseek-v4-flash-0731">
+                      <input id="modelAccessNameInput" value="deepseek-v4-flash-0731">
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 存储目录</span>
-                      <input value="/models/deepseek-v4-flash-0731" data-model-storage-input>
+                      <input id="modelStorageInput" value="/models/deepseek-v4-flash-0731" data-model-storage-input>
                     </label>
                     <label class="field">
                       <span class="label">挂载路径</span>
@@ -4724,9 +4858,10 @@
                 </div>
               </div>
 
-              <div class="panel">
+              <div class="panel" data-template-locked-section>
                 <div class="panel-head">
                   <h2>推理模式</h2>
+                  <button type="button" class="btn text template-edit-inline" data-edit-from-template>编辑部署</button>
                 </div>
                 <div class="panel-body">
                   <div class="form-grid">
@@ -4756,9 +4891,10 @@
                 </div>
               </div>
 
-              <div class="panel">
+              <div class="panel" data-template-locked-section>
                 <div class="panel-head">
                   <h2>资源配置</h2>
+                  <button type="button" class="btn text template-edit-inline" data-edit-from-template>编辑部署</button>
                 </div>
                 <div class="panel-body">
                   <div class="role-tabs" id="roleTabs">
@@ -4850,8 +4986,10 @@
                     <h3>高级配置</h3>
                     <div class="advanced-stack">
                     <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
-                    <div class="adv-item" data-adv>
-                      <div class="nest-head"><span class="adv-title">KV Cache Offload</span><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
+                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-kv-offload">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-kv-offload-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">KV Cache Offload</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state>已开启</span></button>
+                      <div class="adv-acc-panel" id="adv-kv-offload-panel" hidden>
+                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" aria-label="KV Cache Offload" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
                       <div class="nest nest--compact" data-adv-body>
                         <div class="form-grid kv-offload-target">
                         <label class="field">
@@ -4864,11 +5002,14 @@
                         </label>
                         </div>
                       </div>
+                      </div>
                     </div>
 
                     <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
-                    <div class="adv-item" data-adv>
-                      <div class="nest-head"><span class="adv-title">更新策略</span><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
+                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-update-strategy">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-update-strategy-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">更新策略</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state>已开启</span></button>
+                      <div class="adv-acc-panel" id="adv-update-strategy-panel" hidden>
+                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" aria-label="更新策略" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
                       <span class="adv-summary" data-adv-summary hidden>默认重建升级（Recreate），最大不可用：1；最大超量：0。</span>
                       <div class="nest nest--compact" data-adv-body>
                         <div class="form-grid three">
@@ -4886,11 +5027,14 @@
                         </label>
                         </div>
                       </div>
+                      </div>
                     </div>
 
                     <!-- map: <dao-form-item> 环境变量键值配置 -->
-                    <div class="adv-item" data-adv>
-                      <div class="nest-head"><span class="adv-title">环境变量</span><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" data-dao="switch" data-switch data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
+                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-env-vars">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-env-vars-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">环境变量</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state></span></button>
+                      <div class="adv-acc-panel" id="adv-env-vars-panel" hidden>
+                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" aria-label="环境变量" data-dao="switch" data-switch data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
                       <div class="nest nest--compact" data-adv-body hidden>
                         <div class="form-grid">
                           <span class="label">环境变量</span>
@@ -4908,11 +5052,14 @@
                           </div>
                         </div>
                       </div>
+                      </div>
                     </div>
 
                     <!-- map: <dao-form-item> 配置项挂载 -->
-                    <div class="adv-item" data-adv>
-                      <div class="nest-head"><span class="adv-title">配置项挂载</span><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" data-dao="switch" data-switch data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
+                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-config-mount">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-config-mount-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">配置项挂载</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state></span></button>
+                      <div class="adv-acc-panel" id="adv-config-mount-panel" hidden>
+                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" aria-label="配置项挂载" data-dao="switch" data-switch data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
                       <div class="nest nest--compact" data-adv-body hidden>
                         <div class="config-mount-card">
                           <div class="form-grid">
@@ -4940,10 +5087,14 @@
                           <button type="button" class="btn text">+ 添加</button>
                         </div>
                       </div>
+                      </div>
                     </div>
 
-                    <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
-                    <div class="adv-item health-checks">
+                    <!-- map: <dao-form-item> 健康检查 · 折叠行内含存活 / 就绪 / 启动三组探针 -->
+                    <div class="adv-item adv-acc" data-adv-acc id="adv-health-checks">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-health-checks-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">健康检查</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state></span></button>
+                      <div class="adv-acc-panel" id="adv-health-checks-panel" hidden>
+                      <div class="health-checks">
                       <div class="probe-item" data-adv>
                         <div class="nest-head"><span class="adv-title">容器存活检查</span><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
                         <div class="nest nest--compact probe-config" data-adv-body hidden>
@@ -5061,6 +5212,8 @@
                           </div>
                         </div>
                       </div>
+                      </div>
+                      </div>
                     </div>
 
                     </div>
@@ -5070,8 +5223,8 @@
             </div>
           </div>
           <div class="deploy-bottom-bar">
+            <button class="btn" id="deployCancelButton" data-cancel-deploy>取消</button>
             <button class="btn" id="deployPreviewButton" data-open-values>预览 YAML</button>
-            <button class="btn" id="deployCancelButton" data-cancel-deploy hidden>取消</button>
             <button class="btn primary" id="deploySubmitButton" data-submit-deploy>提交并部署</button>
           </div>
         </section>
@@ -5344,7 +5497,7 @@
               <button type="button" class="concept-trigger" data-concept-toggle aria-expanded="false" aria-controls="conceptModelService"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">模型服务</span></button>
               <button type="button" class="concept-close" data-concept-close aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="conceptModelService" hidden>模型服务是把一个模型以 OpenAI 兼容接口对外提供推理能力的部署单元。每个服务绑定一个编排框架（llm-d / dynamo）、一种推理模式与一组 GPU 资源池，可独立扩缩容、灰度更新与回滚。</div>
+            <div class="concept-body" id="conceptModelService" hidden>模型服务是把一个模型以 OpenAI 兼容接口对外提供推理能力的部署单元。每个服务绑定一个编排框架（llm-d / dynamo）、一种推理模式与一组 GPU 资源池，可独立扩缩容。</div>
           </div>
           <div class="concept" data-dao="expansion" data-props="type=doc" data-od-id="concept-inference-mode">
             <div class="concept-head">
@@ -5358,7 +5511,7 @@
           <!-- map: <dao-toolbar> 搜索 + 刷新动作图标 + 次按钮 + 主按钮 · src: dao-style/src/components/toolbar -->
           <div class="tb" data-dao="toolbar" data-od-id="services-toolbar">
             <label class="tb-field"><span class="tb-label">状态</span>
-              <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>Running</option><option>Progressing</option><option>Degraded</option></select>
+              <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>部署中</option><option>更新中</option><option>资源异常</option><option>性能异常</option></select>
             </label>
             <label class="tb-field"><span class="tb-label">推理模式</span>
               <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option>PD 分离</option><option>PD 共置</option></select>
@@ -5367,8 +5520,6 @@
             <div class="tb-right">
               <!-- map: <dao-action-icon name="icon-refresh"> · src: dao-style/src/components/action-icon -->
               <button type="button" class="aicon" id="serviceRefresh" data-dao="action-icon" aria-label="刷新列表" title="刷新列表">↻</button>
-              <!-- map: <dao-button type="secondary"> · src: dao-style/src/components/button -->
-              <button class="btn" data-dao="button" data-props="type=secondary">导出列表</button>
               <!-- map: <dao-button type="primary"> · src: dao-style/src/components/button -->
               <button class="btn primary" data-dao="button" data-props="type=primary" data-open-deploy-choice data-od-id="cta-new-deploy">新建部署</button>
             </div>
@@ -5424,8 +5575,8 @@
               <p class="lead" id="detailLead">Endpoint: deepseek-v4-flash-h800-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2</p>
             </div>
             <div class="dt-right">
-              <span class="tag green" id="detailHealthTag">Running</span>
-              <span class="tag green" id="detailSyncTag">Synced</span>
+              <span class="tag green" id="detailHealthTag">可用</span>
+              <span class="detail-issue-tags" id="detailSyncTag"></span>
               <span class="ops">
                 <button class="btn" type="button">操作</button>
                 <span class="ops-menu">
@@ -6007,8 +6158,8 @@ llm-d-modelservice:
                 <span>选择部署模板后进入结构化表单，模板只负责预填默认值。</span>
               </button>
               <button class="deploy-choice-card" type="button" data-start-deploy="helm" data-cluster="prod-gpu-beijing-01">
-                <strong>Helm 部署</strong>
-                <span>选择集群、工作空间和 Helm 模板后部署。</span>
+                <strong>自定义部署</strong>
+                <span>编写 YAML 文件并部署。</span>
               </button>
             </div>
           </div>
@@ -6063,6 +6214,7 @@ llm-d-modelservice:
     const templateGpuFilter = document.querySelector("#templateGpuFilter");
     const templateFrameworkFilter = document.querySelector("#templateFrameworkFilter");
     const templateModeFilter = document.querySelector("#templateModeFilter");
+    const deployClusterSelect = document.querySelector("#deployClusterSelect");
     const serviceRows = document.querySelector("#serviceRows");
     const templateEmpty = document.querySelector("#templateEmpty");
     const templateModeButtons = Array.from(document.querySelectorAll("[data-deploy-template-mode]"));
@@ -6077,6 +6229,8 @@ llm-d-modelservice:
     const serviceNameInput = document.querySelector("#serviceNameInput");
     const imageInput = document.querySelector("#imageInput");
     const modelPathInput = document.querySelector("#modelPathInput");
+    const modelAccessNameInput = document.querySelector("#modelAccessNameInput");
+    const modelStorageInput = document.querySelector("#modelStorageInput");
     const replicasInput = document.querySelector("#replicasInput");
     const gpusInput = document.querySelector("#gpusInput");
     const nodePoolSelect = document.querySelector("#nodePoolSelect");
@@ -6502,10 +6656,10 @@ llm-d-modelservice:
     };
 
     const serviceRowsData = [
-      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "", status: ["Degraded", "red"], sync: ["OutOfSync", "amber"], note: "手工修改 Service type", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "violet", status: ["Progressing", "amber"], sync: ["Synced", "green"], note: "prefill workers 扩容中", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 4, target: 4 }, { name: "decode", current: 2, target: 2 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], sync: ["Synced", "green"], note: "model-server 2/2", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "model-server", current: 2, target: 2 }] }
+      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
+      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常"], sync: ["OutOfSync", "amber"], note: "手工修改 Service type", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["部署中", "amber"], issueTags: [], sync: ["Synced", "green"], note: "prefill workers 扩容中", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 4, target: 4 }, { name: "decode", current: 2, target: 2 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["更新中", "amber"], issueTags: ["性能异常"], sync: ["Synced", "green"], note: "滚动更新中", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "model-server", current: 2, target: 2 }] }
     ];
 
     let activeScaleService = "";
@@ -6520,6 +6674,8 @@ llm-d-modelservice:
         source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/vllm/vllm-openai:nightly",
+        modelAccessName: "deepseek-v4-flash-0731",
+        storage: "/models/deepseek-v4-flash-0731",
         mode: "split",
         replicas: "2",
         gpus: "4",
@@ -6537,6 +6693,8 @@ llm-d-modelservice:
         source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1",
+        modelAccessName: "qwen3-32b",
+        storage: "/models/qwen3-32b",
         mode: "colocated",
         replicas: "2",
         gpus: "4",
@@ -6554,6 +6712,8 @@ llm-d-modelservice:
         source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/vllm/vllm-openai:v0.8.5",
+        modelAccessName: "qwen3-235b",
+        storage: "/models/qwen3-235b",
         mode: "colocated",
         replicas: "1",
         gpus: "8",
@@ -6571,6 +6731,8 @@ llm-d-modelservice:
         source: "pvc",
         path: "/mnt/data",
         image: "docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8",
+        modelAccessName: "llama4-scout",
+        storage: "/models/llama4-scout",
         mode: "split",
         replicas: "4",
         gpus: "4",
@@ -6589,11 +6751,13 @@ llm-d-modelservice:
         path: "/mnt/data",
         image: "",
         mode: "colocated",
-        replicas: "1",
-        gpus: "1",
+        modelAccessName: "",
+        storage: "",
+        replicas: "",
+        gpus: "",
         nodePool: "NVIDIA H800",
-        cpu: "16 core",
-        memory: "64Gi",
+        cpu: "",
+        memory: "",
         parallel: "TP=1, DP=1, PP=1, EP=off",
         accelerator: "nvidia.com/gpu",
         command: ""
@@ -6652,7 +6816,7 @@ llm-d-modelservice:
       yamlEntry.hidden = false;
       templateDeployLayout.hidden = yamlOnly || helmMode;
       deployPreviewButton.hidden = yamlOnly || helmMode;
-      if (deployCancelButton) deployCancelButton.hidden = !helmMode;
+      if (deployCancelButton) deployCancelButton.hidden = yamlOnly;
       deploySubmitButton.textContent = yamlOnly ? "部署" : helmMode ? "确定部署" : "提交并部署";
       if (!yamlOnly && !helmMode) setDeployTemplateMode("preset");
     }
@@ -6669,10 +6833,17 @@ llm-d-modelservice:
       });
       detailTitle.textContent = profile.title;
       detailLead.textContent = profile.lead;
-      detailHealthTag.textContent = profile.health[0];
-      detailHealthTag.className = tagClass(profile.health[1]);
-      detailSyncTag.textContent = profile.sync[0];
-      detailSyncTag.className = tagClass(profile.sync[1]);
+      const serviceRow = serviceRowsData.find(item => item.id === profile.title);
+      const serviceState = serviceRow?.serviceState || profile.health;
+      const serviceIssues = serviceRow?.issueTags || [];
+      detailHealthTag.textContent = serviceState[0];
+      detailHealthTag.className = tagClass(serviceState[1]);
+      detailSyncTag.className = "detail-issue-tags";
+      detailSyncTag.hidden = serviceIssues.length === 0;
+      detailSyncTag.innerHTML = serviceIssues.map(tag => {
+        const color = tag === "资源异常" ? "red" : "amber";
+        return `<span class="${tagClass(color)}">${escapeHtml(tag)}</span>`;
+      }).join("");
       if (detailCommitTag) {
         detailCommitTag.textContent = profile.commit;
         detailCommitTag.className = "tag";
@@ -6797,6 +6968,29 @@ llm-d-modelservice:
       return serviceRowsData.find(item => item.id === serviceId) || serviceRowsData.find(item => item.id === activeDetailService) || serviceRowsData[0];
     }
 
+    function rolesFromDetailResources(service, existingRoles = []) {
+      const profile = detailProfiles[service.id] || {};
+      const template = document.createElement("template");
+      template.innerHTML = profile.resources || splitDetailSnapshot.resources || "";
+      const existingByName = new Map(existingRoles.map(role => [role.name, role]));
+      const roles = Array.from(template.content.querySelectorAll(".resource-group-head h3")).map(head => {
+        const titleNode = head.cloneNode(true);
+        const tag = titleNode.querySelector(".tag");
+        const statusText = tag?.textContent.trim() || head.textContent.trim();
+        tag?.remove();
+        const name = titleNode.textContent.trim();
+        const counts = statusText.match(/(\d+)\s*\/\s*(\d+)/);
+        const existing = existingByName.get(name);
+        const current = existing?.current || (counts ? Number(counts[1]) : 1);
+        const target = existing?.target || (counts ? Number(counts[2]) : current);
+        return { name, current, target };
+      });
+      if (roles.length) return roles;
+      return existingRoles.length
+        ? existingRoles
+        : [{ name: service.mode === "PD 共置" ? "model-server" : "prefill", current: 1, target: 1 }];
+    }
+
     function openScaleService(serviceId) {
       const service = serviceById(serviceId);
       if (!service || !scaleServiceModal || !scaleRoleList) return;
@@ -6804,7 +6998,7 @@ llm-d-modelservice:
       if (scaleServiceName) scaleServiceName.textContent = service.id;
       if (scaleServiceFramework) scaleServiceFramework.textContent = service.framework;
       if (scaleResult) scaleResult.hidden = true;
-      const roles = service.scaleRoles || [{ name: service.mode === "PD 共置" ? "model-server" : "prefill", current: 1, target: 1 }];
+      const roles = rolesFromDetailResources(service, service.scaleRoles || []);
       service.scaleRoles = roles;
       scaleRoleList.innerHTML = roles.map((role, index) => `
         <div class="scale-role-row" data-scale-role="${index}">
@@ -6850,8 +7044,6 @@ llm-d-modelservice:
     }
 
     const stateClassByColor = { green: "state--ok", amber: "state--warn", red: "state--err", "": "state--off" };
-    const serviceStatusLabel = { Running: "运行中", Progressing: "部署中", Degraded: "异常" };
-
     function serviceFilterState() {
       const status = document.querySelector("#serviceStatusFilter")?.value || "";
       const mode = document.querySelector("#serviceModeFilter")?.value || "";
@@ -6885,7 +7077,9 @@ llm-d-modelservice:
       const service = serviceById(serviceId);
       if (!service || service.sync[0] !== "OutOfSync") return;
       service.sync = ["Synced", "green"];
-      service.note = "GitOps 目标已恢复";
+      service.serviceState = ["更新中", "amber"];
+      service.issueTags = [];
+      service.note = "GitOps 目标恢复中";
       const profile = detailProfiles[service.id];
       if (profile) {
         profile.sync = ["Synced", "green"];
@@ -6899,7 +7093,7 @@ llm-d-modelservice:
       if (!serviceRows) return;
       const { status, mode, query } = serviceFilterState();
       const items = serviceRowsData.filter(item =>
-        (!status || item.status[0] === status) &&
+        (!status || item.serviceState?.[0] === status || (item.issueTags || []).includes(status)) &&
         (!mode || item.mode === mode) &&
         (!query || item.id.toLowerCase().includes(query) || item.model.toLowerCase().includes(query))
       );
@@ -6916,12 +7110,16 @@ llm-d-modelservice:
       serviceRows.innerHTML = items.map(item => {
         const gpu = String(item.resource).split(" ")[0];
         const canSync = item.sync[0] === "OutOfSync";
+        const state = item.serviceState || item.status || ["可用", "green"];
+        const issueTags = (item.issueTags || []).map(tag => {
+          const color = tag === "资源异常" ? "red" : "amber";
+          return `<span class="${tagClass(color)}">${escapeHtml(tag)}</span>`;
+        }).join("");
         return `
           <article class="svc-card${item.selected ? " is-selected" : ""}" data-service-row="${escapeHtml(item.id)}" data-od-id="service-card-${escapeHtml(item.id)}">
             <header class="svc-card-head">
               <span class="svc-ic" aria-hidden="true">◎</span>
               <button class="service-name" data-service="${escapeHtml(item.id)}">${escapeHtml(item.id)}</button>
-              <span class="state ${stateClassByColor[item.status[1]] || "state--off"}"><i class="state-dot" aria-hidden="true"></i>${escapeHtml(serviceStatusLabel[item.status[0]] || item.status[0])}</span>
               <span class="ops svc-ops">
                 <button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button>
                 <span class="ops-menu" role="menu">
@@ -6947,12 +7145,12 @@ llm-d-modelservice:
                 <div><dt>命名空间</dt><dd class="mono">${escapeHtml(item.namespace)}</dd></div>
               </dl>
               <div class="svc-side">
-                <span class="state ${stateClassByColor[item.sync[1]] || "state--off"}"><i class="state-dot" aria-hidden="true"></i>${escapeHtml(item.sync[0])}</span>
+                <span class="state ${stateClassByColor[state[1]] || "state--off"}"><i class="state-dot" aria-hidden="true"></i>${escapeHtml(state[0])}</span>
+                <span class="svc-issue-tags">${issueTags}</span>
                 <span class="svc-note">${escapeHtml(item.note)}</span>
-                <span class="svc-side-label">同步状态</span>
               </div>
               <div class="svc-metric">
-                <div class="svc-metric-v ${stateClassByColor[item.status[1]] || "state--off"}"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>
+                <div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>
                 <span class="svc-metric-l">${escapeHtml(item.pool)}</span>
               </div>
             </div>
@@ -7318,6 +7516,47 @@ llm-d-modelservice:
       resourceAdvanced.innerHTML = roleAdvancedStates[role];
     }
 
+    function setAdvancedConfigOff() {
+      if (!resourceAdvanced) return;
+      resourceAdvanced.querySelectorAll("[data-switch]").forEach(sw => {
+        sw.classList.remove("is-checked");
+        sw.setAttribute("aria-checked", "false");
+        const text = sw.parentElement?.querySelector(".switch-text");
+        const enableWording = sw.closest(".probe-item") || sw.dataset.switchWording === "enable";
+        if (text) text.textContent = enableWording ? "未启用" : "关闭";
+      });
+      resourceAdvanced.querySelectorAll("[data-adv-body]").forEach(body => {
+        body.hidden = true;
+      });
+      resourceAdvanced.querySelectorAll("[data-adv-summary]").forEach(summary => {
+        summary.hidden = false;
+      });
+      resourceAdvanced.querySelectorAll("[data-adv-acc]").forEach(acc => {
+        acc.classList.remove("is-open");
+        const head = acc.querySelector("[data-adv-acc-toggle]");
+        const panel = acc.querySelector(".adv-acc-panel");
+        if (head) head.setAttribute("aria-expanded", "false");
+        if (panel) panel.hidden = true;
+        syncAdvAccState(acc);
+      });
+    }
+
+    function clearBlankTemplateInputs() {
+      if (serviceNameInput) serviceNameInput.value = "";
+      if (modelAccessNameInput) modelAccessNameInput.value = "";
+      if (modelStorageInput) modelStorageInput.value = "";
+      if (imageInput) imageInput.value = "";
+      if (replicasInput) replicasInput.value = "";
+      if (gpusInput) gpusInput.value = "";
+      if (cpuInput) cpuInput.value = "";
+      if (memoryInput) memoryInput.value = "";
+      document.querySelectorAll("[data-command-role] textarea").forEach(textarea => {
+        textarea.value = "";
+      });
+      syncImagePreset();
+      setAdvancedConfigOff();
+    }
+
     function setRole(role) {
       if (activeResourceRole && activeResourceRole !== role) {
         saveRoleAdvancedState(activeResourceRole);
@@ -7364,6 +7603,9 @@ llm-d-modelservice:
         memoryInput.value = "300Gi";
       }
       restoreRoleAdvancedState(role);
+      if (activeTemplate === "blank") {
+        clearBlankTemplateInputs();
+      }
       activeResourceRole = role;
     }
 
@@ -7455,6 +7697,8 @@ llm-d-modelservice:
       serviceNameInput.value = item.service;
       modelSourceSelect.value = item.source;
       modelPathInput.value = item.path;
+      if (modelAccessNameInput) modelAccessNameInput.value = item.modelAccessName || "";
+      if (modelStorageInput) modelStorageInput.value = item.storage || "";
       imageInput.value = item.image;
       syncImagePreset();
       updateSource(item.source);
@@ -7465,6 +7709,7 @@ llm-d-modelservice:
       cpuInput.value = item.cpu;
       memoryInput.value = item.memory;
       commandInput.value = item.command;
+      if (key === "blank") clearBlankTemplateInputs();
     }
 
     renderServiceRows();
@@ -7586,7 +7831,8 @@ llm-d-modelservice:
       applyDefaults(key);
       deployHint.textContent = key === "blank"
         ? "当前选择通用模板，所有字段可按现场模型、硬件和推理引擎完整配置。"
-        : "当前使用模板预填表单，交付人员可以继续修改任意字段。";
+        : "当前使用预置模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。";
+      applyPresetTemplateState();
     }
 
     function matchesTemplateFilter(card) {
@@ -7626,7 +7872,7 @@ llm-d-modelservice:
       if (yamlImportPanel) yamlImportPanel.hidden = mode !== "yaml";
       if (mode === "preset") {
         if (activeTemplate === "blank") selectTemplate("deepseek");
-        deployHint.textContent = "先选择模板库中的模板，模板仅用于预填表单，字段仍可继续修改。";
+        deployHint.textContent = "先选择模板库中的模板，推理模式和资源配置将按模板锁定；如需修改，可点击「编辑部署」。";
       }
       if (mode === "blank") {
         selectTemplate("blank");
@@ -7634,6 +7880,35 @@ llm-d-modelservice:
       if (mode === "yaml") {
         deployHint.textContent = "导入或填写 YAML 后解析到下方部署表单，解析结果仍可继续修改。";
       }
+      applyPresetTemplateState();
+    }
+
+    function applyPresetTemplateState() {
+      const locked = activeDeployTemplateMode === "preset";
+      document.querySelectorAll("[data-template-locked-section]").forEach(section => {
+        section.classList.toggle("is-template-locked", locked);
+        section.querySelectorAll("input, select, textarea, button").forEach(control => {
+          if (control.matches("[data-edit-from-template]")) return;
+          control.disabled = locked;
+        });
+      });
+      document.querySelectorAll("[data-edit-from-template]").forEach(button => {
+        button.hidden = !locked;
+      });
+      deployClusterSelect?.querySelectorAll("[data-preset-only-disabled]").forEach(option => {
+        option.hidden = !locked;
+      });
+    }
+
+    function editFromCurrentTemplate() {
+      activeDeployTemplateMode = "blank";
+      templateModeButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.deployTemplateMode === "blank");
+      });
+      if (templateLibraryPicker) templateLibraryPicker.hidden = true;
+      if (yamlImportPanel) yamlImportPanel.hidden = true;
+      deployHint.textContent = "已基于当前预置模板进入通用模板配置，预填数据已保留，字段可继续修改。";
+      applyPresetTemplateState();
     }
 
     templateModeButtons.forEach(button => {
@@ -7641,7 +7916,23 @@ llm-d-modelservice:
     });
 
     document.querySelectorAll("[data-template-card]").forEach(card => {
-      card.addEventListener("click", () => selectTemplate(card.dataset.templateCard));
+      card.addEventListener("click", event => {
+        if (event.target.closest("[data-edit-from-template]")) return;
+        selectTemplate(card.dataset.templateCard);
+      });
+      card.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        selectTemplate(card.dataset.templateCard);
+      });
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-edit-from-template]");
+      if (!button) return;
+      const card = button.closest("[data-template-card]");
+      if (card) selectTemplate(card.dataset.templateCard);
+      editFromCurrentTemplate();
     });
 
     [templateModelFilter, templateGpuFilter, templateFrameworkFilter, templateModeFilter]
@@ -7816,6 +8107,28 @@ llm-d-modelservice:
       if (body) body.hidden = !on;
       const summary = sw.closest("[data-adv]")?.querySelector("[data-adv-summary]");
       if (summary) summary.hidden = on;
+      syncAdvAccState(sw.closest("[data-adv-acc]"));
+    });
+    // 高级配置折叠行：行头按钮切换展开 / 收起，行头右侧状态文字反映面板内开关状态
+    function syncAdvAccState(acc) {
+      if (!acc) return;
+      const state = acc.querySelector("[data-adv-acc-state]");
+      if (!state) return;
+      const switches = [...acc.querySelectorAll("[data-switch]")];
+      const onCount = switches.filter(s => s.classList.contains("is-checked")).length;
+      state.textContent = onCount === 0 ? "" : switches.length > 1 ? `已启用 ${onCount} 项` : "已开启";
+    }
+    document.querySelectorAll("[data-adv-acc]").forEach(syncAdvAccState);
+    document.addEventListener("click", event => {
+      const head = event.target.closest("[data-adv-acc-toggle]");
+      if (!head) return;
+      const acc = head.closest("[data-adv-acc]");
+      const panel = acc?.querySelector(".adv-acc-panel");
+      if (!acc || !panel) return;
+      const open = !acc.classList.contains("is-open");
+      acc.classList.toggle("is-open", open);
+      head.setAttribute("aria-expanded", String(open));
+      panel.hidden = !open;
     });
     document.addEventListener("click", event => {
       const addButton = event.target.closest("#envVarAddButton");
