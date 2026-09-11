@@ -785,6 +785,7 @@
     #deploy .field > .template-mode-grid,
     #deploy .field > .template-library-picker,
     #deploy .field > .template-yaml-panel,
+    #deploy .field > .parallel-strategy,
     #deploy .field > .role-command-grid {
       grid-column: 2 / 4;
     }
@@ -799,6 +800,7 @@
     #deploy .field > .combo-row,
     #deploy .field > textarea,
     #deploy .field > .template-yaml-panel,
+    #deploy .field > .parallel-strategy,
     #deploy .field > .role-command-grid {
       max-width: 620px;
     }
@@ -961,6 +963,10 @@
       grid-column: 2;
       max-width: none;
       background: var(--surface-warm);
+    }
+
+    #deploy .role-command .field > textarea.is-command-sample {
+      color: var(--meta);
     }
 
     #deploy .source-selector {
@@ -1378,6 +1384,74 @@
     .role-command h3 {
       margin-bottom: 12px;
       color: var(--text);
+    }
+
+    .parallel-strategy {
+      display: grid;
+      gap: 8px;
+      min-height: 32px;
+    }
+
+    .parallel-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .parallel-row--ep {
+      gap: 8px;
+    }
+
+    .parallel-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--fg-2);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .parallel-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .parallel-value {
+      width: 58px !important;
+      min-height: 24px !important;
+      height: 24px !important;
+      padding: 2px 6px !important;
+    }
+
+    .parallel-calc {
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .parallel-calc strong {
+      color: var(--fg-2);
+      font-weight: 600;
+    }
+
+    .parallel-help {
+      display: inline-grid;
+      place-items: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--meta);
+      font-size: 10px;
+      line-height: 1;
+      cursor: help;
     }
 
     .deploy-mode-panel { margin-bottom: 16px; }
@@ -1880,6 +1954,7 @@
       #deploy .field > .template-mode-grid,
       #deploy .field > .template-library-picker,
       #deploy .field > .template-yaml-panel,
+      #deploy .field > .parallel-strategy,
       #deploy .field > .role-command-grid,
       #deploy .hint,
       #deploy .template-empty,
@@ -3817,7 +3892,8 @@
     }
     #deploy .field > .template-mode-grid,
     #deploy .field > .template-library-picker,
-    #deploy .field > .template-yaml-panel {
+    #deploy .field > .template-yaml-panel,
+    #deploy .field > .parallel-strategy {
       grid-column: 2 / -1 !important;
       max-width: none !important;
     }
@@ -3846,6 +3922,10 @@
       gap: 12px 10px !important;
     }
     #deploy .role-command .field > textarea {
+      grid-column: 2 / 4 !important;
+      max-width: 620px !important;
+    }
+    #deploy .role-command .field > .parallel-strategy {
       grid-column: 2 / 4 !important;
       max-width: 620px !important;
     }
@@ -4962,27 +5042,75 @@
                     <div class="role-command" data-command-role="prefill">
                       <h3>prefill 启动命令</h3>
                       <div class="form-grid">
+                        <div class="field wide">
+                          <span class="label">并行策略</span>
+                          <span class="parallel-strategy" data-parallel-strategy>
+                            <span class="parallel-row">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="tp"> TP <input class="parallel-value" type="number" min="1" value="1" aria-label="TP 数量" data-parallel-input="tp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="dp"> DP <input class="parallel-value" type="number" min="1" value="1" aria-label="DP 数量" data-parallel-input="dp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="pp"> PP <input class="parallel-value" type="number" min="1" value="1" aria-label="PP 数量" data-parallel-input="pp" hidden></label>
+                            </span>
+                            <span class="parallel-row parallel-row--ep">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="ep"> EP <span class="parallel-help" title="MOE模型可启用" aria-label="MOE模型可启用">?</span></label>
+                            </span>
+                            <span class="parallel-calc" hidden>Expert Parallel Size: TP × DP = <strong data-parallel-total>1</strong></span>
+                          </span>
+                        </div>
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea id="commandInput">vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 512K --kv-cache-dtype fp8 --enable-expert-parallel</textarea>
+                          <textarea id="commandInput" class="is-command-sample" data-command-textarea>启动命令样例
+---
+vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 512K --kv-cache-dtype fp8 --enable-expert-parallel</textarea>
                         </label>
                       </div>
                     </div>
                     <div class="role-command" data-command-role="decode" hidden>
                       <h3>decode 启动命令</h3>
                       <div class="form-grid">
+                        <div class="field wide">
+                          <span class="label">并行策略</span>
+                          <span class="parallel-strategy" data-parallel-strategy>
+                            <span class="parallel-row">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="tp"> TP <input class="parallel-value" type="number" min="1" value="1" aria-label="TP 数量" data-parallel-input="tp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="dp"> DP <input class="parallel-value" type="number" min="1" value="1" aria-label="DP 数量" data-parallel-input="dp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="pp"> PP <input class="parallel-value" type="number" min="1" value="1" aria-label="PP 数量" data-parallel-input="pp" hidden></label>
+                            </span>
+                            <span class="parallel-row parallel-row--ep">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="ep"> EP <span class="parallel-help" title="MOE模型可启用" aria-label="MOE模型可启用">?</span></label>
+                            </span>
+                            <span class="parallel-calc" hidden>Expert Parallel Size: TP × DP = <strong data-parallel-total>1</strong></span>
+                          </span>
+                        </div>
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --enable-expert-parallel --kv-transfer-config ${KV_TRANSFER_CONFIG}</textarea>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --enable-expert-parallel --kv-transfer-config ${KV_TRANSFER_CONFIG}</textarea>
                         </label>
                       </div>
                     </div>
                     <div class="role-command" data-command-role="server" hidden>
                       <h3>model-server 启动命令</h3>
                       <div class="form-grid">
+                        <div class="field wide">
+                          <span class="label">并行策略</span>
+                          <span class="parallel-strategy" data-parallel-strategy>
+                            <span class="parallel-row">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="tp"> TP <input class="parallel-value" type="number" min="1" value="1" aria-label="TP 数量" data-parallel-input="tp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="dp"> DP <input class="parallel-value" type="number" min="1" value="1" aria-label="DP 数量" data-parallel-input="dp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="pp"> PP <input class="parallel-value" type="number" min="1" value="1" aria-label="PP 数量" data-parallel-input="pp" hidden></label>
+                            </span>
+                            <span class="parallel-row parallel-row--ep">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="ep"> EP <span class="parallel-help" title="MOE模型可启用" aria-label="MOE模型可启用">?</span></label>
+                            </span>
+                            <span class="parallel-calc" hidden>Expert Parallel Size: TP × DP = <strong data-parallel-total>1</strong></span>
+                          </span>
+                        </div>
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>vllm serve ${MODEL_PATH} --port 8000 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 128K</textarea>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+vllm serve ${MODEL_PATH} --port 8000 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 128K</textarea>
                         </label>
                       </div>
                     </div>
@@ -4991,7 +5119,34 @@
                       <div class="form-grid">
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>dynamo-frontend --service-name ${SERVICE_NAME} --worker-pool ${WORKER_POOL} --port 8080</textarea>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+python -m dynamo.frontend --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --worker-pool ${WORKER_POOL} --port 8080</textarea>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="role-command" data-command-role="worker" hidden>
+                      <h3>worker pool 启动命令</h3>
+                      <div class="form-grid">
+                        <div class="field wide">
+                          <span class="label">并行策略</span>
+                          <span class="parallel-strategy" data-parallel-strategy>
+                            <span class="parallel-row">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="tp"> TP <input class="parallel-value" type="number" min="1" value="1" aria-label="TP 数量" data-parallel-input="tp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="dp"> DP <input class="parallel-value" type="number" min="1" value="1" aria-label="DP 数量" data-parallel-input="dp" hidden></label>
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="pp"> PP <input class="parallel-value" type="number" min="1" value="1" aria-label="PP 数量" data-parallel-input="pp" hidden></label>
+                            </span>
+                            <span class="parallel-row parallel-row--ep">
+                              <label class="parallel-item"><input type="checkbox" data-parallel-toggle="ep"> EP <span class="parallel-help" title="MOE模型可启用" aria-label="MOE模型可启用">?</span></label>
+                            </span>
+                            <span class="parallel-calc" hidden>Expert Parallel Size: TP × DP = <strong data-parallel-total>1</strong></span>
+                          </span>
+                        </div>
+                        <label class="field wide">
+                          <span class="label">启动命令</span>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+python -m dynamo.worker --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --deployment-mode colocated --enable-metrics</textarea>
                         </label>
                       </div>
                     </div>
@@ -5000,7 +5155,9 @@
                       <div class="form-grid">
                         <label class="field wide">
                           <span class="label">启动命令</span>
-                          <textarea>llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         </label>
                       </div>
                     </div>
@@ -6854,6 +7011,21 @@ llm-d-modelservice:
       }
     };
 
+    const commandSamples = {
+      "llm-d": {
+        prefill: "vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 512K --kv-cache-dtype fp8 --enable-expert-parallel",
+        decode: "vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --enable-expert-parallel --kv-transfer-config ${KV_TRANSFER_CONFIG}",
+        server: "vllm serve ${MODEL_PATH} --port 8000 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 128K",
+        gateway: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080"
+      },
+      dynamo: {
+        prefill: "python -m dynamo.worker --role prefill --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --enable-kv-router",
+        decode: "python -m dynamo.worker --role decode --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --kv-transfer-config ${KV_TRANSFER_CONFIG}",
+        frontend: "python -m dynamo.frontend --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --worker-pool ${WORKER_POOL} --port 8080",
+        worker: "python -m dynamo.worker --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --deployment-mode colocated --enable-metrics"
+      }
+    };
+
     const maasUpstreamServices = {
       deepseek: {
         modelId: "deepseek-v4-flash-h800-prod",
@@ -7474,7 +7646,12 @@ llm-d-modelservice:
       nodePoolSelect.value = values.nodePool || "NVIDIA H800";
       cpuInput.value = values.cpu || "";
       memoryInput.value = values.memory || "";
-      commandInput.value = values.command || "";
+      if (values.command) {
+        commandInput.value = values.command;
+        commandInput.classList.remove("is-command-sample");
+      } else {
+        setCommandSample(commandInput, activeServiceType, activeResourceRole || "server", true);
+      }
     }
 
     function enterServiceConfigEdit(serviceId, options = {}) {
@@ -7489,7 +7666,7 @@ llm-d-modelservice:
         imageInput.value = "";
         cpuInput.value = "";
         memoryInput.value = "";
-        commandInput.value = "";
+        setCommandSample(commandInput, activeServiceType, activeResourceRole || "server", true);
         syncImagePreset();
       }
       if (deploySubmitButton) deploySubmitButton.textContent = "提交更新";
@@ -7750,6 +7927,25 @@ llm-d-modelservice:
       });
     }
 
+    function commandSampleText(serviceType, role) {
+      const sample = commandSamples[serviceType]?.[role] || commandSamples[activeServiceType]?.[role] || commandSamples["llm-d"].server;
+      return `启动命令样例\n---\n${sample}`;
+    }
+
+    function setCommandSample(textarea, serviceType, role, force = false) {
+      if (!textarea || (!force && !textarea.classList.contains("is-command-sample"))) return;
+      textarea.value = commandSampleText(serviceType, role);
+      textarea.textContent = textarea.value;
+      textarea.classList.add("is-command-sample");
+    }
+
+    function refreshCommandSamples(force = false) {
+      document.querySelectorAll("[data-command-role]").forEach(card => {
+        const textarea = card.querySelector("[data-command-textarea]");
+        setCommandSample(textarea, activeServiceType, card.dataset.commandRole, force);
+      });
+    }
+
     function clearBlankTemplateInputs() {
       if (serviceNameInput) serviceNameInput.value = "";
       if (modelAccessNameInput) modelAccessNameInput.value = "";
@@ -7759,9 +7955,7 @@ llm-d-modelservice:
       if (gpusInput) gpusInput.value = "";
       if (cpuInput) cpuInput.value = "";
       if (memoryInput) memoryInput.value = "";
-      document.querySelectorAll("[data-command-role] textarea").forEach(textarea => {
-        textarea.value = "";
-      });
+      refreshCommandSamples(true);
       syncImagePreset();
       setAdvancedConfigOff();
     }
@@ -7811,6 +8005,8 @@ llm-d-modelservice:
         cpuInput.value = "32 core";
         memoryInput.value = "300Gi";
       }
+      const activeCommand = document.querySelector(`[data-command-role="${role}"] [data-command-textarea]`);
+      setCommandSample(activeCommand, activeServiceType, role);
       restoreRoleAdvancedState(role);
       if (activeTemplate === "blank") {
         clearBlankTemplateInputs();
@@ -7883,6 +8079,7 @@ llm-d-modelservice:
       setButtonGroup("[data-service-type]", type, "serviceType");
       const activeMode = document.querySelector("[data-inference-mode].active");
       updateInferenceMode(activeMode ? activeMode.dataset.inferenceMode : "split");
+      refreshCommandSamples(true);
     }
 
     function updateMaasEndpoint(serviceKey) {
@@ -7918,6 +8115,8 @@ llm-d-modelservice:
       cpuInput.value = item.cpu;
       memoryInput.value = item.memory;
       commandInput.value = item.command;
+      commandInput.classList.remove("is-command-sample");
+      refreshCommandSamples(true);
       if (key === "blank") clearBlankTemplateInputs();
     }
 
@@ -8354,6 +8553,47 @@ llm-d-modelservice:
       if (summary) summary.hidden = on;
       syncAdvAccState(sw.closest("[data-adv-acc]"));
     });
+
+    document.addEventListener("change", event => {
+      const toggle = event.target.closest("[data-parallel-toggle]");
+      if (!toggle) return;
+      const strategy = toggle.closest("[data-parallel-strategy]");
+      const input = strategy?.querySelector(`[data-parallel-input="${toggle.dataset.parallelToggle}"]`);
+      if (input) input.hidden = !toggle.checked;
+      updateParallelTotal(strategy);
+    });
+
+    document.addEventListener("input", event => {
+      const input = event.target.closest("[data-parallel-input]");
+      if (!input) return;
+      updateParallelTotal(input.closest("[data-parallel-strategy]"));
+    });
+
+    document.addEventListener("input", event => {
+      const textarea = event.target.closest("[data-command-textarea]");
+      if (!textarea) return;
+      textarea.classList.remove("is-command-sample");
+    });
+
+    function parallelValue(strategy, key) {
+      const toggle = strategy?.querySelector(`[data-parallel-toggle="${key}"]`);
+      const input = strategy?.querySelector(`[data-parallel-input="${key}"]`);
+      if (!toggle?.checked) return 1;
+      const value = Number(input?.value || 1);
+      return Number.isFinite(value) && value > 0 ? value : 1;
+    }
+
+    function updateParallelTotal(strategy) {
+      const total = strategy?.querySelector("[data-parallel-total]");
+      if (!strategy || !total) return;
+      total.textContent = String(parallelValue(strategy, "tp") * parallelValue(strategy, "dp"));
+      const epToggle = strategy.querySelector('[data-parallel-toggle="ep"]');
+      const calc = strategy.querySelector(".parallel-calc");
+      if (calc) calc.hidden = !epToggle?.checked;
+    }
+
+    document.querySelectorAll("[data-parallel-strategy]").forEach(updateParallelTotal);
+
     // 高级配置折叠行：行头按钮切换展开 / 收起，行头右侧状态文字反映面板内开关状态
     function syncAdvAccState(acc) {
       if (!acc) return;
