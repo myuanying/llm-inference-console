@@ -1084,6 +1084,11 @@
       line-height: 1.55;
     }
 
+    .parse-error-modal {
+      width: min(640px, calc(100vw - 56px));
+      margin-top: 88px;
+    }
+
     .maas-create-shell {
       display: grid;
       gap: 16px;
@@ -1629,6 +1634,25 @@
     .yaml-diff-code {
       max-height: calc(100vh - 214px);
       white-space: pre-wrap;
+    }
+
+    #edit-yaml.active { padding-bottom: 88px; }
+    #edit-yaml .edit-yaml-shell { min-height: calc(100vh - 170px); }
+    #edit-yaml .panel-head { align-items: flex-start; }
+    #edit-yaml .panel-head .hint { margin: 4px 0 0; }
+    #edit-yaml .panel-body { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
+    .edit-yaml-tabs { width: fit-content; }
+    .edit-yaml-pane { min-height: 0; }
+    .edit-yaml-field { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: start; gap: 12px; height: 100%; }
+    .edit-yaml-field .label { padding-top: 8px; }
+    #editYamlInput {
+      height: calc(100vh - 292px) !important;
+      min-height: 420px !important;
+      resize: vertical;
+    }
+    #edit-yaml .yaml-diff-code {
+      max-height: calc(100vh - 316px);
+      min-height: 420px;
     }
 
     .diff-added { color: var(--success); }
@@ -4994,11 +5018,7 @@
                         <div class="form-grid kv-offload-target">
                         <label class="field">
                           <span class="label">redis 实例</span>
-                          <select><option>redhare-kvcache-prod</option><option>nixl-kvcache-h800</option><option>redis-kvcache-shared</option></select>
-                        </label>
-                        <label class="field">
-                          <span class="label">Offload 路径</span>
-                          <input value="/data/kv-cache/offload">
+                          <input value="redhare-kvcache-prod">
                         </label>
                         </div>
                       </div>
@@ -5226,6 +5246,46 @@
             <button class="btn" id="deployCancelButton" data-cancel-deploy>取消</button>
             <button class="btn" id="deployPreviewButton" data-open-values>预览 YAML</button>
             <button class="btn primary" id="deploySubmitButton" data-submit-deploy>提交并部署</button>
+          </div>
+        </section>
+
+        <section id="edit-yaml" class="view" data-od-id="view-edit-yaml">
+          <div class="panel edit-yaml-shell">
+            <div class="panel-head">
+              <div>
+                <h2 id="editYamlTitle">编辑YAML</h2>
+                <p class="hint" id="editYamlMeta">编辑当前服务 YAML 文件，提交前可查看变化。</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="yaml-modal-tabs edit-yaml-tabs" role="tablist" aria-label="编辑YAML模式">
+                <button type="button" class="active" data-edit-yaml-tab="editor">编辑YAML</button>
+                <button type="button" data-edit-yaml-tab="diff">变化</button>
+              </div>
+              <div class="edit-yaml-pane" data-edit-yaml-pane="editor">
+                <label class="field wide edit-yaml-field">
+                  <span class="label">YAML 文件</span>
+                  <textarea id="editYamlInput" class="helm-values-editor"></textarea>
+                </label>
+              </div>
+              <div class="edit-yaml-pane" data-edit-yaml-pane="diff" hidden>
+                <div class="yaml-diff-grid">
+                  <div>
+                    <p class="yaml-diff-title">当前版本 YAML</p>
+                    <pre class="code yaml-diff-code" id="editYamlBaseDiff"></pre>
+                  </div>
+                  <div>
+                    <p class="yaml-diff-title">编辑后 YAML</p>
+                    <pre class="code yaml-diff-code" id="editYamlCurrentDiff"></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="deploy-bottom-bar">
+            <button class="btn" type="button" data-view="detail">取消</button>
+            <button class="btn" type="button" data-edit-yaml-tab="diff">查看变化</button>
+            <button class="btn primary" type="button" data-view="services">提交更新</button>
           </div>
         </section>
 
@@ -5511,7 +5571,7 @@
           <!-- map: <dao-toolbar> 搜索 + 刷新动作图标 + 次按钮 + 主按钮 · src: dao-style/src/components/toolbar -->
           <div class="tb" data-dao="toolbar" data-od-id="services-toolbar">
             <label class="tb-field"><span class="tb-label">状态</span>
-              <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>部署中</option><option>更新中</option><option>资源异常</option><option>性能异常</option></select>
+              <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>部署中</option><option>更新中</option><option>资源异常</option><option>性能异常</option><option>Outofsync</option></select>
             </label>
             <label class="tb-field"><span class="tb-label">推理模式</span>
               <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option>PD 分离</option><option>PD 共置</option></select>
@@ -5581,9 +5641,10 @@
                 <button class="btn" type="button">操作</button>
                 <span class="ops-menu">
                   <button type="button" data-open-values>查看 YAML</button>
+                  <button type="button" data-edit-yaml-action>编辑YAML</button>
                   <button type="button" data-detail-jump="tests">模型测试</button>
                   <button type="button">导出模板</button>
-                  <button type="button">更新服务</button>
+                  <button type="button" data-update-service-action>更新服务</button>
                   <button type="button" data-open-scale-service>扩缩容</button>
                   <button type="button" class="danger">删除服务</button>
                 </span>
@@ -5605,6 +5666,7 @@
               </nav>
               <div class="rail-foot">
                 <button type="button" data-open-values><span class="rail-ic" aria-hidden="true">⤓</span>查看 YAML</button>
+                <button type="button" data-edit-yaml-action><span class="rail-ic" aria-hidden="true">✎</span>编辑YAML</button>
                 <button type="button" data-detail-jump="tests"><span class="rail-ic" aria-hidden="true">⌘</span>模型测试</button>
               </div>
             </aside>
@@ -6164,6 +6226,23 @@ llm-d-modelservice:
             </div>
           </div>
         </section>
+
+        <section id="updateParseNotice" class="modal" aria-hidden="true">
+          <div class="modal-backdrop"></div>
+          <div class="modal-shell compact parse-error-modal" role="alertdialog" aria-modal="true" aria-labelledby="updateParseTitle">
+            <div class="head">
+              <div>
+                <h1 id="updateParseTitle">解析错误</h1>
+                <p class="modal-sub">当前服务 YAML 包含暂不支持的自定义字段，建议通过编辑YAML更新；也可以基于已解析完成的部分继续编辑。</p>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button class="btn" type="button" data-edit-yaml-from-notice>编辑YAML</button>
+              <button class="btn primary" type="button" data-dismiss-update-notice>仍在当前页面编辑</button>
+            </div>
+          </div>
+        </section>
+
       </section>
     </main>
   </div>
@@ -6189,6 +6268,14 @@ llm-d-modelservice:
     const currentYamlDiff = document.querySelector("#currentYamlDiff");
     const yamlModalTabs = Array.from(document.querySelectorAll("[data-yaml-modal-tab]"));
     const yamlModalPanes = Array.from(document.querySelectorAll("[data-yaml-modal-pane]"));
+    const editYamlTitle = document.querySelector("#editYamlTitle");
+    const editYamlMeta = document.querySelector("#editYamlMeta");
+    const editYamlInput = document.querySelector("#editYamlInput");
+    const editYamlBaseDiff = document.querySelector("#editYamlBaseDiff");
+    const editYamlCurrentDiff = document.querySelector("#editYamlCurrentDiff");
+    const editYamlTabs = Array.from(document.querySelectorAll("[data-edit-yaml-tab]"));
+    const editYamlPanes = Array.from(document.querySelectorAll("[data-edit-yaml-pane]"));
+    const updateParseNotice = document.querySelector("#updateParseNotice");
     const maasModelNav = document.querySelector("[data-view='maas-models']");
     const modelServiceNav = document.querySelector("[data-nav-group='model-service']");
     const deployTitle = document.querySelector("#deployTitle");
@@ -6289,6 +6376,9 @@ llm-d-modelservice:
     let activeTemplate = "deepseek";
     let activeDeployTemplateMode = "preset";
     let activeServiceType = "llm-d";
+    let activeYamlService = "deepseek-v4-flash-h800-prod";
+    let activeEditYamlBase = "";
+    let activeUpdateService = "deepseek-v4-flash-h800-prod";
     let activeResourceRole = "prefill";
     const roleAdvancedStates = {};
     const defaultRoleAdvancedMarkup = resourceAdvanced ? resourceAdvanced.innerHTML : "";
@@ -6405,7 +6495,7 @@ llm-d-modelservice:
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>llm-d</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
-                    <tr><td>model-server</td><td>1 副本，每副本 8 GPU</td></tr>
+                    <tr><td>model-server</td><td>0/1 Ready，每副本 8 GPU</td></tr>
                     <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
@@ -6419,7 +6509,7 @@ llm-d-modelservice:
         resources: `
                   <div class="resource-group">
                     <div class="resource-group-head">
-                      <h3>model-server <span class="tag green">1/1 Ready</span></h3>
+                      <h3>model-server <span class="tag red">0/1 Ready</span></h3>
                       <span class="muted">节点：g-worker5 / 重启：0 / 资源：8 GPU, 96 CPU, 800Gi</span>
                     </div>
                     <div class="table-scroll">
@@ -6427,8 +6517,8 @@ llm-d-modelservice:
                         <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
                         <tbody>
                           <tr><td>Deployment</td><td class="mono">qwen3-235b-server</td><td><span class="tag red">Degraded</span></td><td>inferx-prod</td><td>gpu-type=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>ReplicaSet</td><td class="mono">qwen3-235b-server-54b7d</td><td><span class="tag green">1 desired / 1 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">qwen3-235b-server-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker5</td><td><button class="btn text">日志</button></td></tr>
+                          <tr><td>ReplicaSet</td><td class="mono">qwen3-235b-server-54b7d</td><td><span class="tag red">1 desired / 0 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">qwen3-235b-server-0</td><td><span class="tag red">NotReady</span></td><td>inferx-prod</td><td>g-worker5</td><td><button class="btn text">日志</button></td></tr>
                           <tr><td>Service</td><td class="mono">qwen3-235b-prod</td><td><span class="tag amber">OutOfSync</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>ConfigMap</td><td class="mono">qwen3-235b-server-config</td><td><span class="tag green">Mounted</span></td><td>inferx-prod</td><td>-</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>PodMonitor</td><td class="mono">qwen3-235b-server-metrics</td><td><span class="tag green">Active</span></td><td>inferx-prod</td><td>app=model-server</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
@@ -6461,8 +6551,8 @@ llm-d-modelservice:
         topology: `
                   <div class="node"><strong>gateway</strong><span>测试入口、路由、限流</span><span>1/1 Ready</span></div>
                   <div class="node"><strong>dynamo-frontend</strong><span>请求切分、协议适配</span><span>1/1 Ready</span></div>
-                  <div class="node"><strong>prefill worker pool</strong><span>2/4 Ready，单实例 4 GPU</span><span>共享 KV 索引，扩容中</span></div>
-                  <div class="node"><strong>decode worker pool</strong><span>2/2 Ready，单实例 4 GPU</span></div>
+                  <div class="node"><strong>prefill worker pool</strong><span>1/2 Ready，单实例 4 GPU</span><span>共享 KV 索引，创建中</span></div>
+                  <div class="node"><strong>decode worker pool</strong><span>1/1 Ready，单实例 4 GPU</span></div>
         `,
         config: `
                   <table>
@@ -6476,8 +6566,8 @@ llm-d-modelservice:
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>dynamo</td></tr>
                     <tr><td>调度方式</td><td>prefill / decode worker 池独立伸缩</td></tr>
-                    <tr><td>prefill</td><td>目标 4 副本，每副本 4 GPU，当前 2 Ready</td></tr>
-                    <tr><td>decode</td><td>2 副本，每副本 4 GPU</td></tr>
+                    <tr><td>prefill</td><td>1/2 Ready，每副本 4 GPU</td></tr>
+                    <tr><td>decode</td><td>1/1 Ready，每副本 4 GPU</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
@@ -6537,15 +6627,15 @@ llm-d-modelservice:
 
                   <div class="resource-group">
                     <div class="resource-group-head">
-                      <h3>prefill-workers <span class="tag amber">2/4 Ready</span></h3>
-                      <span class="muted">节点：lab-gpu1, lab-gpu2 / 资源：目标 16 GPU, 128 CPU, 1200Gi</span>
+                      <h3>prefill-workers <span class="tag amber">1/2 Ready</span></h3>
+                      <span class="muted">节点：lab-gpu1 / 资源：目标 8 GPU, 64 CPU, 600Gi</span>
                     </div>
                     <div class="table-scroll">
                       <table>
                         <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
                         <tbody>
                           <tr><td>DynamoWorkerGroup</td><td class="mono">llama4-prefill-workers</td><td><span class="tag amber">Scaling</span></td><td>delivery-h800-lab</td><td>pool=lab-dynamo-prefill</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>StatefulSet</td><td class="mono">llama4-prefill-worker</td><td><span class="tag amber">4 desired / 2 ready</span></td><td>delivery-h800-lab</td><td>gpu=4</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>StatefulSet</td><td class="mono">llama4-prefill-worker</td><td><span class="tag amber">2 desired / 1 ready</span></td><td>delivery-h800-lab</td><td>gpu=4</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>Pod</td><td class="mono">llama4-prefill-worker-0</td><td><span class="tag green">Running</span></td><td>delivery-h800-lab</td><td>lab-gpu1</td><td><button class="btn text">日志</button></td></tr>
                           <tr><td>Pod</td><td class="mono">llama4-prefill-worker-3</td><td><span class="tag amber">ContainerCreating</span></td><td>delivery-h800-lab</td><td>pending</td><td><button class="btn text">事件</button></td></tr>
                         </tbody>
@@ -6555,8 +6645,8 @@ llm-d-modelservice:
 
                   <div class="resource-group">
                     <div class="resource-group-head">
-                      <h3>decode-workers <span class="tag green">2/2 Ready</span></h3>
-                      <span class="muted">节点：lab-gpu3, lab-gpu4 / 资源：8 GPU, 64 CPU, 600Gi</span>
+                      <h3>decode-workers <span class="tag green">1/1 Ready</span></h3>
+                      <span class="muted">节点：lab-gpu3 / 资源：4 GPU, 32 CPU, 300Gi</span>
                     </div>
                     <div class="table-scroll">
                       <table>
@@ -6580,7 +6670,7 @@ llm-d-modelservice:
                       <tr><td>15:31:46</td><td>prefill-worker-3</td><td><span class="tag amber">Warn</span></td><td>Image pulling, container creating</td><td><button class="btn text">日志</button></td></tr>
         `,
         versionRows: `
-                      <tr><td>v0.3.8</td><td class="mono">c19f2aa</td><td>Dynamo / Llama-4-Scout</td><td>prefill 目标 4 副本，decode 2 副本，KV router 开启</td><td><span class="tag amber">当前版本</span></td><td>2026-09-03 15:22</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                      <tr><td>v0.3.8</td><td class="mono">c19f2aa</td><td>Dynamo / Llama-4-Scout</td><td>prefill 1/2 Ready，decode 1/1 Ready，KV router 开启</td><td><span class="tag amber">当前版本</span></td><td>2026-09-03 15:22</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                       <tr><td>v0.3.6</td><td class="mono">719bd4e</td><td>Dynamo / Llama-4-Scout</td><td>prefill 2 副本，decode 2 副本，基础路由</td><td><span class="tag">历史版本</span></td><td>2026-09-02 18:11</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
         `
       },
@@ -6603,7 +6693,7 @@ llm-d-modelservice:
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>dynamo</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
-                    <tr><td>model-server</td><td>2 副本，每副本 4 GPU</td></tr>
+                    <tr><td>worker-pool</td><td>1/2 Ready，每副本 4 GPU</td></tr>
                     <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
@@ -6617,17 +6707,17 @@ llm-d-modelservice:
         resources: `
                   <div class="resource-group">
                     <div class="resource-group-head">
-                      <h3>model-server <span class="tag green">2/2 Ready</span></h3>
-                      <span class="muted">节点：g-worker6, g-worker7 / 资源：8 GPU, 128 CPU, 900Gi</span>
+                      <h3>worker-pool <span class="tag amber">1/2 Ready</span></h3>
+                      <span class="muted">节点：g-worker6 / 资源：8 GPU, 128 CPU, 900Gi</span>
                     </div>
                     <div class="table-scroll">
                       <table>
                         <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
                         <tbody>
                           <tr><td>DynamoGraphDeployment</td><td class="mono">dynamo-qwen3-colocated</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>Deployment</td><td class="mono">dynamo-qwen3-colocated-server</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Deployment</td><td class="mono">dynamo-qwen3-colocated-server</td><td><span class="tag amber">RollingUpdate</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker6</td><td><button class="btn text">日志</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-1</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker7</td><td><button class="btn text">日志</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-1</td><td><span class="tag amber">ContainerCreating</span></td><td>inferx-prod</td><td>pending</td><td><button class="btn text">事件</button></td></tr>
                           <tr><td>Service</td><td class="mono">dynamo-qwen3-colocated-prod</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                         </tbody>
                       </table>
@@ -6635,14 +6725,14 @@ llm-d-modelservice:
                   </div>
         `,
         scalingRows: `
-                      <tr><td>dynamo-colocated-scale</td><td>自动扩缩容</td><td>model-server</td><td>TTFT P90 &gt; 900ms 或队列 &gt; 20</td><td>2 - 4</td><td><span class="tag green">启用</span></td><td>2026-09-04 09:18</td><td><button class="btn text">修改策略</button> <button class="btn text">扩缩容日志</button></td></tr>
+                      <tr><td>dynamo-colocated-scale</td><td>自动扩缩容</td><td>worker-pool</td><td>TTFT P90 &gt; 900ms 或队列 &gt; 20</td><td>2 - 4</td><td><span class="tag green">启用</span></td><td>2026-09-04 09:18</td><td><button class="btn text">修改策略</button> <button class="btn text">扩缩容日志</button></td></tr>
         `,
         eventRows: `
-                      <tr><td>09:18:22</td><td>Dynamo Controller</td><td><span class="tag green">Info</span></td><td>PD 共置服务已完成发布，2 个副本 Ready</td><td><button class="btn text">日志</button></td></tr>
-                      <tr><td>09:20:11</td><td>model-server</td><td><span class="tag green">Info</span></td><td>OpenAI compatible endpoint is ready</td><td><button class="btn text">日志</button></td></tr>
+                      <tr><td>09:18:22</td><td>Dynamo Controller</td><td><span class="tag amber">Warn</span></td><td>worker-pool 滚动更新中，当前 1/2 Ready</td><td><button class="btn text">日志</button></td></tr>
+                      <tr><td>09:20:11</td><td>worker-pool</td><td><span class="tag green">Info</span></td><td>OpenAI compatible endpoint is ready</td><td><button class="btn text">日志</button></td></tr>
         `,
         versionRows: `
-                      <tr><td>v0.4.1</td><td class="mono">d4a72bc</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，model-server 2 副本，单实例 4 GPU</td><td><span class="tag green">当前版本</span></td><td>2026-09-04 09:18</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                      <tr><td>v0.4.1</td><td class="mono">d4a72bc</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，worker-pool 1/2 Ready，单实例 4 GPU</td><td><span class="tag green">当前版本</span></td><td>2026-09-04 09:18</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                       <tr><td>v0.4.0</td><td class="mono">a91f08c</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-09-03 19:42</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
         `
       }
@@ -6657,9 +6747,9 @@ llm-d-modelservice:
 
     const serviceRowsData = [
       { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常"], sync: ["OutOfSync", "amber"], note: "手工修改 Service type", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["部署中", "amber"], issueTags: [], sync: ["Synced", "green"], note: "prefill workers 扩容中", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 4, target: 4 }, { name: "decode", current: 2, target: 2 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["更新中", "amber"], issueTags: ["性能异常"], sync: ["Synced", "green"], note: "滚动更新中", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "model-server", current: 2, target: 2 }] }
+      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["部署中", "amber"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["更新中", "amber"], issueTags: ["性能异常"], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] }
     ];
 
     let activeScaleService = "";
@@ -6783,19 +6873,20 @@ llm-d-modelservice:
       views.forEach(view => view.classList.toggle("active", view.id === id));
       shell.classList.toggle("immersive-detail", id === "detail");
       if (id === "detail" && detailScroll) detailScroll.scrollTop = 0;
-      const navTarget = id === "deploy" || id === "detail"
+      const navTarget = id === "deploy" || id === "detail" || id === "edit-yaml"
         ? "services"
         : id === "maas-create"
           ? "maas-models"
           : id;
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
-      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail"].includes(id));
+      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml"].includes(id));
       const viewLabels = {
         "maas-models": "MaaS 模型管理",
         "maas-create": "创建 MaaS 模型",
         services: "模型服务",
         deploy: "新建模型部署",
+        "edit-yaml": "编辑YAML",
         detail: "模型服务详情"
       };
       crumbLabel.textContent = viewLabels[id] || "模型服务";
@@ -6810,6 +6901,10 @@ llm-d-modelservice:
       if (deployLead) {
         deployLead.textContent = "";
         deployLead.hidden = true;
+      }
+      if (updateParseNotice) {
+        updateParseNotice.classList.remove("active");
+        updateParseNotice.setAttribute("aria-hidden", "true");
       }
       yamlDeployPanel.hidden = !yamlOnly;
       if (helmDeployPanel) helmDeployPanel.hidden = !helmMode;
@@ -6844,6 +6939,11 @@ llm-d-modelservice:
         const color = tag === "资源异常" ? "red" : "amber";
         return `<span class="${tagClass(color)}">${escapeHtml(tag)}</span>`;
       }).join("");
+      document.querySelectorAll("#detail [data-edit-yaml-action], #detail [data-update-service-action]").forEach(button => {
+        const disabled = !canEditService(serviceRow);
+        button.disabled = disabled;
+        button.title = disabled ? "部署中或更新中的服务暂不可编辑" : "";
+      });
       if (detailCommitTag) {
         detailCommitTag.textContent = profile.commit;
         detailCommitTag.className = "tag";
@@ -7111,6 +7211,7 @@ llm-d-modelservice:
         const gpu = String(item.resource).split(" ")[0];
         const canSync = item.sync[0] === "OutOfSync";
         const state = item.serviceState || item.status || ["可用", "green"];
+        const editDisabled = disabledServiceActionAttr(item);
         const issueTags = (item.issueTags || []).map(tag => {
           const color = tag === "资源异常" ? "red" : "amber";
           return `<span class="${tagClass(color)}">${escapeHtml(tag)}</span>`;
@@ -7124,10 +7225,11 @@ llm-d-modelservice:
                 <button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button>
                 <span class="ops-menu" role="menu">
                   <button type="button" data-open-values>查看 YAML</button>
+                  <button type="button" data-edit-yaml-action${editDisabled}>编辑YAML</button>
                   <button type="button" data-sync-service="${escapeHtml(item.id)}"${canSync ? "" : " disabled"}>Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">模型测试</button>
                   <button type="button">导出模板</button>
-                  <button type="button">更新服务</button>
+                  <button type="button" data-update-service-action${editDisabled}>更新服务</button>
                   <button type="button" data-open-scale-service>扩缩容</button>
                   <button type="button" class="danger">删除服务</button>
                 </span>
@@ -7300,6 +7402,113 @@ llm-d-modelservice:
         cpu: cpuInput.value,
         memory: memoryInput.value
       };
+    }
+
+    function defaultKeyForService(serviceId) {
+      return Object.keys(defaults).find(key => defaults[key]?.service === serviceId) || "deepseek";
+    }
+
+    function valuesForService(serviceId) {
+      const key = defaultKeyForService(serviceId);
+      const values = { ...(defaults[key] || defaults.deepseek) };
+      const service = serviceById(serviceId);
+      if (service) {
+        values.service = service.id;
+        values.serviceType = service.framework;
+        values.mode = service.mode === "PD 分离" ? "split" : "colocated";
+        values.nodePool = "NVIDIA H800";
+      }
+      return values;
+    }
+
+    function canEditService(service) {
+      const state = service?.serviceState?.[0] || "";
+      return state !== "部署中" && state !== "更新中";
+    }
+
+    function disabledServiceActionAttr(service) {
+      return canEditService(service) ? "" : " disabled title=\"部署中或更新中的服务暂不可编辑\"";
+    }
+
+    function setEditYamlTab(tab) {
+      editYamlTabs.forEach(button => button.classList.toggle("active", button.dataset.editYamlTab === tab));
+      editYamlPanes.forEach(pane => {
+        pane.hidden = pane.dataset.editYamlPane !== tab;
+      });
+      if (tab === "diff") updateEditYamlDiff();
+    }
+
+    function updateEditYamlDiff() {
+      if (!editYamlBaseDiff || !editYamlCurrentDiff || !editYamlInput) return;
+      const [baseDiff, currentDiff] = diffLines(activeEditYamlBase || "", editYamlInput.value || "");
+      editYamlBaseDiff.innerHTML = baseDiff;
+      editYamlCurrentDiff.innerHTML = currentDiff;
+    }
+
+    function openEditYaml(serviceId) {
+      const service = serviceById(serviceId) || serviceById(activeDetailService);
+      if (service && !canEditService(service)) return;
+      activeYamlService = service?.id || activeDetailService;
+      activeEditYamlBase = yamlFromValues(valuesForService(activeYamlService));
+      if (editYamlTitle) editYamlTitle.textContent = `编辑YAML：${activeYamlService}`;
+      if (editYamlMeta) editYamlMeta.textContent = "编辑当前服务 YAML 文件，提交前可查看变化。";
+      if (editYamlInput) editYamlInput.value = activeEditYamlBase;
+      updateEditYamlDiff();
+      setEditYamlTab("editor");
+      showView("edit-yaml");
+    }
+
+    function fillDeployForm(values) {
+      updateServiceType(values.serviceType || "llm-d");
+      serviceNameInput.value = values.service || "";
+      modelSourceSelect.value = values.source || "pvc";
+      modelPathInput.value = values.path || "/mnt/data";
+      if (modelAccessNameInput) modelAccessNameInput.value = values.modelAccessName || "";
+      if (modelStorageInput) modelStorageInput.value = values.storage || "";
+      imageInput.value = values.image || "";
+      syncImagePreset();
+      updateSource(values.source || "pvc");
+      updateInferenceMode(values.mode || "colocated");
+      replicasInput.value = values.replicas || "";
+      gpusInput.value = values.gpus || "";
+      nodePoolSelect.value = values.nodePool || "NVIDIA H800";
+      cpuInput.value = values.cpu || "";
+      memoryInput.value = values.memory || "";
+      commandInput.value = values.command || "";
+    }
+
+    function enterServiceConfigEdit(serviceId, options = {}) {
+      const partial = Boolean(options.partial);
+      const values = valuesForService(serviceId);
+      setDeployMode("template");
+      const key = defaultKeyForService(serviceId);
+      selectTemplate(key);
+      editFromCurrentTemplate();
+      fillDeployForm(values);
+      if (partial) {
+        imageInput.value = "";
+        cpuInput.value = "";
+        memoryInput.value = "";
+        commandInput.value = "";
+        syncImagePreset();
+      }
+      if (deploySubmitButton) deploySubmitButton.textContent = "提交更新";
+      if (deployHint) {
+        deployHint.textContent = partial
+          ? "已保留可解析字段，可继续编辑；未解析字段建议切换到「编辑YAML」处理。"
+          : "已将当前服务 YAML 解析到结构化表单，可继续修改后提交更新。";
+      }
+      closeModals();
+      showView("deploy");
+      if (crumbLabel) crumbLabel.textContent = "编辑服务配置";
+      if (partial && updateParseNotice) openModal(updateParseNotice);
+    }
+
+    function updateServiceDirectly(serviceId) {
+      const service = serviceById(serviceId) || serviceById(activeDetailService);
+      activeUpdateService = service?.id || activeDetailService;
+      if (!canEditService(service)) return;
+      enterServiceConfigEdit(activeUpdateService, { partial: activeUpdateService === "qwen3-235b-prod" });
     }
 
     function diffLines(templateYaml, currentYaml) {
@@ -7757,6 +7966,42 @@ llm-d-modelservice:
         openModal(valuesModal);
       }
     });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-edit-yaml-action]");
+      if (!button) return;
+      const row = button.closest("[data-service-row]");
+      openEditYaml(row?.dataset.serviceRow || activeDetailService);
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-update-service-action]");
+      if (!button) return;
+      const row = button.closest("[data-service-row]");
+      updateServiceDirectly(row?.dataset.serviceRow || activeDetailService);
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-edit-yaml-from-notice]");
+      if (!button) return;
+      closeModals();
+      openEditYaml(activeUpdateService || activeDetailService);
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-dismiss-update-notice]");
+      if (!button || !updateParseNotice) return;
+      updateParseNotice.classList.remove("active");
+      updateParseNotice.setAttribute("aria-hidden", "true");
+    });
+
+    editYamlTabs.forEach(button => {
+      button.addEventListener("click", () => setEditYamlTab(button.dataset.editYamlTab));
+    });
+
+    if (editYamlInput) {
+      editYamlInput.addEventListener("input", updateEditYamlDiff);
+    }
 
     document.addEventListener("click", event => {
       const button = event.target.closest("[data-open-new-test]");
