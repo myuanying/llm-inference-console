@@ -988,6 +988,17 @@
       width: max-content;
     }
 
+    #deploy .pvc-radio-row {
+      min-height: 30px;
+      gap: 10px 18px;
+    }
+
+    #deploy .pvc-radio-row .radio-item {
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
     #deploy .label-help,
     #template-import .label-help {
       display: inline-grid;
@@ -4594,9 +4605,69 @@
     }
     #deploy .config-mount-card .form-grid {
       grid-template-columns: 120px minmax(0, 1fr) !important;
+      max-width: calc(100% - 24px);
+      margin-left: 24px;
+    }
+    #deploy .config-mount-card .field {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    #deploy .config-mount-card .label {
+      justify-content: flex-end;
+      white-space: nowrap;
+    }
+    #deploy .config-mount-card .field > input,
+    #deploy .config-mount-card .field > .combo-row {
+      grid-column: 2;
+    }
+    #deploy .config-mount-card .hint {
+      grid-column: 2;
+      margin-left: 0;
+    }
+    #deploy .config-mount-card + .inline-actions {
+      margin-left: 154px;
     }
     #deploy .combo-row { grid-column: 2; display: flex; align-items: center; gap: 10px; min-width: 0; }
     #deploy .combo-row select { max-width: 320px; min-width: 0; }
+    #deploy .upgrade-strategy-box {
+      max-width: 560px;
+    }
+    #deploy .upgrade-strategy-grid {
+      grid-template-columns: 130px minmax(0, 1fr) !important;
+      gap: 16px 12px !important;
+    }
+    #deploy .upgrade-strategy-grid .field {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: 130px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+    #deploy .upgrade-strategy-grid .field[hidden] {
+      display: none;
+    }
+    #deploy .upgrade-strategy-grid .label {
+      justify-content: flex-end;
+      padding-top: 5px;
+      white-space: nowrap;
+    }
+    #deploy .upgrade-strategy-grid .field > select,
+    #deploy .upgrade-strategy-grid .field > input,
+    #deploy .upgrade-strategy-grid .field > .unit-input,
+    #deploy .upgrade-strategy-grid .field > .hint {
+      grid-column: 2;
+    }
+    #deploy .upgrade-strategy-grid .field > select,
+    #deploy .upgrade-strategy-grid .field > input,
+    #deploy .upgrade-strategy-grid .field > .unit-input {
+      max-width: 300px;
+    }
+    #deploy .upgrade-strategy-grid .hint {
+      margin: -8px 0 0;
+    }
     #deploy .health-checks { display: grid; gap: 14px; }
     #deploy .health-checks .nest-head { justify-content: flex-start; gap: 16px; }
     #deploy .probe-config { max-width: 760px; padding: 18px 20px; }
@@ -4647,7 +4718,7 @@
     #deploy .adv-acc-panel .health-checks { display: grid; gap: 18px; }
     #deploy .adv-acc-panel .probe-config { max-width: none; }
     @media (prefers-reduced-motion: reduce) { #deploy .adv-acc-chevron { transition: none; } }
-    @media (max-width: 760px) { .adv-item { padding-left: 0; } #deploy .adv-acc-panel { padding-left: 16px; } #deploy .nest--compact .form-grid { grid-template-columns: 1fr !important; } #deploy .nest--compact .field > input, #deploy .nest--compact .field > select, #deploy .nest--compact .hint { grid-column: auto; } }
+    @media (max-width: 760px) { .adv-item { padding-left: 0; } #deploy .adv-acc-panel { padding-left: 16px; } #deploy .nest--compact .form-grid { grid-template-columns: 1fr !important; } #deploy .nest--compact .field > input, #deploy .nest--compact .field > select, #deploy .nest--compact .hint { grid-column: auto; } #deploy .config-mount-card .form-grid { max-width: 100%; margin-left: 0; } #deploy .config-mount-card .field, #deploy .upgrade-strategy-grid .field { grid-template-columns: 1fr; } #deploy .config-mount-card .field > input, #deploy .config-mount-card .field > .combo-row, #deploy .config-mount-card .hint, #deploy .upgrade-strategy-grid .field > select, #deploy .upgrade-strategy-grid .field > input, #deploy .upgrade-strategy-grid .field > .unit-input, #deploy .upgrade-strategy-grid .field > .hint { grid-column: auto; } #deploy .config-mount-card .label, #deploy .upgrade-strategy-grid .label { justify-content: flex-start; } #deploy .config-mount-card + .inline-actions { margin-left: 0; } }
 
     /* 结构化配置 · 竖排键值（标签右对齐 --meta，值 600）参照 节点信息 */
     .kv-list { display: grid; gap: 0; }
@@ -5205,7 +5276,13 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> PVC 名称</span>
-                      <select id="modelPvcNameSelect" aria-label="PVC 名称" data-template-unlocked>
+                      <span class="radio-row pvc-radio-row" aria-label="PVC 名称">
+                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-prod-h800" checked data-model-pvc-option data-template-unlocked> model-pvc-prod-h800</label>
+                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-qwen-prod" data-model-pvc-option data-template-unlocked> model-pvc-qwen-prod</label>
+                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-dynamo-lab" data-model-pvc-option data-template-unlocked> model-pvc-dynamo-lab</label>
+                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-shared" data-model-pvc-option data-template-unlocked> model-pvc-shared</label>
+                      </span>
+                      <select id="modelPvcNameSelect" class="hidden-control" aria-label="PVC 名称" tabindex="-1" data-template-unlocked>
                         <option value="model-pvc-prod-h800">model-pvc-prod-h800</option>
                         <option value="model-pvc-qwen-prod">model-pvc-qwen-prod</option>
                         <option value="model-pvc-dynamo-lab">model-pvc-dynamo-lab</option>
@@ -5446,26 +5523,50 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
 
                     <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
                     <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-update-strategy">
-                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-update-strategy-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">更新策略</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state>已开启</span></button>
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-update-strategy-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">升级策略</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state>已开启</span></button>
                       <div class="adv-acc-panel" id="adv-update-strategy-panel" hidden>
-                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" aria-label="更新策略" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
-                      <span class="adv-summary" data-adv-summary hidden>默认重建升级（Recreate），最大不可用：1；最大超量：0。</span>
-                      <div class="nest nest--compact" data-adv-body>
-                        <div class="form-grid three">
-                        <label class="field">
-                          <span class="label">策略类型</span>
-                          <select><option>滚动升级 (RollingUpdate)</option><option selected>重建升级 (Recreate)</option></select>
-                        </label>
-                        <label class="field">
-                          <span class="label">最大不可用</span>
-                          <input value="1">
-                        </label>
-                        <label class="field">
-                          <span class="label">最大超量</span>
-                          <input value="0">
-                        </label>
+                        <div class="nest-head"><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" aria-label="升级策略" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
+                        <span class="adv-summary" data-adv-summary hidden>默认重建升级（Recreate）。</span>
+                        <div class="nest nest--compact upgrade-strategy-box" data-adv-body>
+                          <div class="form-grid upgrade-strategy-grid">
+                            <label class="field">
+                              <span class="label">升级方式</span>
+                              <select id="upgradeStrategySelect" aria-label="升级方式">
+                                <option value="recreate" selected>重建升级 (Recreate)</option>
+                                <option value="rolling">滚动升级 (RollingUpdate)</option>
+                              </select>
+                            </label>
+                            <label class="field" data-rolling-upgrade-field hidden>
+                              <span class="label"><span class="required">*</span> 最大不可用</span>
+                              <span class="unit-input"><input type="number" value="25" min="0" max="100" aria-label="最大不可用"><span>%</span></span>
+                              <span class="hint">滚动升级最大无效 Pod 数（最小可用 Pod 数 = 期望 Pod 数 - 最大无效 Pod 数）</span>
+                            </label>
+                            <label class="field" data-rolling-upgrade-field hidden>
+                              <span class="label"><span class="required">*</span> 最大峰值</span>
+                              <span class="unit-input"><input type="number" value="25" min="0" max="100" aria-label="最大峰值"><span>%</span></span>
+                              <span class="hint">每次滚动升级允许超出所需规模的最大 Pod 数</span>
+                            </label>
+                            <label class="field">
+                              <span class="label">最大保留版本数</span>
+                              <input type="number" value="10" min="0" aria-label="最大保留版本数">
+                            </label>
+                            <label class="field">
+                              <span class="label"><span class="required">*</span> Pod 可用最短时间</span>
+                              <span class="unit-input"><input type="number" value="0" min="0" aria-label="Pod 可用最短时间"><span>秒</span></span>
+                              <span class="hint">Pod 就绪的最短时间，只有超出这个时间 Pod 才被认为可用</span>
+                            </label>
+                            <label class="field">
+                              <span class="label"><span class="required">*</span> 升级最大持续时间</span>
+                              <span class="unit-input"><input type="number" value="600" min="0" aria-label="升级最大持续时间"><span>秒</span></span>
+                              <span class="hint">在标记 deployment 失败之前，等待部署进行的最小持续时间</span>
+                            </label>
+                            <label class="field">
+                              <span class="label"><span class="required">*</span> 缩容时间窗</span>
+                              <span class="unit-input"><input type="number" value="30" min="0" max="9999" aria-label="缩容时间窗"><span>秒</span></span>
+                              <span class="hint">工作负载停止前命令的执行时间窗（0-9,999 秒），默认 30 秒</span>
+                            </label>
+                          </div>
                         </div>
-                      </div>
                       </div>
                     </div>
 
@@ -7041,6 +7142,7 @@ llm-d-modelservice:
     const testConfigModal = document.querySelector("#testConfigModal");
     const testConfigTitle = document.querySelector("#testConfigTitle");
     const testConfigBody = document.querySelector("#testConfigBody");
+    const upgradeStrategySelect = document.querySelector("#upgradeStrategySelect");
     const newTestName = document.querySelector("#newTestName");
     const newTestService = document.querySelector("#newTestService");
     const newTestType = document.querySelector("#newTestType");
@@ -7833,6 +7935,31 @@ llm-d-modelservice:
       return Array.from(document.querySelectorAll("input[name='acceptanceDataset']:checked")).map(input => input.value);
     }
 
+    function getModelPvcName() {
+      return document.querySelector("[data-model-pvc-option]:checked")?.value || modelPvcNameSelect?.value || "";
+    }
+
+    function setModelPvcName(value) {
+      const fallback = "model-pvc-shared";
+      const options = Array.from(modelPvcNameSelect?.options || []);
+      const nextValue = options.some(option => option.value === value) ? value : fallback;
+      if (modelPvcNameSelect) modelPvcNameSelect.value = nextValue;
+      document.querySelectorAll("[data-model-pvc-option]").forEach(input => {
+        input.checked = input.value === nextValue;
+      });
+    }
+
+    function syncUpgradeStrategyFields() {
+      const isRolling = upgradeStrategySelect?.value === "rolling";
+      document.querySelectorAll("[data-rolling-upgrade-field]").forEach(field => {
+        field.hidden = !isRolling;
+        field.setAttribute("aria-hidden", String(!isRolling));
+        field.querySelectorAll("input, select").forEach(control => {
+          control.disabled = !isRolling;
+        });
+      });
+    }
+
     function testReportButton(status) {
       const available = status === "已完成";
       return `<button class="btn text" type="button" data-open-test-report${available ? "" : " disabled title=\"任务完成后可查看测试报告\""}>测试报告</button>`;
@@ -8447,7 +8574,7 @@ llm-d-modelservice:
         service: serviceNameInput.value,
         source: modelSourceSelect.value,
         path: "/mnt/data",
-        pvcName: modelPvcNameSelect?.value || "",
+        pvcName: getModelPvcName(),
         image: imageInput.value,
         mode: document.querySelector("[data-inference-mode].active")?.dataset.inferenceMode || "split",
         replicas: replicasInput.value,
@@ -8519,7 +8646,7 @@ llm-d-modelservice:
       modelSourceSelect.value = values.source || "pvc";
       modelPathInput.value = values.path || "/mnt/data";
       if (modelAccessNameInput) modelAccessNameInput.value = values.modelAccessName || "";
-      if (modelPvcNameSelect) modelPvcNameSelect.value = values.pvcName || "model-pvc-shared";
+      setModelPvcName(values.pvcName || "model-pvc-shared");
       if (modelStorageInput) modelStorageInput.value = values.storage || "";
       imageInput.value = values.image || "";
       syncImagePreset();
@@ -8711,8 +8838,7 @@ llm-d-modelservice:
         updates.push("模型来源");
       }
       if (pvcName && modelPvcNameSelect) {
-        const matched = Array.from(modelPvcNameSelect.options).some(option => option.value === pvcName);
-        modelPvcNameSelect.value = matched ? pvcName : "model-pvc-shared";
+        setModelPvcName(pvcName);
         updates.push("PVC 名称");
       }
       if (modelPath) {
@@ -8994,7 +9120,7 @@ llm-d-modelservice:
       modelSourceSelect.value = item.source;
       modelPathInput.value = item.path;
       if (modelAccessNameInput) modelAccessNameInput.value = item.modelAccessName || "";
-      if (modelPvcNameSelect) modelPvcNameSelect.value = item.pvcName || "model-pvc-shared";
+      setModelPvcName(item.pvcName || "model-pvc-shared");
       if (modelStorageInput) modelStorageInput.value = item.storage || "";
       imageInput.value = item.image;
       syncImagePreset();
@@ -9124,6 +9250,15 @@ llm-d-modelservice:
       });
     });
     if (submitNewTest) submitNewTest.addEventListener("click", submitNewTestTask);
+
+    document.querySelectorAll("[data-model-pvc-option]").forEach(input => {
+      input.addEventListener("change", () => setModelPvcName(input.value));
+    });
+
+    if (upgradeStrategySelect) {
+      upgradeStrategySelect.addEventListener("change", syncUpgradeStrategyFields);
+      syncUpgradeStrategyFields();
+    }
 
     document.addEventListener("click", event => {
       const scope = event.target.closest("#modelTestRows, #detailTestRows");
