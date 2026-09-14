@@ -916,13 +916,18 @@
 
     #deploy .is-template-locked [data-template-unlocked] {
       cursor: text;
-      background: var(--surface);
+      background-color: var(--surface);
       color: var(--text);
       opacity: 1;
     }
 
     #deploy .is-template-locked select[data-template-unlocked] {
       cursor: pointer;
+      padding-right: 28px;
+      background-image: linear-gradient(45deg, transparent 50%, var(--icon) 50%), linear-gradient(135deg, var(--icon) 50%, transparent 50%);
+      background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
     }
 
     #deploy .is-template-locked #roleTabs button {
@@ -986,17 +991,6 @@
 
     #deploy .source-selector {
       width: max-content;
-    }
-
-    #deploy .pvc-radio-row {
-      min-height: 30px;
-      gap: 10px 18px;
-    }
-
-    #deploy .pvc-radio-row .radio-item {
-      color: var(--fg);
-      font-family: var(--font-mono);
-      font-size: 13px;
     }
 
     #deploy .label-help,
@@ -5276,13 +5270,7 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> PVC 名称</span>
-                      <span class="radio-row pvc-radio-row" aria-label="PVC 名称">
-                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-prod-h800" checked data-model-pvc-option data-template-unlocked> model-pvc-prod-h800</label>
-                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-qwen-prod" data-model-pvc-option data-template-unlocked> model-pvc-qwen-prod</label>
-                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-dynamo-lab" data-model-pvc-option data-template-unlocked> model-pvc-dynamo-lab</label>
-                        <label class="radio-item"><input type="radio" name="modelPvcName" value="model-pvc-shared" data-model-pvc-option data-template-unlocked> model-pvc-shared</label>
-                      </span>
-                      <select id="modelPvcNameSelect" class="hidden-control" aria-label="PVC 名称" tabindex="-1" data-template-unlocked>
+                      <select id="modelPvcNameSelect" aria-label="PVC 名称" data-template-unlocked>
                         <option value="model-pvc-prod-h800">model-pvc-prod-h800</option>
                         <option value="model-pvc-qwen-prod">model-pvc-qwen-prod</option>
                         <option value="model-pvc-dynamo-lab">model-pvc-dynamo-lab</option>
@@ -7935,20 +7923,6 @@ llm-d-modelservice:
       return Array.from(document.querySelectorAll("input[name='acceptanceDataset']:checked")).map(input => input.value);
     }
 
-    function getModelPvcName() {
-      return document.querySelector("[data-model-pvc-option]:checked")?.value || modelPvcNameSelect?.value || "";
-    }
-
-    function setModelPvcName(value) {
-      const fallback = "model-pvc-shared";
-      const options = Array.from(modelPvcNameSelect?.options || []);
-      const nextValue = options.some(option => option.value === value) ? value : fallback;
-      if (modelPvcNameSelect) modelPvcNameSelect.value = nextValue;
-      document.querySelectorAll("[data-model-pvc-option]").forEach(input => {
-        input.checked = input.value === nextValue;
-      });
-    }
-
     function syncUpgradeStrategyFields() {
       const isRolling = upgradeStrategySelect?.value === "rolling";
       document.querySelectorAll("[data-rolling-upgrade-field]").forEach(field => {
@@ -8574,7 +8548,7 @@ llm-d-modelservice:
         service: serviceNameInput.value,
         source: modelSourceSelect.value,
         path: "/mnt/data",
-        pvcName: getModelPvcName(),
+        pvcName: modelPvcNameSelect?.value || "",
         image: imageInput.value,
         mode: document.querySelector("[data-inference-mode].active")?.dataset.inferenceMode || "split",
         replicas: replicasInput.value,
@@ -8646,7 +8620,7 @@ llm-d-modelservice:
       modelSourceSelect.value = values.source || "pvc";
       modelPathInput.value = values.path || "/mnt/data";
       if (modelAccessNameInput) modelAccessNameInput.value = values.modelAccessName || "";
-      setModelPvcName(values.pvcName || "model-pvc-shared");
+      if (modelPvcNameSelect) modelPvcNameSelect.value = values.pvcName || "model-pvc-shared";
       if (modelStorageInput) modelStorageInput.value = values.storage || "";
       imageInput.value = values.image || "";
       syncImagePreset();
@@ -8838,7 +8812,8 @@ llm-d-modelservice:
         updates.push("模型来源");
       }
       if (pvcName && modelPvcNameSelect) {
-        setModelPvcName(pvcName);
+        const matched = Array.from(modelPvcNameSelect.options).some(option => option.value === pvcName);
+        modelPvcNameSelect.value = matched ? pvcName : "model-pvc-shared";
         updates.push("PVC 名称");
       }
       if (modelPath) {
@@ -9120,7 +9095,7 @@ llm-d-modelservice:
       modelSourceSelect.value = item.source;
       modelPathInput.value = item.path;
       if (modelAccessNameInput) modelAccessNameInput.value = item.modelAccessName || "";
-      setModelPvcName(item.pvcName || "model-pvc-shared");
+      if (modelPvcNameSelect) modelPvcNameSelect.value = item.pvcName || "model-pvc-shared";
       if (modelStorageInput) modelStorageInput.value = item.storage || "";
       imageInput.value = item.image;
       syncImagePreset();
@@ -9250,10 +9225,6 @@ llm-d-modelservice:
       });
     });
     if (submitNewTest) submitNewTest.addEventListener("click", submitNewTestTask);
-
-    document.querySelectorAll("[data-model-pvc-option]").forEach(input => {
-      input.addEventListener("change", () => setModelPvcName(input.value));
-    });
 
     if (upgradeStrategySelect) {
       upgradeStrategySelect.addEventListener("change", syncUpgradeStrategyFields);
