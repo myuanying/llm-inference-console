@@ -1877,6 +1877,14 @@
       max-height: calc(100vh - 316px);
       min-height: 420px;
     }
+    #sync-restore.active { padding-bottom: 88px; }
+    #sync-restore .sync-restore-shell { min-height: calc(100vh - 170px); }
+    #sync-restore .panel-body { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
+    #sync-restore .sync-restore-grid { min-height: 0; }
+    #sync-restore .yaml-diff-code {
+      max-height: calc(100vh - 294px);
+      min-height: 420px;
+    }
 
     .diff-added { color: var(--success); }
     .diff-removed { color: var(--danger-hover); }
@@ -1906,6 +1914,26 @@
 
     .node strong { display: block; margin-bottom: 8px; }
     .node span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .node .node-line {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      margin-top: 4px;
+    }
+    .node .node-label {
+      color: var(--meta);
+      white-space: nowrap;
+    }
+    .node .node-line > span:last-child {
+      color: var(--fg-2);
+      overflow-wrap: anywhere;
+    }
+    .node .node-line .tag {
+      display: inline-flex;
+      width: fit-content;
+      color: var(--fg-2);
+    }
 
     .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
     .metric { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 13px 14px; box-shadow: var(--shadow); }
@@ -5048,6 +5076,18 @@
     .scale-role-current { color: var(--fg); font-size: 13px; text-align: right; }
     .scale-role-row .field { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 8px; align-items: center; }
     .scale-role-row input { min-height: 32px; }
+    .export-template-grid { margin-top: 16px; }
+    .export-template-status {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+    .export-template-status .radio-row {
+      display: flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 16px;
+    }
     .update-summary {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5263,7 +5303,6 @@
     .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .lc-desc { margin: 0; color: var(--muted); font-size: 13px; line-height: 20px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .lc-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border-row); color: var(--meta); font-size: 12px; line-height: 16px; }
-    .lc-provider { font-family: var(--font-mono); }
     #template-import.active { padding-bottom: 88px; }
     .template-import-shell { display: grid; gap: 16px; max-width: 1040px; }
     #template-import .template-import-basic-grid {
@@ -5579,7 +5618,7 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 命名空间</span>
-                      <select>
+                      <select id="deployNamespaceSelect">
                         <option>inferx-prod</option>
                         <option>model-serving</option>
                         <option>default</option>
@@ -6109,6 +6148,33 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           </div>
         </section>
 
+        <section id="sync-restore" class="view" data-od-id="view-sync-restore">
+          <div class="panel edit-yaml-shell sync-restore-shell">
+            <div class="panel-head">
+              <div>
+                <h2 id="syncRestoreTitle">Sync 恢复</h2>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="yaml-diff-grid sync-restore-grid">
+                <div>
+                  <p class="yaml-diff-title">当前 YAML</p>
+                  <pre class="code yaml-diff-code" id="syncCurrentYaml" aria-readonly="true"></pre>
+                </div>
+                <div>
+                  <p class="yaml-diff-title">目标 YAML</p>
+                  <pre class="code yaml-diff-code" id="syncTargetYaml" aria-readonly="true"></pre>
+                </div>
+              </div>
+              <div class="update-result" id="syncRestoreResult" hidden></div>
+            </div>
+          </div>
+          <div class="deploy-bottom-bar">
+            <button class="btn" type="button" data-cancel-sync-restore>取消</button>
+            <button class="btn primary" type="button" id="confirmSyncRestore">确认恢复</button>
+          </div>
+        </section>
+
         <section id="maas-models" class="view" data-od-id="view-maas-models">
           <div class="panel">
             <div class="panel-head">
@@ -6542,9 +6608,9 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             <aside class="tl-side" id="templateLibraryFilterSide" aria-label="筛选条件">
               <button type="button" class="btn tl-clear" id="templateLibraryClear" data-dao="button" data-props="type=secondary">清空筛选项</button>
               <div class="tl-group" data-tl-group>
-                <button type="button" class="tl-group-title" data-tl-fold aria-expanded="true">GPU 品牌<span class="tl-caret" aria-hidden="true">⌄</span></button>
+                <button type="button" class="tl-group-title" data-tl-fold aria-expanded="true">GPU 类型<span class="tl-caret" aria-hidden="true">⌄</span></button>
                 <select class="hidden-control" id="templateLibraryGpuFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="nvidia">英伟达 GPU</option><option value="huawei">华为 GPU</option><option value="muxi">沐曦 GPU</option></select>
-                <div class="filter-chip-list" data-template-library-filter="templateLibraryGpuFilter" role="group" aria-label="GPU 品牌">
+                <div class="filter-chip-list" data-template-library-filter="templateLibraryGpuFilter" role="group" aria-label="GPU 类型">
                   <button type="button" class="filter-chip" data-filter-value="nvidia">英伟达 GPU</button>
                   <button type="button" class="filter-chip" data-filter-value="huawei">华为 GPU</button>
                   <button type="button" class="filter-chip" data-filter-value="muxi">沐曦 GPU</button>
@@ -6584,7 +6650,6 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           <div class="head">
             <div>
               <h1>导入模板</h1>
-              <p class="lead">录入模板元信息并粘贴 YAML 配置，导入后可在部署模板库中选择使用。</p>
             </div>
             <div class="tag-row">
               <button class="btn" type="button" data-view="template-library">返回模板库</button>
@@ -6665,8 +6730,9 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 <span class="ops-menu">
                   <button type="button" data-open-values>查看 YAML</button>
                   <button type="button" data-edit-yaml-action>编辑YAML</button>
+                  <button type="button" data-detail-sync-service>Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">服务测试</button>
-                  <button type="button" data-external-page-action>导出模板</button>
+                  <button type="button" data-export-template-action data-external-page-action>导出模板</button>
                   <button type="button" data-update-service-action>更新服务</button>
                   <button type="button" data-open-scale-service>扩缩容</button>
                   <button type="button" class="danger" data-open-delete-service>删除服务</button>
@@ -6701,8 +6767,17 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 </div>
                 <div class="topology" id="detailTopology">
                   <div class="node"><strong>model-gateway</strong><span>统一入口、路由</span><span>1/1 Ready</span></div>
-                  <div class="node"><strong>prefill pool</strong><span>2 副本，单实例 4 GPU</span><span>DP4，RDMA 已启用</span><span>KV Cache Offload</span></div>
-                  <div class="node"><strong>decode pool</strong><span>1 副本，单实例 4 GPU</span><span>DP4 + EP 已启用</span></div>
+                  <div class="node">
+                    <strong>prefill pool</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>2 副本，8 GPU H800，每副本 4 GPU，DP4</span></span>
+                    <span class="node-line"><span class="node-label">增强能力</span><span class="tag">KV Cache Offload</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>2/2 Ready</span></span>
+                  </div>
+                  <div class="node">
+                    <strong>decode pool</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>1 副本，4 GPU H800，每副本 4 GPU，DP4 + EP</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>1/1 Ready</span></span>
+                  </div>
                 </div>
 
                 <div class="panel-head" id="detailConfigHead" style="padding-left:0;padding-right:0;margin-top:18px;">
@@ -7240,6 +7315,45 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           </div>
         </section>
 
+        <section id="exportTemplateModal" class="modal" aria-hidden="true">
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-shell compact update-modal" role="dialog" aria-modal="true" aria-labelledby="exportTemplateTitle">
+            <div class="modal-head">
+              <div>
+                <h1 id="exportTemplateTitle">导出模板</h1>
+              </div>
+              <button class="btn" data-close-modal>关闭</button>
+            </div>
+
+            <div class="update-summary" aria-label="导出服务摘要">
+              <div class="update-summary-item">
+                <span>来源服务</span>
+                <strong id="exportTemplateService">deepseek-v4-flash-h800-prod</strong>
+              </div>
+            </div>
+
+            <div class="form-grid export-template-grid">
+              <label class="field">
+                <span class="label"><span class="required">*</span> 模板名称</span>
+                <input id="exportTemplateName" placeholder="DeepSeek-V4-Flash-H800">
+              </label>
+              <fieldset class="field export-template-status">
+                <legend class="label"><span class="required">*</span> 模板状态</legend>
+                <span class="radio-row">
+                  <label class="radio-item"><input type="radio" name="exportTemplateStatus" value="生产可用" checked> 生产可用</label>
+                  <label class="radio-item"><input type="radio" name="exportTemplateStatus" value="抢先体验"> 抢先体验</label>
+                </span>
+              </fieldset>
+            </div>
+
+            <div class="update-result" id="exportTemplateResult" hidden></div>
+            <div class="footer-actions">
+              <button class="btn" type="button" data-close-modal>取消</button>
+              <button class="btn primary" type="button" id="submitExportTemplate">确定</button>
+            </div>
+          </div>
+        </section>
+
         <section id="deleteServiceModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal></div>
           <div class="modal-shell compact delete-service-modal" role="dialog" aria-modal="true" aria-labelledby="deleteServiceTitle">
@@ -7264,17 +7378,22 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
         <section id="valuesModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal></div>
           <div class="modal-shell compact values-modal" role="dialog" aria-modal="true" aria-labelledby="valuesTitle">
-          <div class="head">
-            <div>
-              <h1 id="valuesTitle">查看 YAML</h1>
+            <div class="head">
+              <div>
+                <h1 id="valuesTitle">查看 YAML</h1>
+              </div>
+              <div class="tag-row">
+                <button class="btn" data-close-modal>关闭</button>
+              </div>
             </div>
-            <div class="tag-row">
-              <button class="btn" data-close-modal>关闭</button>
-            </div>
-          </div>
 
-          <div class="yaml-modal-pane" data-yaml-modal-pane="preview">
-          <div class="code yaml-preview-code" id="currentYamlPreview">kind: HelmValues
+            <div class="yaml-modal-tabs" role="tablist" aria-label="YAML查看模式">
+              <button type="button" class="active" data-yaml-modal-tab="preview">当前 YAML</button>
+              <button type="button" data-yaml-modal-tab="diff">变化</button>
+            </div>
+
+            <div class="yaml-modal-pane" data-yaml-modal-pane="preview">
+              <div class="code yaml-preview-code" id="currentYamlPreview">kind: HelmValues
 metadata:
   name: inferx
 llm-d-modelservice:
@@ -7314,7 +7433,19 @@ llm-d-modelservice:
               cpu: "64"
               memory: 600Gi
               nvidia.com/gpu: "4"</div>
-          </div>
+            </div>
+            <div class="yaml-modal-pane" data-yaml-modal-pane="diff" hidden>
+              <div class="yaml-diff-grid">
+                <div>
+                  <p class="yaml-diff-title">当前版本 YAML</p>
+                  <pre class="code yaml-diff-code" id="templateYamlDiff"></pre>
+                </div>
+                <div>
+                  <p class="yaml-diff-title">变化</p>
+                  <pre class="code yaml-diff-code" id="currentYamlDiff"></pre>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -7430,6 +7561,7 @@ llm-d-modelservice:
     const observeStatusFilter = document.querySelector("#observeStatusFilter");
     const observeModeFilter = document.querySelector("#observeModeFilter");
     const deployClusterSelect = document.querySelector("#deployClusterSelect");
+    const deployNamespaceSelect = document.querySelector("#deployNamespaceSelect");
     const serviceRows = document.querySelector("#serviceRows");
     const templateEmpty = document.querySelector("#templateEmpty");
     const templateModeButtons = Array.from(document.querySelectorAll("[data-deploy-template-mode]"));
@@ -7497,6 +7629,16 @@ llm-d-modelservice:
     const scaleRoleList = document.querySelector("#scaleRoleList");
     const scaleResult = document.querySelector("#scaleResult");
     const submitScaleService = document.querySelector("#submitScaleService");
+    const exportTemplateModal = document.querySelector("#exportTemplateModal");
+    const exportTemplateService = document.querySelector("#exportTemplateService");
+    const exportTemplateName = document.querySelector("#exportTemplateName");
+    const exportTemplateResult = document.querySelector("#exportTemplateResult");
+    const submitExportTemplate = document.querySelector("#submitExportTemplate");
+    const syncRestoreTitle = document.querySelector("#syncRestoreTitle");
+    const syncCurrentYaml = document.querySelector("#syncCurrentYaml");
+    const syncTargetYaml = document.querySelector("#syncTargetYaml");
+    const syncRestoreResult = document.querySelector("#syncRestoreResult");
+    const confirmSyncRestore = document.querySelector("#confirmSyncRestore");
     const deleteServiceModal = document.querySelector("#deleteServiceModal");
     const deleteServiceTitle = document.querySelector("#deleteServiceTitle");
     const deleteServiceMessage = document.querySelector("#deleteServiceMessage");
@@ -7527,6 +7669,10 @@ llm-d-modelservice:
     let activeUpdateService = "deepseek-v4-flash-h800-prod";
     let activeResourceRole = "prefill";
     let activeDeleteService = "";
+    let activeExportTemplateService = "";
+    let activeSyncRestoreService = "";
+    let syncRestoreReturnView = "services";
+    let isEditingServiceConfig = false;
     const roleAdvancedStates = {};
     const defaultRoleAdvancedMarkup = resourceAdvanced ? resourceAdvanced.innerHTML : "";
 
@@ -8007,10 +8153,10 @@ llm-d-modelservice:
     // 名称 / 模型 / 编排框架 / 部署方式 / GPU / 状态 / 推理引擎 / 硬件全部直接读那份定义，不在这里再抄一份，
     // 避免「模板库」与「部署配置」两处数据漂移。只有副本数与更新时间是模板库特有的展示信息。
     const templateLibraryExtras = {
-      deepseek: { replicas: "prefill 2 / decode 1", updated: "2026-08-31 16:28" },
-      glm: { replicas: "worker-pool 1/2 Ready", updated: "2026-09-04 09:18" },
-      qwen: { replicas: "model-server 1 副本", updated: "2026-08-28 10:42" },
-      dynamoScout: { replicas: "prefill / decode worker pool", updated: "2026-09-03 15:22" }
+      deepseek: { replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2*H800*4卡，decode 1*H800*4卡 · DP4", updated: "2026-08-31 16:28" },
+      glm: { replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2*H800*4卡 · DP2", updated: "2026-09-04 09:18" },
+      qwen: { replicas: "model-server 1 副本", resourceSummary: "model-server 1*H800*8卡 · TP8", updated: "2026-08-28 10:42" },
+      dynamoScout: { replicas: "prefill / decode worker pool", resourceSummary: "prefill 2*H800*4卡，decode 2*H800*4卡 · KV router", updated: "2026-09-03 15:22" }
     };
 
     const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
@@ -8040,6 +8186,7 @@ llm-d-modelservice:
           engine,
           resource: detail["硬件"] || "",
           replicas: extra.replicas || "",
+          resourceSummary: extra.resourceSummary || "",
           updated: extra.updated || "",
           selected: card.classList.contains("active")
         };
@@ -8193,7 +8340,7 @@ llm-d-modelservice:
       views.forEach(view => view.classList.toggle("active", view.id === id));
       shell.classList.toggle("immersive-detail", id === "detail");
       if (id === "detail" && detailScroll) detailScroll.scrollTop = 0;
-      const navTarget = id === "deploy" || id === "detail" || id === "edit-yaml"
+      const navTarget = id === "deploy" || id === "detail" || id === "edit-yaml" || id === "sync-restore"
         ? "services"
         : id === "maas-create"
           ? "maas-models"
@@ -8202,7 +8349,7 @@ llm-d-modelservice:
           : id;
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
-      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "service-observability", "model-tests", "template-library", "template-import"].includes(id));
+      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import"].includes(id));
       const viewLabels = {
         "maas-models": "MaaS 模型管理",
         "maas-create": "创建 MaaS 模型",
@@ -8213,6 +8360,7 @@ llm-d-modelservice:
         "template-import": "导入模板",
         deploy: "新建模型部署",
         "edit-yaml": "编辑YAML",
+        "sync-restore": "Sync 恢复",
         detail: "模型服务详情"
       };
       crumbLabel.textContent = viewLabels[id] || "模型服务";
@@ -8221,6 +8369,7 @@ llm-d-modelservice:
     }
 
     function setDeployMode(mode) {
+      isEditingServiceConfig = false;
       const yamlOnly = mode === "yaml";
       const helmMode = mode === "helm";
       if (deployTitle) deployTitle.textContent = yamlOnly ? "YAML 部署" : "新建模型部署";
@@ -8240,6 +8389,7 @@ llm-d-modelservice:
       if (deployCancelButton) deployCancelButton.hidden = yamlOnly;
       deploySubmitButton.textContent = yamlOnly ? "部署" : helmMode ? "确定部署" : "提交并部署";
       if (!yamlOnly && !helmMode) setDeployTemplateMode("preset");
+      syncServiceConfigScopeLock();
     }
 
     function tagClass(color) {
@@ -8272,6 +8422,11 @@ llm-d-modelservice:
         const disabled = !canEditService(serviceRow);
         button.disabled = disabled;
         button.title = disabled ? (isExternalService ? "外部接入服务，不支持页面操作" : "部署中或更新中的服务暂不可编辑") : "";
+      });
+      document.querySelectorAll("#detail [data-detail-sync-service]").forEach(button => {
+        const disabled = isExternalService || serviceRow?.sync?.[0] !== "OutOfSync";
+        button.disabled = disabled;
+        button.title = disabled ? "当前服务无需 Sync 恢复" : "";
       });
       document.querySelectorAll("#detail [data-open-scale-service], #detail [data-open-delete-service], #detail [data-external-page-action]").forEach(button => {
         button.disabled = isExternalService;
@@ -8584,7 +8739,7 @@ llm-d-modelservice:
       if (templateYamlDiff) templateYamlDiff.innerHTML = "";
       if (currentYamlDiff) currentYamlDiff.innerHTML = "";
       yamlModalTabs.forEach(button => {
-        if (button.dataset.yamlModalTab === "diff") button.hidden = true;
+        button.hidden = true;
       });
       setYamlModalTab("preview");
       openModal(valuesModal);
@@ -8699,6 +8854,40 @@ llm-d-modelservice:
       }
     }
 
+    function openExportTemplate(serviceId) {
+      const service = serviceById(serviceId) || serviceById(activeDetailService);
+      if (!service || !exportTemplateModal) return;
+      activeExportTemplateService = service.id;
+      if (exportTemplateService) exportTemplateService.textContent = service.id;
+      if (exportTemplateName) {
+        exportTemplateName.value = `${service.model || service.id}-template`;
+      }
+      document.querySelectorAll("input[name='exportTemplateStatus']").forEach(input => {
+        input.checked = input.value === "生产可用";
+      });
+      if (exportTemplateResult) exportTemplateResult.hidden = true;
+      openModal(exportTemplateModal);
+      window.setTimeout(() => exportTemplateName?.focus(), 0);
+    }
+
+    function submitExportTemplateAction() {
+      if (!activeExportTemplateService || !exportTemplateName) return;
+      const name = exportTemplateName.value.trim();
+      const status = document.querySelector("input[name='exportTemplateStatus']:checked")?.value || "生产可用";
+      if (!name) {
+        if (exportTemplateResult) {
+          exportTemplateResult.hidden = false;
+          exportTemplateResult.textContent = "请填写模板名称。";
+        }
+        exportTemplateName.focus();
+        return;
+      }
+      if (exportTemplateResult) {
+        exportTemplateResult.hidden = false;
+        exportTemplateResult.textContent = `已导出模板 ${name}，状态为${status}。`;
+      }
+    }
+
     function updateDeleteServiceSubmitState() {
       if (!submitDeleteService || !deleteServiceInput) return;
       submitDeleteService.disabled = deleteServiceInput.value.trim() !== activeDeleteService;
@@ -8788,6 +8977,42 @@ llm-d-modelservice:
       if (document.querySelector("#detail").classList.contains("active")) renderDetail(service.id);
     }
 
+    function syncRestoreYamlPair(serviceId) {
+      const targetValues = { ...valuesForService(serviceId) };
+      const currentValues = {
+        ...targetValues,
+        replicas: "0",
+        memory: "640Gi"
+      };
+      const currentYaml = yamlFromValues(currentValues);
+      const targetYaml = yamlFromValues(targetValues);
+      return { currentYaml, targetYaml };
+    }
+
+    function openSyncRestorePage(serviceId) {
+      const service = serviceById(serviceId);
+      if (!service || service.sync[0] !== "OutOfSync") return;
+      activeSyncRestoreService = service.id;
+      syncRestoreReturnView = document.querySelector("#detail")?.classList.contains("active") ? "detail" : "services";
+      const { currentYaml, targetYaml } = syncRestoreYamlPair(service.id);
+      const [currentDiff, targetDiff] = diffLines(currentYaml, targetYaml);
+      closeModals();
+      if (syncRestoreTitle) syncRestoreTitle.textContent = `Sync 恢复：${service.id}`;
+      if (syncCurrentYaml) syncCurrentYaml.innerHTML = currentDiff;
+      if (syncTargetYaml) syncTargetYaml.innerHTML = targetDiff;
+      if (syncRestoreResult) syncRestoreResult.hidden = true;
+      showView("sync-restore");
+    }
+
+    function confirmSyncRestoreAction() {
+      const serviceId = activeSyncRestoreService;
+      restoreServiceSync(serviceId);
+      if (syncRestoreResult) {
+        syncRestoreResult.hidden = false;
+        syncRestoreResult.textContent = `已提交 ${serviceId} 的 Sync 恢复。`;
+      }
+    }
+
     function renderServiceRows() {
       if (!serviceRows) return;
       const { status, mode, query } = serviceFilterState();
@@ -8834,7 +9059,7 @@ llm-d-modelservice:
                   <button type="button" data-edit-yaml-action${editDisabled}>编辑YAML</button>
                   <button type="button" data-sync-service="${escapeHtml(item.id)}"${item.external ? externalDisabled : canSync ? "" : " disabled"}>Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">服务测试</button>
-                  <button type="button"${externalDisabled}>导出模板</button>
+                  <button type="button" data-export-template-action${externalDisabled}>导出模板</button>
                   <button type="button" data-update-service-action${editDisabled}>更新服务</button>
                   <button type="button" data-open-scale-service${externalDisabled}>扩缩容</button>
                   <button type="button" class="danger" data-open-delete-service="${escapeHtml(item.id)}"${externalDisabled}>删除服务</button>
@@ -8871,7 +9096,7 @@ llm-d-modelservice:
       const copyButton = event.target.closest("[data-copy-endpoint]");
       if (copyButton) { copyEndpoint(copyButton.dataset.copyEndpoint); return; }
       const syncButton = event.target.closest("[data-sync-service]");
-      if (syncButton) { restoreServiceSync(syncButton.dataset.syncService); return; }
+      if (syncButton) { openSyncRestorePage(syncButton.dataset.syncService); return; }
       const jumpButton = event.target.closest("[data-detail-jump]");
       if (jumpButton) {
         const row = jumpButton.closest("[data-service-row]");
@@ -8961,8 +9186,8 @@ llm-d-modelservice:
                         <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">查看模板</button><button type="button">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button></span></span>
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
-                      <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resource)}，${escapeHtml(item.replicas)}</p>
-                      <div class="lc-foot"><span class="lc-provider">${escapeHtml(item.gpu.split(" ").slice(-1)[0])}</span><span class="lc-time">${escapeHtml(item.updated || "2026-08-30 10:00")} 更新</span></div>
+                      <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resourceSummary || `${item.resource}，${item.replicas}`)}</p>
+                      <div class="lc-foot"><span class="lc-time">${escapeHtml(item.updated || "2026-08-30 10:00")}</span></div>
                     </div>
                   </article>`).join("");
       applyTemplateLibraryFilters();
@@ -9038,6 +9263,7 @@ llm-d-modelservice:
         statusColor: templateStatusColor[status] || "",
         resource: `${resourceModel} 节点`,
         replicas: "YAML 导入配置",
+        resourceSummary: `${resourceModel} 节点，YAML 导入配置`,
         updated: currentMinuteText(),
         yaml
       });
@@ -9252,6 +9478,12 @@ llm-d-modelservice:
       if (text) text.textContent = enabled ? "开启" : "关闭";
     }
 
+    function syncServiceConfigScopeLock() {
+      [deployClusterSelect, deployNamespaceSelect].forEach(control => {
+        if (control) control.disabled = isEditingServiceConfig;
+      });
+    }
+
     function defaultKeyForService(serviceId) {
       return Object.keys(defaults).find(key => defaults[key]?.service === serviceId) || "deepseek";
     }
@@ -9351,6 +9583,7 @@ llm-d-modelservice:
       const partial = Boolean(options.partial);
       const values = valuesForService(serviceId);
       setDeployMode("template");
+      isEditingServiceConfig = true;
       const key = defaultKeyForService(serviceId);
       selectTemplate(key);
       editFromCurrentTemplate();
@@ -9371,6 +9604,7 @@ llm-d-modelservice:
       closeModals();
       showView("deploy");
       if (crumbLabel) crumbLabel.textContent = "编辑服务配置";
+      syncServiceConfigScopeLock();
       if (partial && updateParseNotice) openModal(updateParseNotice);
     }
 
@@ -9407,6 +9641,7 @@ llm-d-modelservice:
     function prepareYamlPreview(options = {}) {
       const resourceOnly = Boolean(options.resourceOnly);
       const hideDiff = Boolean(options.hideDiff);
+      const showDiffTabs = isEditingServiceConfig && !resourceOnly && !hideDiff;
       const currentYaml = yamlFromValues(currentFormValues());
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
@@ -9416,7 +9651,7 @@ llm-d-modelservice:
       if (templateYamlDiff) templateYamlDiff.innerHTML = templateDiff;
       if (currentYamlDiff) currentYamlDiff.innerHTML = currentDiff;
       yamlModalTabs.forEach(button => {
-        if (button.dataset.yamlModalTab === "diff") button.hidden = resourceOnly || hideDiff;
+        button.hidden = !showDiffTabs;
       });
       setYamlModalTab("preview");
     }
@@ -9902,7 +10137,7 @@ llm-d-modelservice:
         const isDeployPreview = button.id === "deployPreviewButton";
         prepareYamlPreview({
           resourceOnly: Boolean(button.closest("#detailResources")),
-          hideDiff: isDeployPreview && activeDeployTemplateMode === "blank"
+          hideDiff: isDeployPreview && !isEditingServiceConfig && activeDeployTemplateMode === "blank"
         });
         openModal(valuesModal);
       }
@@ -9920,6 +10155,19 @@ llm-d-modelservice:
       if (!button) return;
       const row = button.closest("[data-service-row]");
       updateServiceDirectly(row?.dataset.serviceRow || activeDetailService);
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-export-template-action]");
+      if (!button) return;
+      const row = button.closest("[data-service-row]");
+      openExportTemplate(row?.dataset.serviceRow || activeDetailService);
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-detail-sync-service]");
+      if (!button) return;
+      openSyncRestorePage(activeDetailService);
     });
 
     document.addEventListener("click", event => {
@@ -10005,6 +10253,20 @@ llm-d-modelservice:
     if (submitScaleService) {
       submitScaleService.addEventListener("click", submitScaleServiceChange);
     }
+
+    if (submitExportTemplate) {
+      submitExportTemplate.addEventListener("click", submitExportTemplateAction);
+    }
+
+    if (confirmSyncRestore) {
+      confirmSyncRestore.addEventListener("click", confirmSyncRestoreAction);
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-cancel-sync-restore]");
+      if (!button) return;
+      showView(syncRestoreReturnView);
+    });
 
     document.addEventListener("click", event => {
       const button = event.target.closest("[data-open-delete-service]");
@@ -10153,6 +10415,7 @@ llm-d-modelservice:
       deployClusterSelect?.querySelectorAll("[data-preset-only-disabled]").forEach(option => {
         option.hidden = !locked;
       });
+      syncServiceConfigScopeLock();
     }
 
     function editFromCurrentTemplate() {
