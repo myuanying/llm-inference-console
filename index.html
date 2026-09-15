@@ -648,6 +648,10 @@
       max-height: calc(100vh - 112px);
     }
 
+    .modal-shell.values-modal {
+      width: min(1080px, calc(100vw - 56px));
+    }
+
     .modal-head {
       display: flex;
       align-items: flex-start;
@@ -786,6 +790,7 @@
     #deploy .field > .template-library-picker,
     #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy,
+    #deploy .field > .distributed-gpu-row,
     #deploy .field > .role-command-grid {
       grid-column: 2 / 4;
     }
@@ -801,6 +806,7 @@
     #deploy .field > textarea,
     #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy,
+    #deploy .field > .distributed-gpu-row,
     #deploy .field > .role-command-grid {
       max-width: 620px;
     }
@@ -1686,7 +1692,126 @@
     .yaml-preview-code {
       margin: 0;
       max-height: calc(100vh - 172px);
+      white-space: pre;
     }
+
+    .report-preview {
+      max-height: calc(100vh - 172px);
+      overflow: auto;
+      padding: 18px 20px 20px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--fg);
+    }
+
+    .report-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-row);
+    }
+
+    .report-head h2 {
+      margin: 0;
+      color: var(--fg-2);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 700;
+    }
+
+    .report-meta-grid,
+    .report-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .report-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .report-meta-grid > div,
+    .report-summary > div {
+      min-height: 72px;
+      padding: 12px;
+      border: 1px solid var(--border-row);
+      border-radius: 4px;
+      background: var(--bg-subtle);
+    }
+
+    .report-meta-grid span,
+    .report-summary span {
+      display: block;
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .report-meta-grid strong,
+    .report-summary strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .report-summary p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .ok-text { color: var(--success) !important; }
+    .warn-text { color: var(--warn) !important; }
+    .danger-text { color: var(--danger) !important; }
+
+    .report-section { margin-top: 18px; }
+
+    .report-section h3 {
+      margin: 0 0 8px;
+      color: var(--fg-2);
+      font-size: 15px;
+      line-height: 22px;
+      font-weight: 700;
+    }
+
+    .report-table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border-row);
+      border-radius: 4px;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .report-table th,
+    .report-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border-row);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .report-table th {
+      background: var(--bg-subtle);
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .report-table tr:last-child td { border-bottom: 0; }
+    .report-gate { border: 1px solid var(--border-row); border-radius: 4px; overflow: hidden; }
 
     .yaml-modal-tabs {
       display: inline-flex;
@@ -4039,6 +4164,10 @@
     .nav button { height: 46px; gap: 12px; padding: 0 20px; border-radius: 0; color: var(--fg-2); font-size: 13px; font-weight: 600; transition: background-color var(--motion-fast); }
     .nav button:hover { background: var(--nav-hover); }
     .nav button.active { background: var(--nav-hover); color: var(--nav-fg-selected); font-weight: 700; }
+    .nav button.nav-muted,
+    .nav button.nav-muted.active {
+      color: var(--meta);
+    }
     .nav .chevron { color: var(--icon); font-size: 12px; }
     .nav-children { margin-left: 0; padding-left: 0; border-left: 0; background: var(--nav-hover); }
     .nav button.nav-child { height: 36px; padding-left: 56px; font-weight: 400; }
@@ -4161,6 +4290,17 @@
     .dt-right .detail-issue-tags .tag.amber { padding: 0 8px; background: var(--lt-yellow-bg); color: var(--lt-yellow-fg); font-weight: 600; }
     .dt-right .detail-issue-tags .tag.red { padding: 0 8px; background: var(--lt-red-bg); color: var(--lt-red-fg); font-weight: 600; }
     .dt-right .detail-issue-tags .tag.amber::before, .dt-right .detail-issue-tags .tag.red::before { display: none; }
+    .external-access-tag {
+      flex: 0 0 auto;
+      margin-left: -4px;
+      background: var(--lt-grey-bg);
+      color: var(--lt-grey-fg);
+      font-weight: 600;
+    }
+    .detail-h1 .external-access-tag {
+      margin-left: 8px;
+      vertical-align: 2px;
+    }
     .si-status { width: 10px; height: 10px; background: var(--icon); }
     /* ---- 消息条：r4 padding 10 15；info / warning 边框用 --msg-border-* ---- */
     .notice { border: 1px solid var(--msg-border-info); background: var(--info-soft); border-radius: 4px; padding: 10px 15px; color: var(--muted); line-height: 20px; }
@@ -4256,6 +4396,84 @@
     .modal-sub { color: var(--meta); }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
     .modal-shell .form-grid { gap: 14px 12px; }
+    .modal-shell.delete-service-modal {
+      width: min(980px, calc(100vw - 56px));
+      padding: 0;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .delete-service-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 78px;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .delete-service-head h1 {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .delete-service-close {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      background: transparent;
+      color: var(--fg-on-disabled);
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .delete-service-close:hover { color: var(--meta); }
+    .delete-service-message {
+      padding: 34px 32px 40px;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+    .delete-service-confirm {
+      padding: 30px 32px 24px;
+    }
+    .delete-service-confirm .label {
+      margin-bottom: 16px;
+      color: var(--fg);
+      font-size: 18px;
+      line-height: 28px;
+    }
+    .delete-service-confirm input {
+      height: 48px;
+      font-size: 16px;
+    }
+    .delete-service-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .btn.delete-service-submit,
+    .btn.delete-service-cancel {
+      width: 100%;
+      height: 48px;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .btn.delete-service-submit:not(:disabled) {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: var(--surface);
+    }
+    .btn.delete-service-submit:not(:disabled):hover {
+      background: var(--danger-strong);
+      border-color: var(--danger-strong);
+    }
+    .btn.delete-service-cancel {
+      color: var(--fg);
+    }
 
     /* ---- 空态：80×80 占位，标题 13/600 --muted，辅助 12/18 --fg-on-disabled，无 CTA ---- */
     .template-empty, .switch-empty { border: 0; background: transparent; text-align: center; padding: 40px 0 32px; color: var(--muted); font-size: 13px; font-weight: 600; line-height: 20px; }
@@ -4472,11 +4690,73 @@
       line-height: 20px;
       overflow-wrap: anywhere;
     }
+
+    .config-view .config-view-wide {
+      grid-column: 1 / -1;
+    }
+
+    .config-view .config-view-wide dd {
+      font-weight: 400;
+    }
+
+    .config-view dd:has(.config-case-groups) {
+      font-weight: 400;
+    }
+
+    .config-case-groups {
+      display: grid;
+      gap: 10px;
+    }
+
+    .config-case-groups section {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--border-row);
+      border-radius: 4px;
+      background: var(--bg-subtle);
+    }
+
+    .config-case-groups h4 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 8px;
+      color: var(--fg-2);
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+
+    .config-case-groups h4 span {
+      color: var(--meta);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .config-case-groups ul {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .config-case-groups li {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      color: var(--fg);
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+    }
     @media (max-width: 760px) {
       .tb--wrap .search { flex-basis: 100%; }
       #model-tests td.col-act,
       #detailTestRows td.col-act { width: 150px; }
-      .config-view dl { grid-template-columns: 1fr; }
+      .config-view dl,
+      .config-case-groups li { grid-template-columns: 1fr; }
     }
 
     /* ---- 详情页子页：与外部列表页一致的工具栏 + 列表块 ---- */
@@ -4557,6 +4837,41 @@
     .switch[disabled].is-checked { background: var(--check-disabled); }
     .switch-text { color: var(--fg); font-size: 13px; line-height: 20px; }
     #deploy .field > .switch-row { grid-column: 2 / 4; }
+
+    .distributed-gpu-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+      align-items: end;
+      gap: 10px;
+    }
+
+    .distributed-part {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .mini-label {
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .distributed-part input {
+      width: 100%;
+    }
+
+    .multiply {
+      display: inline-grid;
+      place-items: center;
+      height: 32px;
+      color: var(--meta);
+      font-size: 15px;
+      line-height: 20px;
+      font-weight: 700;
+    }
 
     /* ---- 高级配置：每组 = 标题 + 开关 → 开启时展开嵌套配置盒 .nest--compact（表单规范 B-8-10 / S-23） ---- */
     #deploy .advanced-stack { gap: 20px; }
@@ -4795,6 +5110,53 @@
       cursor: not-allowed;
     }
     .dataset-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .case-group-stack {
+      display: grid;
+      gap: 10px;
+    }
+    .case-group {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+    }
+    .case-group[open] {
+      border-color: var(--border-soft);
+      background: var(--bg-subtle);
+    }
+    .case-group summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 0 12px;
+      color: var(--fg-2);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      list-style: none;
+    }
+    .case-group summary::-webkit-details-marker { display: none; }
+    .case-group summary::before {
+      content: "›";
+      width: 14px;
+      color: var(--icon-hover);
+      font-size: 16px;
+      transform: rotate(0deg);
+      transition: transform var(--motion-fast);
+    }
+    .case-group[open] summary::before { transform: rotate(90deg); }
+    .case-group summary span {
+      flex: 1;
+      margin-left: 4px;
+    }
+    .case-group summary small {
+      color: var(--meta);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .case-group .dataset-grid {
+      padding: 0 12px 12px;
+    }
     .dataset-option {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
@@ -5020,11 +5382,11 @@
         <button type="button">≋ 模型提供商管理</button>
         <button type="button" data-view="maas-models">◉ MaaS 模型管理</button>
         <button type="button" class="active ai-only" data-view="services">模型服务</button>
-        <button type="button" class="ai-only" data-view="service-observability">服务观测</button>
+        <button type="button" class="ai-only nav-muted" data-view="service-observability">服务观测</button>
         <button type="button" class="ai-only" data-view="model-tests">模型测试</button>
         <button type="button" class="ai-only" data-view="template-library">部署模板库</button>
-        <button type="button" class="ai-only">◫ 容量规划</button>
-        <button type="button" class="ai-only">▣ 高速缓存服务</button>
+        <button type="button" class="ai-only nav-muted">◫ 容量规划</button>
+        <button type="button" class="ai-only nav-muted">▣ 高速缓存服务</button>
         <button type="button">⌘ 智能路由</button>
         <button type="button">▰ 文件存储管理</button>
         <button type="button">◎ Token 配额管理</button>
@@ -5056,7 +5418,7 @@
             <div class="panel-body yaml-entry" id="yamlEntry">
               <label class="field wide">
                 <span class="label">YAML 配置</span>
-                <textarea id="yamlInput" placeholder="serviceName: deepseek-v4-flash-h800-prod&#10;model:&#10;  source: market&#10;  mountPath: /mnt/data&#10;image: docker.m.daocloud.io/vllm/vllm-openai:nightly&#10;inferenceMode: split&#10;resources:&#10;  replicas: 2&#10;  gpuType: NVIDIA H800&#10;  gpusPerReplica: 4&#10;  cpu: 64 core&#10;  memory: 600Gi"></textarea>
+                <textarea id="yamlInput" placeholder="serviceName: deepseek-v4-flash-h800-prod&#10;model:&#10;  source: market&#10;  mountPath: /mnt/data&#10;image: docker.m.daocloud.io/vllm/vllm-openai:nightly&#10;inferenceMode: split&#10;resources:&#10;  replicas: 2&#10;  gpuType: Nvidia GPU&#10;  gpuModel: NVIDIA H800&#10;  gpusPerReplica: 4&#10;  cpu: 64 core&#10;  memory: 600Gi"></textarea>
               </label>
             </div>
           </div>
@@ -5155,7 +5517,7 @@
                           <strong>DeepSeek-V4-Flash</strong>
                           <span>编排框架：llm-d</span>
                           <span>H800 / vLLM / PD 分离</span>
-                          <small>生产推荐</small>
+                          <small>生产可用</small>
                           <span class="template-detail">编排框架：llm-d<br>模型：DeepSeek-V4-Flash-0731<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 分离</span>
                           </span>
                           <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置">
@@ -5179,7 +5541,7 @@
                           <strong>Llama-4-Scout</strong>
                           <span>编排框架：dynamo</span>
                           <span>H800 / vLLM / PD 分离</span>
-                          <small>实验环境</small>
+                          <small>抢先体验</small>
                           <span class="template-detail">编排框架：dynamo<br>模型：Llama-4-Scout<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 分离</span>
                           </span>
                         </span>
@@ -5188,7 +5550,7 @@
                       <div class="template-yaml-panel" id="yamlImportPanel" hidden>
                         <label class="field wide">
                           <span class="label">YAML 文件</span>
-                          <textarea id="yamlImportInput" placeholder="serviceName: deepseek-v4-flash-h800-prod&#10;model:&#10;  source: market&#10;  mountPath: /mnt/data&#10;image: docker.m.daocloud.io/vllm/vllm-openai:nightly&#10;inferenceMode: split&#10;resources:&#10;  replicas: 2&#10;  gpuType: NVIDIA H800&#10;  gpusPerReplica: 4&#10;  cpu: 64 core&#10;  memory: 600Gi"></textarea>
+                          <textarea id="yamlImportInput" placeholder="serviceName: deepseek-v4-flash-h800-prod&#10;model:&#10;  source: market&#10;  mountPath: /mnt/data&#10;image: docker.m.daocloud.io/vllm/vllm-openai:nightly&#10;inferenceMode: split&#10;resources:&#10;  replicas: 2&#10;  gpuType: Nvidia GPU&#10;  gpuModel: NVIDIA H800&#10;  gpusPerReplica: 4&#10;  cpu: 64 core&#10;  memory: 600Gi"></textarea>
                         </label>
                         <div class="yaml-import-actions">
                           <input class="yaml-import-file" id="yamlImportFile" type="file" accept=".yaml,.yml,text/yaml,text/plain">
@@ -5241,13 +5603,13 @@
                     <label class="field">
                       <span class="label"><span class="required">*</span> 推理镜像</span>
                       <span class="combo-row">
-                        <select id="imagePresetSelect">
+                        <select id="imagePresetSelect" data-template-unlocked>
                           <option value="docker.m.daocloud.io/vllm/vllm-openai:nightly">vLLM OpenAI nightly</option>
                           <option value="docker.m.daocloud.io/vllm/vllm-openai:v0.8.5">vLLM OpenAI v0.8.5</option>
                           <option value="ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17.iaas.dev.202608251235">SGLang v0.5.17</option>
                           <option value="custom">自定义镜像</option>
                         </select>
-                        <input id="imageInput" value="docker.m.daocloud.io/vllm/vllm-openai:nightly" disabled>
+                        <input id="imageInput" value="docker.m.daocloud.io/vllm/vllm-openai:nightly" disabled data-template-unlocked>
                       </span>
                     </label>
                   </div>
@@ -5266,7 +5628,7 @@
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 模型访问名称 <i class="label-help" tabindex="0" data-tooltip="模型访问ID，建议使用模型官方名称" aria-label="模型访问名称说明">?</i></span>
-                      <input id="modelAccessNameInput" value="deepseek-v4-flash-0731">
+                      <input id="modelAccessNameInput" value="deepseek-v4-flash-0731" data-template-unlocked>
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> PVC 名称</span>
@@ -5316,7 +5678,7 @@
                     <strong>部署清单</strong>
                     <ul id="deployChecklist">
                       <li>组件：llm-d、inferencepool、gateway、nvidia-device-plugin、rdma-device-plugin、prometheus-agent</li>
-                      <li>角色：prefill、decode 与 gateway 独立配置，gateway 配置项与 frontend 一致</li>
+                      <li>角色：prefill、decode、gateway 与 EPP 独立配置，gateway 和 EPP 配置项一致</li>
                     </ul>
                   </div>
                 </div>
@@ -5332,6 +5694,7 @@
                     <button type="button" class="active" data-role="prefill">prefill</button>
                     <button type="button" data-role="decode">decode</button>
                     <button type="button" data-role="gateway">gateway</button>
+                    <button type="button" data-role="epp">EPP</button>
                   </div>
 
                   <div class="form-grid three">
@@ -5343,6 +5706,13 @@
                       <span class="label"><span class="required">*</span> 实例数</span>
                       <input id="replicasInput" type="number" min="0" value="2">
                     </label>
+                    <label class="field" data-resource-field="gpu-brand">
+                      <span class="label"><span class="required">*</span> GPU 类型</span>
+                      <select id="gpuTypeSelect">
+                        <option>Nvidia GPU</option>
+                        <option>Ascend 910</option>
+                      </select>
+                    </label>
                     <label class="field" data-resource-field="gpu-type">
                       <span class="label">GPU型号</span>
                       <select id="nodePoolSelect">
@@ -5351,9 +5721,24 @@
                         <option>Ascend 910B</option>
                       </select>
                     </label>
+                    <label class="field" data-resource-field="distributed">
+                      <span class="label">分布式推理</span>
+                      <span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" data-dao="switch" data-switch data-distributed-toggle><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">关闭</span></span>
+                    </label>
                     <label class="field" data-resource-field="gpus">
                       <span class="label"><span class="required">*</span> 单实例卡数</span>
                       <input id="gpusInput" type="number" min="0" value="4">
+                      <span class="distributed-gpu-row" id="distributedGpuRow" hidden>
+                        <span class="distributed-part">
+                          <input id="distributedNodesInput" type="number" min="1" value="2">
+                          <span class="mini-label">节点数</span>
+                        </span>
+                        <span class="multiply" aria-hidden="true">×</span>
+                        <span class="distributed-part">
+                          <input id="machineGpusInput" type="number" min="0" value="8" disabled>
+                          <span class="mini-label">单机卡数</span>
+                        </span>
+                      </span>
                     </label>
                     <label class="field">
                       <span class="label">单实例CPU</span>
@@ -5488,6 +5873,17 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         </label>
                       </div>
                     </div>
+                    <div class="role-command" data-command-role="epp" hidden>
+                      <h3>EPP 启动命令</h3>
+                      <div class="form-grid">
+                        <label class="field wide">
+                          <span class="label">启动命令</span>
+                          <textarea class="is-command-sample" data-command-textarea>启动命令样例
+---
+llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
+                        </label>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="resource-advanced">
@@ -5506,55 +5902,6 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         </label>
                         </div>
                       </div>
-                      </div>
-                    </div>
-
-                    <!-- map: <dao-form-item> 标题 + <dao-switch> 开关 · 内容为嵌套配置盒 .nest--compact（B-8-10） -->
-                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-update-strategy">
-                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-update-strategy-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">升级策略</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state>已开启</span></button>
-                      <div class="adv-acc-panel" id="adv-update-strategy-panel" hidden>
-                        <div class="nest-head"><span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" aria-label="升级策略" data-dao="switch" data-switch><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span></div>
-                        <span class="adv-summary" data-adv-summary hidden>默认重建升级（Recreate）。</span>
-                        <div class="nest nest--compact upgrade-strategy-box" data-adv-body>
-                          <div class="form-grid upgrade-strategy-grid">
-                            <label class="field">
-                              <span class="label">升级方式</span>
-                              <select id="upgradeStrategySelect" aria-label="升级方式">
-                                <option value="recreate" selected>重建升级 (Recreate)</option>
-                                <option value="rolling">滚动升级 (RollingUpdate)</option>
-                              </select>
-                            </label>
-                            <label class="field" data-rolling-upgrade-field hidden>
-                              <span class="label"><span class="required">*</span> 最大不可用</span>
-                              <span class="unit-input"><input type="number" value="25" min="0" max="100" aria-label="最大不可用"><span>%</span></span>
-                              <span class="hint">滚动升级最大无效 Pod 数（最小可用 Pod 数 = 期望 Pod 数 - 最大无效 Pod 数）</span>
-                            </label>
-                            <label class="field" data-rolling-upgrade-field hidden>
-                              <span class="label"><span class="required">*</span> 最大峰值</span>
-                              <span class="unit-input"><input type="number" value="25" min="0" max="100" aria-label="最大峰值"><span>%</span></span>
-                              <span class="hint">每次滚动升级允许超出所需规模的最大 Pod 数</span>
-                            </label>
-                            <label class="field">
-                              <span class="label">最大保留版本数</span>
-                              <input type="number" value="10" min="0" aria-label="最大保留版本数">
-                            </label>
-                            <label class="field">
-                              <span class="label"><span class="required">*</span> Pod 可用最短时间</span>
-                              <span class="unit-input"><input type="number" value="0" min="0" aria-label="Pod 可用最短时间"><span>秒</span></span>
-                              <span class="hint">Pod 就绪的最短时间，只有超出这个时间 Pod 才被认为可用</span>
-                            </label>
-                            <label class="field">
-                              <span class="label"><span class="required">*</span> 升级最大持续时间</span>
-                              <span class="unit-input"><input type="number" value="600" min="0" aria-label="升级最大持续时间"><span>秒</span></span>
-                              <span class="hint">在标记 deployment 失败之前，等待部署进行的最小持续时间</span>
-                            </label>
-                            <label class="field">
-                              <span class="label"><span class="required">*</span> 缩容时间窗</span>
-                              <span class="unit-input"><input type="number" value="30" min="0" max="9999" aria-label="缩容时间窗"><span>秒</span></span>
-                              <span class="hint">工作负载停止前命令的执行时间窗（0-9,999 秒），默认 30 秒</span>
-                            </label>
-                          </div>
-                        </div>
                       </div>
                     </div>
 
@@ -5578,41 +5925,6 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                             <button type="button" class="btn text" id="envVarAddButton">+ 添加</button>
                             <button type="button" class="btn text">查看系统内置环境变量</button>
                           </div>
-                        </div>
-                      </div>
-                      </div>
-                    </div>
-
-                    <!-- map: <dao-form-item> 配置项挂载 -->
-                    <div class="adv-item adv-acc" data-adv data-adv-acc id="adv-config-mount">
-                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-config-mount-panel" data-adv-acc-toggle><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="adv-acc-title">配置项挂载</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state></span></button>
-                      <div class="adv-acc-panel" id="adv-config-mount-panel" hidden>
-                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" aria-label="配置项挂载" data-dao="switch" data-switch data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
-                      <div class="nest nest--compact" data-adv-body hidden>
-                        <div class="config-mount-card">
-                          <div class="form-grid">
-                            <label class="field">
-                              <span class="label">配置项 <span class="required">*</span></span>
-                              <span class="combo-row">
-                                <select><option>请选择配置项</option><option>vllm-runtime-config</option><option>dynamo-router-config</option></select>
-                                <button type="button" class="aicon" aria-label="刷新配置项" title="刷新配置项">↻</button>
-                                <button type="button" class="btn text">去创建 ↗</button>
-                              </span>
-                            </label>
-                            <label class="field">
-                              <span class="label">容器路径（mountPath）<span class="required">*</span></span>
-                              <input placeholder="请输入挂载路径，例如：/tmp">
-                            </label>
-                            <div class="hint">配置项挂载到容器上的路径</div>
-                            <label class="field">
-                              <span class="label">子路径（subPath）</span>
-                              <input placeholder="请输入挂载子路径">
-                            </label>
-                            <div class="hint">使用子路径挂载本地磁盘，实现在单一 Pod 中重复使用同一个 Volume。不填写时默认为根。</div>
-                          </div>
-                        </div>
-                        <div class="inline-actions">
-                          <button type="button" class="btn text">+ 添加</button>
                         </div>
                       </div>
                       </div>
@@ -6166,11 +6478,11 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle aria-expanded="false" aria-controls="concept-model-tests-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">模型测试</span></button>
               <button type="button" class="concept-close" data-concept-close aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-model-tests-body" hidden>模型测试对已部署的模型服务发起验收或性能任务：验收测试校验接口兼容性与输出质量，性能测试按并发梯度压测并产出 TTFT / TPOT / 吞吐报告。</div>
+            <div class="concept-body" id="concept-model-tests-body" hidden>模型测试面向已部署模型服务发起测试任务。当前仅支持功能测试，用于校验健康检查、鉴权、Chat Completions 协议、流式输出、结构化输出、工具调用、长上下文、Thinking 开关与网关参数适配等工程能力。</div>
           </div>
           <div class="tb" data-dao="toolbar">
-            <label class="tb-field"><span class="tb-label">测试类型</span>
-              <select class="mini-select sel" aria-label="测试类型"><option>全部测试类型</option><option>性能测试</option><option>验收测试</option></select></label>
+            <label class="tb-field"><span class="tb-label">测试范围</span>
+              <select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label>
             <label class="tb-field"><span class="tb-label">状态</span>
               <select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>进行中</option><option>已完成</option><option>失败</option></select></label>
             <input class="search" type="search" placeholder="输入任务名称搜索" aria-label="搜索任务">
@@ -6181,12 +6493,12 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           <div class="list-block" data-dao="table">
             <div class="table-scroll">
               <table>
-                <thead><tr><th>任务名称</th><th>目标服务</th><th>测试类型</th><th>状态</th><th>创建时间</th><th class="col-act"></th></tr></thead>
+                <thead><tr><th>任务名称</th><th>目标服务</th><th>测试范围</th><th>状态</th><th>创建时间</th><th class="col-act"></th></tr></thead>
                 <tbody id="modelTestRows">
-                  <tr><td><span class="test-name-link">smoke-deepseek-prod-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>验收测试</td><td><span class="tag green">已完成</span></td><td>2026-08-31 17:20:04</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
-                  <tr><td><span class="test-name-link">load-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>性能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
-                  <tr><td><span class="test-name-link">regression-qwen-common</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>验收测试</td><td><span class="tag red">失败</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
-                  <tr><td><span class="test-name-link">perf-qwen-h800-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>性能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                  <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag red">失败</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -6212,7 +6524,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle aria-expanded="false" aria-controls="concept-template-library-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">部署模板库</span></button>
               <button type="button" class="concept-close" data-concept-close aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-template-library-body" hidden>部署模板是一组经过验证的模型服务配置（镜像、编排框架、推理模式、GPU 规格与副本数），用于「新建部署」时预填表单。「生产推荐」表示已在生产集群稳定运行，「抢先体验」仍在验证阶段。</div>
+            <div class="concept-body" id="concept-template-library-body" hidden>部署模板是一组经过验证的模型服务配置（镜像、编排框架、推理模式、GPU 规格与副本数），用于「新建部署」时预填表单。「生产可用」表示已在生产集群稳定运行，「抢先体验」仍在验证阶段。</div>
           </div>
           <!-- layout: 参考 大模型服务平台 · 模型广场（筛选按钮 + 搜索 + 左侧筹选面板 + 三列卡片） -->
           <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
@@ -6256,11 +6568,10 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               </div>
               <div class="tl-group" data-tl-group>
                 <button type="button" class="tl-group-title" data-tl-fold aria-expanded="true">状态<span class="tl-caret" aria-hidden="true">⌄</span></button>
-                <select class="hidden-control" id="templateLibraryStatusFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="生产推荐">生产推荐</option><option value="生产可用">生产可用</option><option value="实验环境">实验环境</option></select>
+                <select class="hidden-control" id="templateLibraryStatusFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="生产可用">生产可用</option><option value="抢先体验">抢先体验</option></select>
                 <div class="filter-chip-list" data-template-library-filter="templateLibraryStatusFilter" role="group" aria-label="状态">
-                  <button type="button" class="filter-chip" data-filter-value="生产推荐">生产推荐</button>
                   <button type="button" class="filter-chip" data-filter-value="生产可用">生产可用</button>
-                  <button type="button" class="filter-chip" data-filter-value="实验环境">实验环境</button>
+                  <button type="button" class="filter-chip" data-filter-value="抢先体验">抢先体验</button>
                 </div>
               </div>
             </aside>
@@ -6292,48 +6603,10 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                     <input id="importTemplateName" placeholder="DeepSeek-V4-Flash-H800">
                   </label>
                   <label class="field">
-                    <span class="label"><span class="required">*</span> 模型访问名称 <i class="label-help" tabindex="0" data-tooltip="模型访问ID，建议使用模型官方名称" aria-label="模型访问名称说明">?</i></span>
-                    <input id="importTemplateModel" placeholder="DeepSeek-V4-Flash-0731">
-                  </label>
-                  <label class="field">
-                    <span class="label"><span class="required">*</span> GPU 品牌</span>
-                    <select id="importTemplateGpuBrand">
-                      <option value="英伟达">英伟达</option>
-                      <option value="华为">华为</option>
-                      <option value="沐曦">沐曦</option>
-                    </select>
-                  </label>
-                  <label class="field">
-                    <span class="label"><span class="required">*</span> GPU 型号</span>
-                    <input id="importTemplateGpuModel" placeholder="H800">
-                  </label>
-                  <label class="field">
-                    <span class="label"><span class="required">*</span> 编排框架</span>
-                    <select id="importTemplateFramework">
-                      <option value="llm-d">llm-d</option>
-                      <option value="dynamo">dynamo</option>
-                    </select>
-                  </label>
-                  <label class="field">
-                    <span class="label"><span class="required">*</span> 推理引擎</span>
-                    <select id="importTemplateEngine">
-                      <option value="vLLM">vLLM</option>
-                      <option value="Dynamo">Dynamo</option>
-                    </select>
-                  </label>
-                  <label class="field">
-                    <span class="label"><span class="required">*</span> 推理模式</span>
-                    <select id="importTemplateMode">
-                      <option value="PD 分离">PD 分离</option>
-                      <option value="PD 共置">PD 共置</option>
-                    </select>
-                  </label>
-                  <label class="field">
                     <span class="label"><span class="required">*</span> 模板状态</span>
                     <select id="importTemplateStatus">
-                      <option value="生产推荐">生产推荐</option>
                       <option value="生产可用">生产可用</option>
-                      <option value="实验环境">实验环境</option>
+                      <option value="抢先体验">抢先体验</option>
                     </select>
                   </label>
                 </div>
@@ -6378,6 +6651,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <h1 class="detail-h1">
                 <span class="dh-module">模型服务：</span>
                 <span class="dh-name" id="detailTitle">deepseek-v4-flash-h800-prod</span>
+                <span class="tag external-access-tag" id="detailExternalTag" hidden>外部接入</span>
                 <span class="dh-slash" aria-hidden="true">/</span>
                 <span class="dh-section" id="detailSectionTitle">拓扑与配置</span>
               </h1>
@@ -6391,11 +6665,11 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 <span class="ops-menu">
                   <button type="button" data-open-values>查看 YAML</button>
                   <button type="button" data-edit-yaml-action>编辑YAML</button>
-                  <button type="button" data-detail-jump="tests">模型测试</button>
-                  <button type="button">导出模板</button>
+                  <button type="button" data-detail-jump="tests">服务测试</button>
+                  <button type="button" data-external-page-action>导出模板</button>
                   <button type="button" data-update-service-action>更新服务</button>
                   <button type="button" data-open-scale-service>扩缩容</button>
-                  <button type="button" class="danger">删除服务</button>
+                  <button type="button" class="danger" data-open-delete-service>删除服务</button>
                 </span>
               </span>
             </div>
@@ -6426,7 +6700,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                   <h2>服务拓扑</h2>
                 </div>
                 <div class="topology" id="detailTopology">
-                  <div class="node"><strong>model-gateway</strong><span>统一入口、路由、限流</span><span>1/1 Ready</span></div>
+                  <div class="node"><strong>model-gateway</strong><span>统一入口、路由</span><span>1/1 Ready</span></div>
                   <div class="node"><strong>prefill pool</strong><span>2 副本，单实例 4 GPU</span><span>DP4，RDMA 已启用</span><span>KV Cache Offload</span></div>
                   <div class="node"><strong>decode pool</strong><span>1 副本，单实例 4 GPU</span><span>DP4 + EP 已启用</span></div>
                 </div>
@@ -6437,24 +6711,24 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 <div class="config-groups" id="detailConfig">
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
-                    <tr><td>模型</td><td>deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
+                    <tr><td>模型访问名称</td><td>deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
                     <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/deepseek-v4-flash-0731 / 挂载路径：/mnt/data</td></tr>
-                    <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
-                    <tr><td>端口</td><td>8200</td></tr>
+                    <tr><td>Prefill 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
+                    <tr><td>Decode 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>llm-d</td></tr>
                     <tr><td>推理模式</td><td>PD 分离</td></tr>
-                    <tr><td>prefill</td><td>2 副本，每副本 4 GPU，DP4</td></tr>
-                    <tr><td>decode</td><td>1 副本，每副本 4 GPU，DP4 + EP</td></tr>
-                    <tr><td>KV Cache Offload</td><td>Redis 服务：redhare-kvcache-prod，缓存路径：/data/kv-cache/offload</td></tr>
+                    <tr><td>prefill</td><td>2 副本，8 GPU H800，每副本 4 GPU，DP4</td></tr>
+                    <tr><td>decode</td><td>1 副本，4 GPU H800，每副本 4 GPU，DP4 + EP</td></tr>
+                    <tr><td>KV Cache Offload</td><td>Redis 服务：redhare-kvcache-prod</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">deepseek-v4-flash-h800-prod.inferx-prod.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
-                    <tr><td>模型 ID</td><td class="mono">deepseek-v4-flash-h800-prod</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1/chat/completions</td></tr>
+                    <tr><td>模型 ID</td><td class="mono">deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
                   </table>
                 </div>
               </div>
@@ -6485,8 +6759,8 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         <tbody>
                           <tr><td>Deployment</td><td class="mono">deepseek-prefill</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>pool=h800-rdma</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                           <tr><td>ReplicaSet</td><td class="mono">deepseek-prefill-7f9c8</td><td><span class="tag green">2 desired / 2 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
-                          <tr><td>Pod</td><td class="mono">deepseek-prefill-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker1</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
-                          <tr><td>Pod</td><td class="mono">deepseek-prefill-1</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker3</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
+                          <tr><td>Pod</td><td class="mono">deepseek-prefill-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker1</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button><button type="button">日志</button></span></span></td></tr>
+                          <tr><td>Pod</td><td class="mono">deepseek-prefill-1</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker3</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button><button type="button">日志</button></span></span></td></tr>
                           <tr><td>ConfigMap</td><td class="mono">deepseek-prefill-config</td><td><span class="tag green">Mounted</span></td><td>inferx-prod</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                           <tr><td>PodMonitor</td><td class="mono">deepseek-prefill-metrics</td><td><span class="tag green">Active</span></td><td>inferx-prod</td><td>app=prefill</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                         </tbody>
@@ -6505,7 +6779,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         <tbody>
                           <tr><td>Deployment</td><td class="mono">deepseek-decode</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>pool=h800-rdma</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                           <tr><td>ReplicaSet</td><td class="mono">deepseek-decode-6b82d</td><td><span class="tag green">1 desired / 1 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
-                          <tr><td>Pod</td><td class="mono">deepseek-decode-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker2</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
+                          <tr><td>Pod</td><td class="mono">deepseek-decode-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker2</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button><button type="button">日志</button></span></span></td></tr>
                           <tr><td>Service</td><td class="mono">deepseek-decode</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                           <tr><td>ConfigMap</td><td class="mono">deepseek-decode-config</td><td><span class="tag green">Mounted</span></td><td>inferx-prod</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values>查看 YAML</button></span></span></td></tr>
                         </tbody>
@@ -6546,7 +6820,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 <div class="tb tb--detail" data-dao="toolbar">
                   <label class="tb-field"><span class="tb-label">策略类型</span><select class="mini-select sel" aria-label="策略类型"><option>全部策略类型</option><option>定时扩缩容</option><option>自动扩缩容</option></select></label><label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>启用</option><option>观察中</option><option>停用</option></select></label>
                   <input class="search" type="search" placeholder="输入策略名称搜索" aria-label="输入策略名称搜索">
-                  <div class="tb-right"><button class="btn primary" data-dao="button" data-props="type=primary">新增策略</button></div>
+                  <div class="tb-right"><button class="btn primary" id="addScalingPolicyButton" data-dao="button" data-props="type=primary">新增策略</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
@@ -6646,21 +6920,21 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle aria-expanded="false" aria-controls="concept-detail-tests-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">测试任务</span></button>
               <button type="button" class="concept-close" data-concept-close aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-detail-tests-body" hidden>测试任务列出针对该服务发起的验收与性能测试，可回看报告或从「模型测试」页新建任务。</div>
+            <div class="concept-body" id="concept-detail-tests-body" hidden>测试任务列出针对该服务发起的模型测试，可回看配置、报告，或从「模型测试」页新建任务。当前仅支持功能测试。</div>
           </div>
                 <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
                 <div class="tb tb--detail" data-dao="toolbar">
-                  <label class="tb-field"><span class="tb-label">测试类型</span><select class="mini-select sel" aria-label="测试类型"><option>全部测试类型</option><option>性能测试</option><option>验收测试</option></select></label><label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>已完成</option><option>进行中</option><option>失败</option></select></label>
+                  <label class="tb-field"><span class="tb-label">测试范围</span><select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label><label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>已完成</option><option>进行中</option><option>失败</option></select></label>
                   <input class="search" type="search" placeholder="输入任务名称搜索" aria-label="输入任务名称搜索">
                   <div class="tb-right"><button class="btn primary" data-dao="button" data-props="type=primary" data-open-new-test>新建测试</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>任务名称</th><th>测试类型</th><th>状态</th><th>创建时间</th><th>完成时间</th><th class="col-act"></th></tr></thead>
+                    <thead><tr><th>任务名称</th><th>测试范围</th><th>状态</th><th>创建时间</th><th>完成时间</th><th class="col-act"></th></tr></thead>
                     <tbody id="detailTestRows">
-                      <tr><td class="mono"><span class="test-name-link">smoke-deepseek-prod-0831</span></td><td>验收测试</td><td><span class="tag green">已完成</span></td><td>2026-08-31 17:20</td><td>2026-08-31 17:28</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
-                      <tr><td class="mono"><span class="test-name-link">perf-deepseek-h800-0901</span></td><td>性能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12</td><td>-</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
-                      <tr><td class="mono"><span class="test-name-link">acceptance-deepseek-gw-0830</span></td><td>验收测试</td><td><span class="tag red">失败</span></td><td>2026-08-30 15:44</td><td>2026-08-30 15:51</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                      <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td class="mono"><span class="test-name-link">api-cli-deepseek-0824</span></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-24 09:53</td><td>2026-08-24 10:08</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                      <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td class="mono"><span class="test-name-link">deepseek-stream-longctx-0901</span></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12</td><td>-</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report disabled title="任务完成后可查看测试报告">测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
+                      <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td class="mono"><span class="test-name-link">deepseek-knoway-validators-0830</span></td><td>功能测试</td><td><span class="tag red">失败</span></td><td>2026-08-30 15:44</td><td>2026-08-30 15:51</td><td class="col-act"><span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button><button class="btn text" type="button" data-open-test-report>测试报告</button><button class="btn text danger" type="button" data-delete-test>删除</button></span></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -6762,8 +7036,8 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           <div class="modal-shell compact test-modal" role="dialog" aria-modal="true" aria-labelledby="newTestTitle">
             <div class="modal-head">
               <div>
-                <h1 id="newTestTitle">新增测试</h1>
-                <p class="modal-sub">对在线模型服务发起验收或性能测试，验收测试可选择主流评测集。</p>
+                <h1 id="newTestTitle">新建测试</h1>
+                <p class="modal-sub">对在线模型服务发起测试任务。当前仅支持功能测试，用于验证协议、鉴权、流式、结构化输出、工具调用与网关参数适配。</p>
               </div>
               <button class="btn" data-close-modal>关闭</button>
             </div>
@@ -6772,7 +7046,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <div class="test-form-grid">
                 <label class="field">
                   <span class="label"><span class="required">*</span> 测试名称</span>
-                  <input id="newTestName" placeholder="acceptance-deepseek-0909" aria-label="测试名称">
+                  <input id="newTestName" placeholder="api-function-deepseek-0909" aria-label="测试名称">
                 </label>
                 <label class="field">
                   <span class="label"><span class="required">*</span> 目标服务</span>
@@ -6784,59 +7058,127 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                   </select>
                 </label>
                 <label class="field">
-                  <span class="label"><span class="required">*</span> 测试类型</span>
-                  <span class="test-type-tags" role="radiogroup" aria-label="测试类型">
-                    <button type="button" class="test-type-tag active" data-new-test-type-option="acceptance" aria-checked="true" role="radio">验收测试</button>
+                  <span class="label"><span class="required">*</span> 测试范围</span>
+                  <span class="test-type-tags" role="radiogroup" aria-label="测试范围">
+                    <button type="button" class="test-type-tag active" data-new-test-type-option="acceptance" aria-checked="true" role="radio">功能测试</button>
                     <button type="button" class="test-type-tag" data-new-test-type-option="performance" aria-checked="false" aria-disabled="true" disabled role="radio">性能测试</button>
+                    <button type="button" class="test-type-tag" data-new-test-type-option="accuracy" aria-checked="false" aria-disabled="true" disabled role="radio">精度测试</button>
                   </span>
-                  <select id="newTestType" class="hidden-control" aria-label="测试类型" tabindex="-1">
-                    <option value="acceptance">验收测试</option>
-                    <option value="performance">性能测试</option>
+                  <select id="newTestType" class="hidden-control" aria-label="测试范围" tabindex="-1">
+                    <option value="acceptance">功能测试</option>
+                    <option value="performance" disabled>性能测试</option>
+                    <option value="accuracy" disabled>精度测试</option>
                   </select>
                 </label>
               </div>
 
               <div class="field wide" id="acceptanceDatasetField">
-                <span class="label"><span class="required">*</span> 测试集</span>
-                <div class="dataset-grid" aria-label="测试集">
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="MMLU" checked>
-                    <span><span class="dataset-name">MMLU</span><span class="dataset-desc">通用知识与多学科能力验收。</span></span>
-                  </label>
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="GSM8K" checked>
-                    <span><span class="dataset-name">GSM8K</span><span class="dataset-desc">数学推理与链路稳定性验证。</span></span>
-                  </label>
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="HumanEval">
-                    <span><span class="dataset-name">HumanEval</span><span class="dataset-desc">代码生成接口兼容性测试。</span></span>
-                  </label>
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="C-Eval">
-                    <span><span class="dataset-name">C-Eval</span><span class="dataset-desc">中文知识与问答质量回归。</span></span>
-                  </label>
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="MT-Bench">
-                    <span><span class="dataset-name">MT-Bench</span><span class="dataset-desc">多轮对话与指令跟随能力测试。</span></span>
-                  </label>
-                  <label class="dataset-option">
-                    <input type="checkbox" name="acceptanceDataset" value="LongBench">
-                    <span><span class="dataset-name">LongBench</span><span class="dataset-desc">长上下文理解与检索能力测试。</span></span>
-                  </label>
+                <span class="label"><span class="required">*</span> 功能用例</span>
+                <div class="case-group-stack" aria-label="功能用例">
+                  <details class="case-group">
+                    <summary><span>基本功能</span><small data-case-count="basic">已选 14/14</small></summary>
+                    <div class="dataset-grid">
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="鉴权失败响应" data-case-category="basic" checked>
+                        <span><span class="dataset-name">鉴权失败响应</span><span class="dataset-desc">缺失、假 Key、空 Bearer 统一返回 401。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="messages 结构校验" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Messages 结构</span><span class="dataset-desc">role、content、空内容与内容块校验。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="message_elements" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Messages 内容块</span><span class="dataset-desc">字符串内容、文本块和基础结构错误。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="JSON Schema" data-case-category="basic" checked>
+                        <span><span class="dataset-name">结构化输出</span><span class="dataset-desc">json_object、json_schema 与 enum/items 约束。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="SSE 流式输出" data-case-category="basic" checked>
+                        <span><span class="dataset-name">SSE 流式输出</span><span class="dataset-desc">chunk、delta.content、usage 与 [DONE]。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="stream usage" data-case-category="basic" checked>
+                        <span><span class="dataset-name">流式 Token 用量</span><span class="dataset-desc">最终 chunk 回传 usage 且 token 合计正确。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="工具调用" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Tools 调用</span><span class="dataset-desc">并行 tool_calls、多轮回传与二次回答。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="多轮上下文" data-case-category="basic" checked>
+                        <span><span class="dataset-name">多轮上下文</span><span class="dataset-desc">十轮记忆读取与 prompt_tokens 单调增长。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="Unicode 编解码" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Unicode 编解码</span><span class="dataset-desc">中日文、emoji、非 BMP 与组合字符回显。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="max_tokens" data-case-category="basic" checked>
+                        <span><span class="dataset-name">max_tokens 限制</span><span class="dataset-desc">生成长度限制与 finish_reason=length。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="stop 参数" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Stop 截断</span><span class="dataset-desc">文本 stop 与 EOS token 截断。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="system_prompt" data-case-category="basic" checked>
+                        <span><span class="dataset-name">System Prompt 优先级</span><span class="dataset-desc">system 高于 user 且提示词隔离。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="默认 system prompt 隔离" data-case-category="basic" checked>
+                        <span><span class="dataset-name">默认 System Prompt</span><span class="dataset-desc">默认请求不注入额外 system 消息。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="Thinking 控制" data-case-category="basic" checked>
+                        <span><span class="dataset-name">Thinking 控制</span><span class="dataset-desc">vLLM chat_template_kwargs 思考开关生效。</span></span>
+                      </label>
+                    </div>
+                  </details>
+                  <details class="case-group">
+                    <summary><span>可选功能</span><small data-case-count="optional">已选 0/6</small></summary>
+                    <div class="dataset-grid">
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="健康检查" data-case-category="optional">
+                        <span><span class="dataset-name">健康检查门禁</span><span class="dataset-desc">服务可达、鉴权有效、模型 ID 可请求。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="context_cache" data-case-category="optional">
+                        <span><span class="dataset-name">长上下文缓存</span><span class="dataset-desc">缓存命中与 nonce 反向验证。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="input_length_cloud" data-case-category="optional">
+                        <span><span class="dataset-name">上下文窗口边界</span><span class="dataset-desc">指数增长和二分搜索定位最大成功长度。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="长输入输出" data-case-category="optional">
+                        <span><span class="dataset-name">超长输入</span><span class="dataset-desc">约 256K token 输入完整性。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="long_output" data-case-category="optional">
+                        <span><span class="dataset-name">超长输出</span><span class="dataset-desc">截断前完整行连续。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="Anthropic Thinking" data-case-category="optional">
+                        <span><span class="dataset-name">Anthropic Thinking</span><span class="dataset-desc">thinking.type enabled / disabled 可选探测。</span></span>
+                      </label>
+                    </div>
+                  </details>
                 </div>
               </div>
 
               <div class="test-form-grid" id="performanceConfigField" hidden>
                 <label class="field">
-                  <span class="label">并发梯度</span>
-                  <input id="newTestConcurrency" value="1, 4, 8, 16, 32" aria-label="并发梯度">
+                  <span class="label">协议场景</span>
+                  <input id="newTestConcurrency" value="SSE, JSON Schema, tools, long input, long output" aria-label="协议场景">
                 </label>
                 <label class="field">
-                  <span class="label">持续时间</span>
-                  <select id="newTestDuration" aria-label="持续时间">
-                    <option>10 分钟</option>
-                    <option>30 分钟</option>
-                    <option>60 分钟</option>
+                  <span class="label">网关适配</span>
+                  <select id="newTestDuration" aria-label="网关适配">
+                    <option>校验 Knoway 默认参数与覆盖参数</option>
+                    <option>仅校验 OpenAI Chat Completions</option>
+                    <option>包含 ThinkingAdapter 注入校验</option>
                   </select>
                 </label>
               </div>
@@ -6898,9 +7240,30 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           </div>
         </section>
 
+        <section id="deleteServiceModal" class="modal" aria-hidden="true">
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-shell compact delete-service-modal" role="dialog" aria-modal="true" aria-labelledby="deleteServiceTitle">
+            <div class="delete-service-head">
+              <h1 id="deleteServiceTitle">删除服务</h1>
+              <button class="delete-service-close" type="button" data-close-modal aria-label="关闭">×</button>
+            </div>
+            <div class="delete-service-message" id="deleteServiceMessage"></div>
+            <div class="delete-service-confirm">
+              <label class="field wide">
+                <span class="label" id="deleteServiceConfirmLabel">请输入服务名称确定删除</span>
+                <input id="deleteServiceInput" autocomplete="off">
+              </label>
+              <div class="delete-service-actions">
+                <button class="btn danger delete-service-submit" type="button" id="submitDeleteService" disabled>删除</button>
+                <button class="btn text delete-service-cancel" type="button" data-close-modal>取消</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="valuesModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal></div>
-          <div class="modal-shell compact" role="dialog" aria-modal="true" aria-labelledby="valuesTitle">
+          <div class="modal-shell compact values-modal" role="dialog" aria-modal="true" aria-labelledby="valuesTitle">
           <div class="head">
             <div>
               <h1 id="valuesTitle">查看 YAML</h1>
@@ -6910,13 +7273,8 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             </div>
           </div>
 
-          <div class="yaml-modal-tabs" role="tablist" aria-label="查看 YAML 模式">
-            <button type="button" class="active" data-yaml-modal-tab="preview">当前 YAML</button>
-            <button type="button" data-yaml-modal-tab="diff">变化</button>
-          </div>
-
           <div class="yaml-modal-pane" data-yaml-modal-pane="preview">
-          <pre class="code yaml-preview-code" id="currentYamlPreview">kind: HelmValues
+          <div class="code yaml-preview-code" id="currentYamlPreview">kind: HelmValues
 metadata:
   name: inferx
 llm-d-modelservice:
@@ -6955,20 +7313,7 @@ llm-d-modelservice:
             limits:
               cpu: "64"
               memory: 600Gi
-              nvidia.com/gpu: "4"</pre>
-          </div>
-
-          <div class="yaml-modal-pane" data-yaml-modal-pane="diff" hidden>
-            <div class="yaml-diff-grid">
-              <div>
-                <p class="yaml-diff-title">模板 YAML</p>
-                <pre class="code yaml-diff-code" id="templateYamlDiff"></pre>
-              </div>
-              <div>
-                <p class="yaml-diff-title">当前 YAML</p>
-                <pre class="code yaml-diff-code" id="currentYamlDiff"></pre>
-              </div>
-            </div>
+              nvidia.com/gpu: "4"</div>
           </div>
           </div>
         </section>
@@ -7033,6 +7378,7 @@ llm-d-modelservice:
     const valuesModal = document.querySelector("#valuesModal");
     const deployChoiceModal = document.querySelector("#deployChoiceModal");
     const valuesTitle = document.querySelector("#valuesTitle");
+    const detailExternalTag = document.querySelector("#detailExternalTag");
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
     const currentYamlDiff = document.querySelector("#currentYamlDiff");
@@ -7103,6 +7449,11 @@ llm-d-modelservice:
     const modelPvcNameSelect = document.querySelector("#modelPvcNameSelect");
     const replicasInput = document.querySelector("#replicasInput");
     const gpusInput = document.querySelector("#gpusInput");
+    const distributedToggle = document.querySelector("[data-distributed-toggle]");
+    const distributedGpuRow = document.querySelector("#distributedGpuRow");
+    const distributedNodesInput = document.querySelector("#distributedNodesInput");
+    const machineGpusInput = document.querySelector("#machineGpusInput");
+    const gpuTypeSelect = document.querySelector("#gpuTypeSelect");
     const nodePoolSelect = document.querySelector("#nodePoolSelect");
     const cpuInput = document.querySelector("#cpuInput");
     const memoryInput = document.querySelector("#memoryInput");
@@ -7118,6 +7469,7 @@ llm-d-modelservice:
     const detailConfig = document.querySelector("#detailConfig");
     const detailResources = document.querySelector("#detailResources");
     const detailScalingRows = document.querySelector("#detailScalingRows");
+    const addScalingPolicyButton = document.querySelector("#addScalingPolicyButton");
     const detailEventRows = document.querySelector("#detailEventRows");
     const detailVersionRows = document.querySelector("#detailVersionRows");
     const switchServiceLabel = document.querySelector("#switchServiceLabel");
@@ -7145,6 +7497,12 @@ llm-d-modelservice:
     const scaleRoleList = document.querySelector("#scaleRoleList");
     const scaleResult = document.querySelector("#scaleResult");
     const submitScaleService = document.querySelector("#submitScaleService");
+    const deleteServiceModal = document.querySelector("#deleteServiceModal");
+    const deleteServiceTitle = document.querySelector("#deleteServiceTitle");
+    const deleteServiceMessage = document.querySelector("#deleteServiceMessage");
+    const deleteServiceConfirmLabel = document.querySelector("#deleteServiceConfirmLabel");
+    const deleteServiceInput = document.querySelector("#deleteServiceInput");
+    const submitDeleteService = document.querySelector("#submitDeleteService");
     const detailScroll = document.querySelector(".detail-content");
     const detailSectionTitle = document.querySelector("#detailSectionTitle");
     const detailSectionNames = {
@@ -7168,6 +7526,7 @@ llm-d-modelservice:
     let activeEditYamlBase = "";
     let activeUpdateService = "deepseek-v4-flash-h800-prod";
     let activeResourceRole = "prefill";
+    let activeDeleteService = "";
     const roleAdvancedStates = {};
     const defaultRoleAdvancedMarkup = resourceAdvanced ? resourceAdvanced.innerHTML : "";
 
@@ -7199,7 +7558,12 @@ llm-d-modelservice:
         const rows = [...table.querySelectorAll("tr")];
         const title = rows[0]?.querySelector("th")?.textContent.trim() || "";
         const accessClass = title === "访问方式" ? " cfg-sub--access" : "";
-        const items = rows.filter(r => r.querySelectorAll("td").length === 2).map(r => {
+        const items = rows.filter(r => {
+          const cells = r.querySelectorAll("td");
+          if (cells.length !== 2) return false;
+          const key = cells[0].textContent.trim();
+          return key !== "GPU型号" && key !== "端口";
+        }).map(r => {
           const [k, v] = r.querySelectorAll("td");
           return `<div class="kvr"><span class="kvr-l">${k.innerHTML}</span><span class="kvr-v${v.classList.contains("mono") ? " mono" : ""}">${v.innerHTML}</span></div>`;
         }).join("");
@@ -7278,14 +7642,12 @@ llm-d-modelservice:
                     <tr><td>模型</td><td>Qwen3-235B</td></tr>
                     <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-235b / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:v0.8.5</td></tr>
-                    <tr><td>端口</td><td>8000</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>llm-d</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
-                    <tr><td>model-server</td><td>0/1 Ready，每副本 8 GPU</td></tr>
-                    <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
+                    <tr><td>model-server</td><td>0/1 Ready，每副本 8 GPU H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
                   <table>
@@ -7307,7 +7669,7 @@ llm-d-modelservice:
                         <tbody>
                           <tr><td>Deployment</td><td class="mono">qwen3-235b-server</td><td><span class="tag red">Degraded</span></td><td>inferx-prod</td><td>gpu-type=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>ReplicaSet</td><td class="mono">qwen3-235b-server-54b7d</td><td><span class="tag red">1 desired / 0 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">qwen3-235b-server-0</td><td><span class="tag red">NotReady</span></td><td>inferx-prod</td><td>g-worker5</td><td><button class="btn text">日志</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">qwen3-235b-server-0</td><td><span class="tag red">NotReady</span></td><td>inferx-prod</td><td>g-worker5</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">日志</button></td></tr>
                           <tr><td>Service</td><td class="mono">qwen3-235b-prod</td><td><span class="tag green">Ready</span> <span class="tag amber">Outofsync</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>ConfigMap</td><td class="mono">qwen3-235b-server-config</td><td><span class="tag green">Mounted</span></td><td>inferx-prod</td><td>-</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>PodMonitor</td><td class="mono">qwen3-235b-server-metrics</td><td><span class="tag green">Active</span></td><td>inferx-prod</td><td>app=model-server</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
@@ -7338,7 +7700,7 @@ llm-d-modelservice:
         commit: "commit c19f2aa",
         layout: "dynamo",
         topology: `
-                  <div class="node"><strong>gateway</strong><span>测试入口、路由、限流</span><span>1/1 Ready</span></div>
+                  <div class="node"><strong>gateway</strong><span>测试入口、路由</span><span>1/1 Ready</span></div>
                   <div class="node"><strong>dynamo-frontend</strong><span>请求切分、协议适配</span><span>1/1 Ready</span></div>
                   <div class="node"><strong>prefill worker pool</strong><span>1/2 Ready，单实例 4 GPU</span><span>共享 KV 索引，创建中</span></div>
                   <div class="node"><strong>decode worker pool</strong><span>1/1 Ready，单实例 4 GPU</span></div>
@@ -7349,14 +7711,13 @@ llm-d-modelservice:
                     <tr><td>模型</td><td>Llama-4-Scout</td></tr>
                     <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/llama4-scout / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8</td></tr>
-                    <tr><td>端口</td><td>8000</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>dynamo</td></tr>
                     <tr><td>调度方式</td><td>prefill / decode worker 池独立伸缩</td></tr>
-                    <tr><td>prefill</td><td>1/2 Ready，每副本 4 GPU</td></tr>
-                    <tr><td>decode</td><td>1/1 Ready，每副本 4 GPU</td></tr>
+                    <tr><td>prefill</td><td>1/2 Ready，8 GPU H800，每副本 4 GPU</td></tr>
+                    <tr><td>decode</td><td>1/1 Ready，8 GPU H20，每副本 4 GPU</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
@@ -7425,8 +7786,8 @@ llm-d-modelservice:
                         <tbody>
                           <tr><td>DynamoWorkerGroup</td><td class="mono">llama4-prefill-workers</td><td><span class="tag amber">Scaling</span></td><td>delivery-h800-lab</td><td>pool=lab-dynamo-prefill</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>StatefulSet</td><td class="mono">llama4-prefill-worker</td><td><span class="tag amber">2 desired / 1 ready</span></td><td>delivery-h800-lab</td><td>gpu=4</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">llama4-prefill-worker-0</td><td><span class="tag green">Running</span></td><td>delivery-h800-lab</td><td>lab-gpu1</td><td><button class="btn text">日志</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">llama4-prefill-worker-3</td><td><span class="tag amber">ContainerCreating</span></td><td>delivery-h800-lab</td><td>pending</td><td><button class="btn text">事件</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">llama4-prefill-worker-0</td><td><span class="tag green">Running</span></td><td>delivery-h800-lab</td><td>lab-gpu1</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">日志</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">llama4-prefill-worker-3</td><td><span class="tag amber">ContainerCreating</span></td><td>delivery-h800-lab</td><td>pending</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">事件</button></td></tr>
                         </tbody>
                       </table>
                     </div>
@@ -7476,14 +7837,12 @@ llm-d-modelservice:
                     <tr><td>模型</td><td>Qwen3-32B</td></tr>
                     <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-32b / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1</td></tr>
-                    <tr><td>端口</td><td>8000</td></tr>
                   </table>
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>dynamo</td></tr>
                     <tr><td>推理模式</td><td>PD 共置</td></tr>
-                    <tr><td>worker-pool</td><td>1/2 Ready，每副本 4 GPU</td></tr>
-                    <tr><td>GPU型号</td><td>NVIDIA H800</td></tr>
+                    <tr><td>worker-pool</td><td>1/2 Ready，每副本 4 GPU H20</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
                   <table>
@@ -7505,8 +7864,8 @@ llm-d-modelservice:
                         <tbody>
                           <tr><td>DynamoGraphDeployment</td><td class="mono">dynamo-qwen3-colocated</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                           <tr><td>Deployment</td><td class="mono">dynamo-qwen3-colocated-server</td><td><span class="tag amber">RollingUpdate</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker6</td><td><button class="btn text">日志</button></td></tr>
-                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-1</td><td><span class="tag amber">ContainerCreating</span></td><td>inferx-prod</td><td>pending</td><td><button class="btn text">事件</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker6</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">日志</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">dynamo-qwen3-colocated-1</td><td><span class="tag amber">ContainerCreating</span></td><td>inferx-prod</td><td>pending</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">事件</button></td></tr>
                           <tr><td>Service</td><td class="mono">dynamo-qwen3-colocated-prod</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                         </tbody>
                       </table>
@@ -7524,28 +7883,122 @@ llm-d-modelservice:
                       <tr><td>v0.4.1</td><td class="mono">d4a72bc</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，worker-pool 1/2 Ready，单实例 4 GPU</td><td><span class="tag green">当前版本</span></td><td>2026-09-04 09:18</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
                       <tr><td>v0.4.0</td><td class="mono">a91f08c</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-09-03 19:42</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
         `
+      },
+      "external-qwen3-router-prod": {
+        title: "external-qwen3-router-prod",
+        lead: "Endpoint: external-qwen3-router-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 外部接入",
+        health: ["Running", "green"],
+        sync: ["Synced", "green"],
+        commit: "外部接入",
+        layout: "colocated",
+        config: `
+                  <table>
+                    <tr><th colspan="2">模型与镜像</th></tr>
+                    <tr><td>模型</td><td>Qwen3-External</td></tr>
+                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-external / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:v0.8.5</td></tr>
+                  </table>
+                  <table>
+                    <tr><th colspan="2">推理与资源</th></tr>
+                    <tr><td>编排框架</td><td>llm-d</td></tr>
+                    <tr><td>推理模式</td><td>PD 分离</td></tr>
+                    <tr><td>prefill</td><td>1/1 Ready，每副本 4 GPU H800</td></tr>
+                    <tr><td>decode</td><td>1/1 Ready，每副本 4 GPU H800</td></tr>
+                    <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
+                  </table>
+                  <table>
+                    <tr><th colspan="2">访问方式</th></tr>
+                    <tr><td>服务地址</td><td class="mono">external-qwen3-router-prod.inferx-prod.svc</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
+                    <tr><td>模型 ID</td><td class="mono">qwen3-external</td></tr>
+                  </table>
+        `,
+        resources: `
+                  <div class="resource-group">
+                    <div class="resource-group-head">
+                      <h3>model-gateway <span class="tag green">1/1 Ready</span></h3>
+                      <span class="muted">节点：external-gateway / 资源：8 GPU, 96 CPU, 800Gi</span>
+                    </div>
+                    <div class="table-scroll">
+                      <table>
+                        <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
+                        <tbody>
+                          <tr><td>Deployment</td><td class="mono">external-qwen3-gateway</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>role=gateway</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Service</td><td class="mono">external-qwen3-router-prod</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>HTTPRoute</td><td class="mono">external-qwen3-route</td><td><span class="tag green">Accepted</span></td><td>inferx-prod</td><td>gatewayClass=inferx</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="resource-group">
+                    <div class="resource-group-head">
+                      <h3>prefill <span class="tag green">1/1 Ready</span></h3>
+                      <span class="muted">节点：g-worker7 / 重启：0 / 资源：4 GPU, 48 CPU, 400Gi</span>
+                    </div>
+                    <div class="table-scroll">
+                      <table>
+                        <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
+                        <tbody>
+                          <tr><td>Deployment</td><td class="mono">external-qwen3-prefill</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>ReplicaSet</td><td class="mono">external-qwen3-prefill-66df8</td><td><span class="tag green">1 desired / 1 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">external-qwen3-prefill-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker7</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">日志</button></td></tr>
+                          <tr><td>ConfigMap</td><td class="mono">external-qwen3-prefill-config</td><td><span class="tag green">Mounted</span></td><td>inferx-prod</td><td>-</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="resource-group">
+                    <div class="resource-group-head">
+                      <h3>decode <span class="tag green">1/1 Ready</span></h3>
+                      <span class="muted">节点：g-worker8 / 重启：0 / 资源：4 GPU, 48 CPU, 400Gi</span>
+                    </div>
+                    <div class="table-scroll">
+                      <table>
+                        <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
+                        <tbody>
+                          <tr><td>Deployment</td><td class="mono">external-qwen3-decode</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>pool=h800</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>ReplicaSet</td><td class="mono">external-qwen3-decode-9c8ba</td><td><span class="tag green">1 desired / 1 ready</span></td><td>inferx-prod</td><td>继承 Deployment</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Pod</td><td class="mono">external-qwen3-decode-0</td><td><span class="tag green">Running</span></td><td>inferx-prod</td><td>g-worker8</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">日志</button></td></tr>
+                          <tr><td>Service</td><td class="mono">external-qwen3-decode</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+        `,
+        scalingRows: "",
+        eventRows: `
+                      <tr><td>11:30:02</td><td>llm-d</td><td><span class="tag green">Info</span></td><td>服务接入配置已生效</td><td><button class="btn text">日志</button></td></tr>
+        `,
+        versionRows: `
+                      <tr><td>v1.0.0</td><td class="mono">e72c191</td><td>Qwen3-External / H800</td><td>PD 分离，prefill 1 副本，decode 1 副本</td><td><span class="tag green">当前版本</span></td><td>2026-09-05 11:30</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+        `
       }
     };
 
     const serviceSwitchMeta = {
-      "deepseek-v4-flash-h800-prod": { model: "DeepSeek-V4-Flash", type: "llm-d", cluster: "inferx-prod" },
+      "deepseek-v4-flash-h800-prod": { model: "deepseek-ai/DeepSeek-V4-Flash-0731", type: "llm-d", cluster: "inferx-prod" },
       "qwen3-235b-prod": { model: "Qwen3-235B", type: "llm-d", cluster: "inferx-prod" },
       "dynamo-llama4-scout-lab": { model: "Llama-4-Scout", type: "dynamo", cluster: "delivery-h800-lab" },
-      "dynamo-qwen3-colocated-prod": { model: "Qwen3-32B", type: "dynamo", cluster: "inferx-prod" }
+      "dynamo-qwen3-colocated-prod": { model: "Qwen3-32B", type: "dynamo", cluster: "inferx-prod" },
+      "external-qwen3-router-prod": { model: "Qwen3-External", type: "llm-d", cluster: "inferx-prod" }
     };
 
     const serviceRowsData = [
-      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "DeepSeek-V4-Flash", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "部署中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: ["性能异常"], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] }
+      { id: "deepseek-v4-flash-h800-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
+      { id: "qwen3-235b-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "部署中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "Prefill：8 GPU H800 / Decode：8 GPU H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
+      { id: "external-qwen3-router-prod", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
 
     const observeRowsData = [
       { service: "deepseek-v4-flash-h800-prod", metrics: [["21.4", "blue", "0,24 12,21 24,23 36,18 48,20 60,14 72,17 84,12 96,15 108,9 120,12"], ["428", "green", "0,25 12,22 24,23 36,19 48,20 60,16 72,18 84,13 96,15 108,10 120,11"], ["286 ms", "amber", "0,24 12,23 24,25 36,21 48,22 60,20 72,19 84,18 96,17 108,15 120,16"], ["24 ms", "purple", "0,20 12,21 24,19 36,20 48,18 60,19 72,17 84,18 96,16 108,17 120,15"], ["91.8%", "green", "0,22 12,20 24,21 36,18 48,19 60,16 72,17 84,14 96,15 108,12 120,13"], ["6", "green", "0,24 12,23 24,25 36,21 48,22 60,18 72,20 84,16 96,18 108,14 120,15"]] },
       { service: "qwen3-235b-prod", metrics: [["3.2", "amber", "0,16 12,20 24,18 36,24 48,21 60,26 72,23 84,28 96,25 108,30 120,27"], ["72", "amber", "0,15 12,19 24,17 36,22 48,20 60,25 72,24 84,28 96,26 108,30 120,29"], ["690 ms", "amber", "0,15 12,17 24,16 36,20 48,19 60,22 72,21 84,25 96,24 108,28 120,27"], ["47 ms", "purple", "0,16 12,18 24,17 36,19 48,18 60,21 72,20 84,22 96,21 108,24 120,23"], ["68.5%", "amber", "0,18 12,20 24,19 36,22 48,21 60,24 72,23 84,26 96,25 108,28 120,27"], ["31", "amber", "0,14 12,16 24,15 36,19 48,18 60,22 72,21 84,25 96,24 108,28 120,27"]] },
       { service: "dynamo-llama4-scout-lab", metrics: [["11.9", "blue", "0,27 12,24 24,25 36,20 48,21 60,17 72,19 84,14 96,16 108,12 120,13"], ["236", "green", "0,26 12,23 24,24 36,21 48,19 60,18 72,16 84,15 96,13 108,12 120,10"], ["352 ms", "amber", "0,22 12,21 24,23 36,20 48,21 60,19 72,18 84,17 96,16 108,15 120,14"], ["28 ms", "purple", "0,21 12,20 24,21 36,19 48,20 60,18 72,19 84,17 96,18 108,16 120,17"], ["88.7%", "green", "0,24 12,22 24,23 36,20 48,19 60,17 72,16 84,14 96,13 108,11 120,10"], ["9", "green", "0,25 12,24 24,23 36,21 48,22 60,19 72,18 84,16 96,17 108,14 120,13"]] },
-      { service: "dynamo-qwen3-colocated-prod", metrics: [["7.8", "blue", "0,25 12,23 24,24 36,20 48,22 60,18 72,20 84,16 96,18 108,14 120,15"], ["154", "green", "0,26 12,24 24,22 36,21 48,20 60,18 72,16 84,17 96,15 108,14 120,13"], ["410 ms", "amber", "0,20 12,21 24,19 36,23 48,22 60,25 72,23 84,26 96,24 108,28 120,26"], ["34 ms", "purple", "0,19 12,20 24,18 36,21 48,19 60,22 72,20 84,23 96,21 108,24 120,22"], ["86.4%", "green", "0,22 12,21 24,19 36,20 48,18 60,17 72,16 84,15 96,14 108,13 120,12"], ["18", "amber", "0,18 12,19 24,17 36,20 48,19 60,23 72,21 84,25 96,23 108,27 120,24"]] }
+      { service: "dynamo-qwen3-colocated-prod", metrics: [["7.8", "blue", "0,25 12,23 24,24 36,20 48,22 60,18 72,20 84,16 96,18 108,14 120,15"], ["154", "green", "0,26 12,24 24,22 36,21 48,20 60,18 72,16 84,17 96,15 108,14 120,13"], ["410 ms", "amber", "0,20 12,21 24,19 36,23 48,22 60,25 72,23 84,26 96,24 108,28 120,26"], ["34 ms", "purple", "0,19 12,20 24,18 36,21 48,19 60,22 72,20 84,23 96,21 108,24 120,22"], ["86.4%", "green", "0,22 12,21 24,19 36,20 48,18 60,17 72,16 84,15 96,14 108,13 120,12"], ["18", "amber", "0,18 12,19 24,17 36,20 48,19 60,23 72,21 84,25 96,23 108,27 120,24"]] },
+      { service: "external-qwen3-router-prod", metrics: [["18.6", "blue", "0,22 12,20 24,21 36,18 48,19 60,16 72,18 84,15 96,16 108,13 120,14"], ["316", "green", "0,24 12,22 24,23 36,21 48,19 60,18 72,17 84,15 96,14 108,12 120,11"], ["320 ms", "amber", "0,19 12,18 24,20 36,17 48,19 60,16 72,18 84,15 96,16 108,13 120,14"], ["29 ms", "purple", "0,20 12,21 24,19 36,20 48,18 60,19 72,17 84,18 96,16 108,17 120,15"], ["90.2%", "green", "0,24 12,23 24,21 36,20 48,18 60,17 72,15 84,14 96,13 108,12 120,11"], ["4", "green", "0,25 12,24 24,23 36,21 48,20 60,18 72,17 84,15 96,14 108,13 120,12"]] }
     ];
 
     const observeMetricLabels = ["RPS 趋势", "Token 吞吐趋势", "TTFT 趋势", "TPOT 趋势", "KV 命中率趋势", "排队请求趋势"];
@@ -7560,7 +8013,7 @@ llm-d-modelservice:
       dynamoScout: { replicas: "prefill / decode worker pool", updated: "2026-09-03 15:22" }
     };
 
-    const templateStatusColor = { "生产推荐": "blue", "生产可用": "green", "实验环境": "violet" };
+    const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
     const importedTemplates = [];
 
     function deployPresetTemplates() {
@@ -7600,7 +8053,7 @@ llm-d-modelservice:
     const defaults = {
       deepseek: {
         serviceType: "llm-d",
-        version: "v1.3.2 生产推荐",
+        version: "v1.3.2 生产可用",
         service: "deepseek-v4-flash-h800-prod",
         source: "pvc",
         path: "/mnt/data",
@@ -7611,6 +8064,7 @@ llm-d-modelservice:
         mode: "split",
         replicas: "2",
         gpus: "4",
+        gpuType: "Nvidia GPU",
         nodePool: "NVIDIA H800",
         cpu: "64 core",
         memory: "600Gi",
@@ -7631,6 +8085,7 @@ llm-d-modelservice:
         mode: "colocated",
         replicas: "2",
         gpus: "4",
+        gpuType: "Nvidia GPU",
         nodePool: "NVIDIA H800",
         cpu: "64 core",
         memory: "600Gi",
@@ -7640,7 +8095,7 @@ llm-d-modelservice:
       },
       qwen: {
         serviceType: "llm-d",
-        version: "v1.3.2 生产推荐",
+        version: "v1.3.2 生产可用",
         service: "qwen3-235b-prod",
         source: "pvc",
         path: "/mnt/data",
@@ -7651,6 +8106,7 @@ llm-d-modelservice:
         mode: "colocated",
         replicas: "1",
         gpus: "8",
+        gpuType: "Nvidia GPU",
         nodePool: "NVIDIA H800",
         cpu: "96 core",
         memory: "800Gi",
@@ -7660,7 +8116,7 @@ llm-d-modelservice:
       },
       dynamoScout: {
         serviceType: "dynamo",
-        version: "v0.3.8 实验环境",
+        version: "v0.3.8 抢先体验",
         service: "dynamo-llama4-scout-lab",
         source: "pvc",
         path: "/mnt/data",
@@ -7671,6 +8127,7 @@ llm-d-modelservice:
         mode: "split",
         replicas: "4",
         gpus: "4",
+        gpuType: "Nvidia GPU",
         nodePool: "NVIDIA H800",
         cpu: "128 core",
         memory: "1200Gi",
@@ -7691,6 +8148,7 @@ llm-d-modelservice:
         storage: "",
         replicas: "",
         gpus: "",
+        gpuType: "Nvidia GPU",
         nodePool: "NVIDIA H800",
         cpu: "",
         memory: "",
@@ -7705,7 +8163,8 @@ llm-d-modelservice:
         prefill: "vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 512K --kv-cache-dtype fp8 --enable-expert-parallel",
         decode: "vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --enable-expert-parallel --kv-transfer-config ${KV_TRANSFER_CONFIG}",
         server: "vllm serve ${MODEL_PATH} --port 8000 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 128K",
-        gateway: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080"
+        gateway: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080",
+        epp: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080"
       },
       dynamo: {
         prefill: "python -m dynamo.worker --role prefill --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --enable-kv-router",
@@ -7796,6 +8255,7 @@ llm-d-modelservice:
       detailTitle.textContent = profile.title;
       detailLead.textContent = profile.lead;
       const serviceRow = serviceRowsData.find(item => item.id === profile.title);
+      const isExternalService = Boolean(serviceRow?.external);
       const serviceState = serviceRow?.serviceState || profile.health;
       const serviceIssues = [...(serviceRow?.auxiliaryTags || []), ...(serviceRow?.issueTags || [])];
       detailHealthTag.textContent = serviceState[0];
@@ -7804,14 +8264,23 @@ llm-d-modelservice:
       detailSyncTag.hidden = serviceIssues.length === 0;
       detailSyncTag.innerHTML = serviceIssues.map(tag => {
         const label = typeof tag === "string" ? tag : tag.label;
-        const color = typeof tag === "string" ? (tag === "资源异常" ? "red" : "amber") : tag.color;
+        const color = typeof tag === "string" ? "amber" : tag.color;
         return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
       }).join("");
+      if (detailExternalTag) detailExternalTag.hidden = !isExternalService;
       document.querySelectorAll("#detail [data-edit-yaml-action], #detail [data-update-service-action]").forEach(button => {
         const disabled = !canEditService(serviceRow);
         button.disabled = disabled;
-        button.title = disabled ? "部署中或更新中的服务暂不可编辑" : "";
+        button.title = disabled ? (isExternalService ? "外部接入服务，不支持页面操作" : "部署中或更新中的服务暂不可编辑") : "";
       });
+      document.querySelectorAll("#detail [data-open-scale-service], #detail [data-open-delete-service], #detail [data-external-page-action]").forEach(button => {
+        button.disabled = isExternalService;
+        button.title = isExternalService ? "外部接入服务，不支持页面操作" : "";
+      });
+      if (addScalingPolicyButton) {
+        addScalingPolicyButton.disabled = isExternalService;
+        addScalingPolicyButton.title = isExternalService ? "外部接入服务，不支持页面操作" : "";
+      }
       if (detailCommitTag) {
         detailCommitTag.textContent = profile.commit;
         detailCommitTag.className = "tag";
@@ -7884,6 +8353,70 @@ llm-d-modelservice:
       modal.setAttribute("aria-hidden", "false");
     }
 
+    const functionalCaseCatalog = [
+      { id: "auth_security", label: "鉴权失败响应", name: "鉴权失败响应与凭据保护", category: "basic", required: "必选", note: "缺失、假 Key、空 Bearer 统一返回 401，且错误体不回显凭据。" },
+      { id: "messages_structure", label: "messages 结构校验", name: "messages 基础结构、角色与空内容校验", category: "basic", required: "必选", note: "messages 存在性、role 合法性与空内容校验符合预期。" },
+      { id: "message_elements", label: "message_elements", name: "messages 内容块与空内容校验", category: "basic", required: "必选", note: "字符串内容、文本块和基础结构错误按预期处理。" },
+      { id: "json_object_case", label: "JSON Schema", name: "JSON Object/Schema 结构化输出", category: "basic", required: "必选", note: "json_object/json_schema 的 type、required、enum、items 校验通过。" },
+      { id: "sse_stream", label: "SSE 流式输出", name: "SSE 流式输出协议与中断处理", category: "basic", required: "必选", note: "chunk 格式、delta.content、finish_reason、usage 与 [DONE] 正常。" },
+      { id: "stream_usage", label: "stream usage", name: "流式累计 Token 用量回传", category: "basic", required: "必选", note: "usage 仅在最终 chunk 出现，total_tokens 计算正确。" },
+      { id: "function_calling", label: "工具调用", name: "tools 并行调用、多轮回传与二次回答", category: "basic", required: "必选", note: "新版 tools/tool_calls 协议、多轮回传与二次回答正常。" },
+      { id: "multi_turn", label: "多轮上下文", name: "十轮记忆读取与 Token 统计", category: "basic", required: "必选", note: "十轮读取携带完整历史，prompt_tokens 单调增长。" },
+      { id: "encoding_special", label: "Unicode 编解码", name: "Unicode 编解码与特殊控制字符", category: "basic", required: "必选", note: "中日文、emoji、非 BMP 与组合字符回显正常。" },
+      { id: "max_tokens_user", label: "max_tokens", name: "max_tokens 用户设置与生成长度限制", category: "basic", required: "必选", note: "completion_tokens 命中限制且 finish_reason=length。" },
+      { id: "stop_sequence", label: "stop 参数", name: "stop 文本序列与 EOS token 截断", category: "basic", required: "必选", note: "文本 stop 与可选 stop_token_ids EOS 截断符合预期。" },
+      { id: "system_prompt", label: "system_prompt", name: "System Prompt 优先级与提示词隔离", category: "basic", required: "必选", note: "system 高于 user，canary 未泄露到最终答案。" },
+      { id: "no_default_system_prompt", label: "默认 system prompt 隔离", name: "默认请求不添加 System Prompt", category: "basic", required: "必选", note: "仅 user 消息时未注入默认 system prompt。" },
+      { id: "thinking_control_vllm", label: "Thinking 控制", name: "vLLM chat_template_kwargs 思考开关", category: "basic", required: "必选", note: "thinking / enable_thinking 至少一组开关生效。" },
+      { id: "health_gate", label: "健康检查", name: "健康检查门禁", category: "optional", required: "可选", note: "服务可达、鉴权有效、模型 ID 可请求。" },
+      { id: "context_cache", label: "context_cache", name: "长上下文缓存命中与 nonce 反向验证", category: "optional", required: "可选", note: "核心缓存命中；随机 nonce 请求出现部分前缀复用。" },
+      { id: "thinking_control", label: "Anthropic Thinking", name: "Anthropic 风格思考启停控制", category: "optional", required: "可选", note: "thinking.type 未确认生效，建议以 vLLM 原生开关为准。" },
+      { id: "input_length_cloud", label: "input_length_cloud", name: "云 API 最大上下文窗口边界", category: "optional", required: "可选", note: "指数增长与二分搜索定位最大成功长度。" },
+      { id: "long_input_nonstream", label: "长输入输出", name: "超长输入非流式响应完整性", category: "optional", required: "可选", note: "约 256K token 输入首、中、尾检查码均可返回。" },
+      { id: "long_output", label: "long_output", name: "超长输出截断与连续性", category: "optional", required: "可选", note: "截断前完整行连续，最后一行允许不完整 token。" }
+    ];
+
+    function casesFromLabels(labels) {
+      const normalized = new Set(labels.map(label => label.trim()).filter(Boolean));
+      return functionalCaseCatalog.filter(item => normalized.has(item.label) || normalized.has(item.id) || normalized.has(item.name));
+    }
+
+    function groupedCasesHtml(labels, options = {}) {
+      const selected = casesFromLabels(labels);
+      const basic = selected.filter(item => item.category === "basic");
+      const optional = selected.filter(item => item.category === "optional");
+      const compact = Boolean(options.compact);
+      const empty = "<span class=\"muted\">未选择</span>";
+      const renderItems = items => items.length
+        ? `<ul>${items.map(item => `<li><span class="mono">${escapeHtml(item.id)}</span><span>${escapeHtml(item.name)}</span></li>`).join("")}</ul>`
+        : empty;
+      return `
+        <div class="config-case-groups${compact ? " compact" : ""}">
+          <section><h4>基本功能 <span>${basic.length} 项</span></h4>${renderItems(basic)}</section>
+          <section><h4>可选功能 <span>${optional.length} 项</span></h4>${renderItems(optional)}</section>
+        </div>`;
+    }
+
+    function reportCaseRows(cases, failed) {
+      return cases.map(item => {
+        let status = "✅ 通过";
+        if (item.id === "context_cache") status = "⚠️ 告警";
+        if (item.id === "thinking_control") status = "⚠️ 跳过";
+        if (item.id === "auth_security" && failed) status = "❌ 失败";
+        return [item.id, item.name, item.required, status, item.note];
+      });
+    }
+
+    function syncFunctionalCaseCounts() {
+      if (!acceptanceDatasetField) return;
+      ["basic", "optional"].forEach(category => {
+        const inputs = Array.from(acceptanceDatasetField.querySelectorAll(`input[data-case-category="${category}"]`));
+        const checked = inputs.filter(input => input.checked).length;
+        const count = acceptanceDatasetField.querySelector(`[data-case-count="${category}"]`);
+        if (count) count.textContent = `已选 ${checked}/${inputs.length}`;
+      });
+    }
+
     function syncNewTestType() {
       const isAcceptance = (newTestType?.value || "acceptance") === "acceptance";
       document.querySelectorAll("[data-new-test-type-option]").forEach(button => {
@@ -7903,12 +8436,16 @@ llm-d-modelservice:
       if (newTestType) newTestType.value = "acceptance";
       if (newTestName) {
         newTestName.value = "";
-        newTestName.placeholder = `acceptance-${shortId}-0909`;
+        newTestName.placeholder = `api-function-${shortId}-0909`;
       }
       document.querySelectorAll("input[name='acceptanceDataset']").forEach(input => {
-        input.checked = ["MMLU", "GSM8K"].includes(input.value);
+        input.checked = input.dataset.caseCategory === "basic";
+      });
+      document.querySelectorAll("#acceptanceDatasetField details").forEach(group => {
+        group.removeAttribute("open");
       });
       syncNewTestType();
+      syncFunctionalCaseCounts();
       openModal(newTestModal);
     }
 
@@ -7935,12 +8472,12 @@ llm-d-modelservice:
     }
 
     function testReportButton(status) {
-      const available = status === "已完成";
+      const available = status === "已完成" || status === "失败";
       return `<button class="btn text" type="button" data-open-test-report${available ? "" : " disabled title=\"任务完成后可查看测试报告\""}>测试报告</button>`;
     }
 
     function testActions(status) {
-      return `<span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看</button>${testReportButton(status)}<button class="btn text danger" type="button" data-delete-test>删除</button></span>`;
+      return `<span class="test-actions"><button class="btn text" type="button" data-view-test-config>查看配置</button>${testReportButton(status)}<button class="btn text danger" type="button" data-delete-test>删除</button></span>`;
     }
 
     function testServiceLink(serviceId) {
@@ -7955,24 +8492,30 @@ llm-d-modelservice:
         service: isDetailRow ? activeDetailService : (cells[1]?.textContent.trim() || activeDetailService),
         type: isDetailRow ? (cells[1]?.textContent.trim() || "") : (cells[2]?.textContent.trim() || ""),
         status: isDetailRow ? (cells[2]?.textContent.trim() || "") : (cells[3]?.textContent.trim() || ""),
-        created: isDetailRow ? (cells[3]?.textContent.trim() || "") : (cells[4]?.textContent.trim() || "")
+        created: isDetailRow ? (cells[3]?.textContent.trim() || "") : (cells[4]?.textContent.trim() || ""),
+        cases: row?.dataset.cases || functionalCaseCatalog.filter(item => item.category === "basic").map(item => item.id).join(",")
       };
     }
 
     function openTestConfig(row) {
       if (!testConfigModal || !testConfigBody) return;
       const config = getTestConfigFromRow(row);
-      const extraLabel = config.type === "性能测试" ? "性能配置" : "测试集";
-      const extraValue = config.type === "性能测试" ? "并发梯度 1, 4, 8, 16, 32；持续时间 30 分钟" : "MMLU、GSM8K";
-      if (testConfigTitle) testConfigTitle.textContent = config.name || "查看测试";
+      const service = serviceById(config.service);
+      const protocolConfig = "Chat Completions /v1/chat/completions；OpenAI-compatible tools、response_format、SSE、长输入/长输出";
+      if (testConfigTitle) testConfigTitle.textContent = config.name || "查看配置";
+      const selectedLabels = config.cases.split(",");
       testConfigBody.innerHTML = `
         <dl>
           <div><dt>测试名称</dt><dd>${escapeHtml(config.name)}</dd></div>
           <div><dt>目标服务</dt><dd class="mono">${escapeHtml(config.service)}</dd></div>
-          <div><dt>测试类型</dt><dd>${escapeHtml(config.type)}</dd></div>
+          <div><dt>请求模型名</dt><dd class="mono">${escapeHtml(requestModelName(service))}</dd></div>
+          <div><dt>服务端点</dt><dd class="mono">${escapeHtml(service?.endpoint || `${config.service}.inferx-prod.svc`)}</dd></div>
+          <div><dt>测试范围</dt><dd>${escapeHtml(config.type)}</dd></div>
           <div><dt>状态</dt><dd>${escapeHtml(config.status)}</dd></div>
           <div><dt>创建时间</dt><dd>${escapeHtml(config.created)}</dd></div>
-          <div><dt>${extraLabel}</dt><dd>${escapeHtml(extraValue)}</dd></div>
+          <div class="config-view-wide"><dt>功能用例</dt><dd>${groupedCasesHtml(selectedLabels, { compact: true })}</dd></div>
+          <div><dt>协议配置</dt><dd>${escapeHtml(protocolConfig)}</dd></div>
+          <div><dt>网关适配</dt><dd>默认参数：temperature=1.0、top_p=0.95；ThinkingAdapter 按需注入 reasoning_effort</dd></div>
         </dl>`;
       openModal(testConfigModal);
     }
@@ -7981,19 +8524,65 @@ llm-d-modelservice:
       if (!valuesModal || !currentYamlPreview) return;
       const config = getTestConfigFromRow(row);
       if (valuesTitle) valuesTitle.textContent = "测试报告";
-      currentYamlPreview.textContent = `测试任务: ${config.name}
-目标服务: ${config.service}
-测试类型: ${config.type}
-状态: ${config.status}
-创建时间: ${config.created}
-
-结果摘要:
-- 接口兼容性: 通过
-- 输出质量: 通过
-- 平均响应延迟: 286 ms
-- 成功率: 99.92%`;
-      templateYamlDiff.innerHTML = "";
-      currentYamlDiff.innerHTML = "";
+      const failed = config.status === "失败";
+      const selectedCases = casesFromLabels(config.cases.split(","));
+      const basicCases = selectedCases.filter(item => item.category === "basic");
+      const optionalCases = selectedCases.filter(item => item.category === "optional");
+      const basicRows = reportCaseRows(basicCases, failed);
+      const optionalRows = reportCaseRows(optionalCases, failed);
+      const allRows = [...basicRows, ...optionalRows];
+      const passCount = allRows.filter(row => row[3].includes("通过")).length;
+      const failCount = allRows.filter(row => row[3].includes("失败")).length;
+      const warnCount = allRows.filter(row => row[3].includes("告警")).length;
+      const skipCount = allRows.filter(row => row[3].includes("跳过")).length;
+      const statusSummary = rows => {
+        const items = [
+          ["✅ 通过", rows.filter(row => row[3].includes("通过")).length],
+          ["❌ 失败", rows.filter(row => row[3].includes("失败")).length],
+          ["⚠️ 告警", rows.filter(row => row[3].includes("告警")).length],
+          ["⚠️ 跳过", rows.filter(row => row[3].includes("跳过")).length]
+        ].filter(([, count]) => count > 0);
+        return items.length ? items.map(([label, count]) => `${label}：${count}`).join("　") : "未选择";
+      };
+      const reportStatus = failed
+        ? { label: "未通过", tag: "tag red", health: "未通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
+        : (failCount + warnCount + skipCount > 0 || passCount < allRows.length)
+          ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
+          : { label: "通过", tag: "tag green", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" };
+      const renderReportRows = rows => rows.length
+        ? rows.map(([id, name, , status, note]) => `<tr><td class="mono">${escapeHtml(id)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(status)}</td><td>${escapeHtml(note)}</td></tr>`).join("")
+        : `<tr><td colspan="4" class="muted">未选择该类用例</td></tr>`;
+      currentYamlPreview.className = "report-preview";
+      currentYamlPreview.innerHTML = `
+        <div class="report-head">
+          <h2>DeepSeek V4 Flash CLI 功能测试</h2>
+          <span class="${reportStatus.tag}">${reportStatus.label}</span>
+        </div>
+        <div class="report-meta-grid">
+          <div><span>模型</span><strong>DeepSeek V4 Flash</strong></div>
+          <div><span>canonical_model_id</span><strong class="mono">deepseek/deepseek-v4-flash</strong></div>
+          <div><span>请求模型名</span><strong class="mono">${escapeHtml(requestModelName(serviceById(config.service)))}</strong></div>
+          <div><span>任务 ID</span><strong class="mono">${escapeHtml(reportTaskId(config))}</strong></div>
+        </div>
+        <div class="report-summary">
+          <div><span>健康检查</span><strong class="${reportStatus.healthClass}">${reportStatus.health}</strong><p>${reportStatus.healthNote}</p></div>
+          <div><span>基本功能</span><strong>${basicCases.length} 项</strong><p>${statusSummary(basicRows)}</p></div>
+          <div><span>可选功能</span><strong>${optionalCases.length} 项</strong><p>${statusSummary(optionalRows)}</p></div>
+        </div>
+        <section class="report-section">
+          <h3>健康检查门禁</h3>
+          <table class="report-table report-gate"><thead><tr><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>${reportStatus.health}</td><td>${failed ? reportStatus.healthNote : `服务可达、鉴权有效、模型 ${escapeHtml(requestModelName(serviceById(config.service)))} 可请求。`}</td></tr></tbody></table>
+        </section>
+        <section class="report-section">
+          <h3>基本功能</h3>
+          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>执行状态</th><th>说明</th></tr></thead><tbody>${renderReportRows(basicRows)}</tbody></table></div>
+        </section>
+        <section class="report-section">
+          <h3>可选功能</h3>
+          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>执行状态</th><th>说明</th></tr></thead><tbody>${renderReportRows(optionalRows)}</tbody></table></div>
+        </section>`;
+      if (templateYamlDiff) templateYamlDiff.innerHTML = "";
+      if (currentYamlDiff) currentYamlDiff.innerHTML = "";
       yamlModalTabs.forEach(button => {
         if (button.dataset.yamlModalTab === "diff") button.hidden = true;
       });
@@ -8007,13 +8596,14 @@ llm-d-modelservice:
       const isAcceptance = (newTestType?.value || "acceptance") === "acceptance";
       const datasets = selectedAcceptanceDatasets();
       if (!name || (isAcceptance && datasets.length === 0)) return;
-      const typeLabel = isAcceptance ? "验收测试" : "性能测试";
+      const typeLabel = isAcceptance ? "功能测试" : "性能测试";
       const created = currentMinuteText();
       const statusLabel = "进行中";
+      const caseText = isAcceptance ? datasets.join(",") : "SSE 流式输出,JSON Schema,工具调用,长输入,长输出";
       const detailRow = `
-                      <tr><td class="mono"><span class="test-name-link">${escapeHtml(name)}</span></td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>${created}</td><td>-</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
+                      <tr data-cases="${escapeHtml(caseText)}"><td class="mono"><span class="test-name-link">${escapeHtml(name)}</span></td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>${created}</td><td>-</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
       const listRow = `
-                  <tr><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
+                  <tr data-cases="${escapeHtml(caseText)}"><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
       if (detailTestRows && serviceId === activeDetailService) detailTestRows.insertAdjacentHTML("afterbegin", detailRow);
       if (modelTestRows) {
         modelTestRows.insertAdjacentHTML("afterbegin", listRow);
@@ -8025,6 +8615,20 @@ llm-d-modelservice:
 
     function serviceById(serviceId) {
       return serviceRowsData.find(item => item.id === serviceId) || serviceRowsData.find(item => item.id === activeDetailService) || serviceRowsData[0];
+    }
+
+    function reportTaskId(config) {
+      if (config.name === "api-cli-deepseek-0824") return "api-cli-20260824-095356-e81b4fab";
+      return config.name || "api-cli-generated";
+    }
+
+    function requestModelName(service) {
+      if (!service) return activeDetailService;
+      if (service.id === "deepseek-v4-flash-h800-prod") return "public/DeepSeek-V4-Flash-0731";
+      if (service.id === "qwen3-235b-prod") return "public/Qwen3-235B";
+      if (service.id === "dynamo-qwen3-colocated-prod") return "public/Qwen3-32B";
+      if (service.id === "external-qwen3-router-prod") return "qwen3-external";
+      return service.id;
     }
 
     function rolesFromDetailResources(service, existingRoles = []) {
@@ -8093,6 +8697,39 @@ llm-d-modelservice:
         scaleResult.hidden = false;
         scaleResult.textContent = `已提交 ${service.id} 的扩缩容目标。`;
       }
+    }
+
+    function updateDeleteServiceSubmitState() {
+      if (!submitDeleteService || !deleteServiceInput) return;
+      submitDeleteService.disabled = deleteServiceInput.value.trim() !== activeDeleteService;
+    }
+
+    function openDeleteService(serviceId) {
+      const service = serviceById(serviceId) || serviceById(activeDetailService);
+      if (!service || !deleteServiceModal) return;
+      activeDeleteService = service.id;
+      if (deleteServiceTitle) deleteServiceTitle.textContent = `删除服务 ${service.id}`;
+      if (deleteServiceMessage) {
+        deleteServiceMessage.innerHTML = `确定删除服务 <strong>${escapeHtml(service.id)}</strong> 吗？删除后对应的数据将会全部丢失且无法恢复，请谨慎操作。`;
+      }
+      if (deleteServiceConfirmLabel) {
+        deleteServiceConfirmLabel.innerHTML = `请输入 <strong>${escapeHtml(service.id)}</strong> 确定删除`;
+      }
+      if (deleteServiceInput) deleteServiceInput.value = "";
+      updateDeleteServiceSubmitState();
+      openModal(deleteServiceModal);
+      window.setTimeout(() => deleteServiceInput?.focus(), 0);
+    }
+
+    function submitDeleteServiceAction() {
+      if (!activeDeleteService || !submitDeleteService || submitDeleteService.disabled) return;
+      const index = serviceRowsData.findIndex(item => item.id === activeDeleteService);
+      if (index >= 0) serviceRowsData.splice(index, 1);
+      renderServiceRows();
+      renderObservabilityRows();
+      closeModals();
+      if (activeDetailService === activeDeleteService) showView("services");
+      activeDeleteService = "";
     }
 
     function escapeHtml(value) {
@@ -8171,12 +8808,17 @@ llm-d-modelservice:
       if (total) total.textContent = `总共 ${items.length} 条`;
       serviceRows.innerHTML = items.map(item => {
         const gpu = String(item.resource).split(" ")[0];
+        const gpuSummary = item.gpuSummary || "";
+        const gpuTypeSummary = gpuSummary ? `<span class="svc-metric-l">${escapeHtml(gpuSummary)}</span>` : "";
         const canSync = item.sync[0] === "OutOfSync";
         const state = item.serviceState || item.status || ["可用", "green"];
         const editDisabled = disabledServiceActionAttr(item);
+        const externalDisabled = externalServiceDisabledAttr(item);
+        const externalTag = item.external ? `<span class="tag external-access-tag">外部接入</span>` : "";
+        const metric = `<div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>${gpuTypeSummary}`;
         const issueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])].map(tag => {
           const label = typeof tag === "string" ? tag : tag.label;
-          const color = typeof tag === "string" ? (tag === "资源异常" ? "red" : "amber") : tag.color;
+          const color = typeof tag === "string" ? "amber" : tag.color;
           return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
         }).join("");
         return `
@@ -8184,23 +8826,24 @@ llm-d-modelservice:
             <header class="svc-card-head">
               <span class="svc-ic" aria-hidden="true">◎</span>
               <button class="service-name" data-service="${escapeHtml(item.id)}">${escapeHtml(item.id)}</button>
+              ${externalTag}
               <span class="ops svc-ops">
                 <button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button>
                 <span class="ops-menu" role="menu">
                   <button type="button" data-open-values>查看 YAML</button>
                   <button type="button" data-edit-yaml-action${editDisabled}>编辑YAML</button>
-                  <button type="button" data-sync-service="${escapeHtml(item.id)}"${canSync ? "" : " disabled"}>Sync 恢复</button>
-                  <button type="button" data-detail-jump="tests">模型测试</button>
-                  <button type="button">导出模板</button>
+                  <button type="button" data-sync-service="${escapeHtml(item.id)}"${item.external ? externalDisabled : canSync ? "" : " disabled"}>Sync 恢复</button>
+                  <button type="button" data-detail-jump="tests">服务测试</button>
+                  <button type="button"${externalDisabled}>导出模板</button>
                   <button type="button" data-update-service-action${editDisabled}>更新服务</button>
-                  <button type="button" data-open-scale-service>扩缩容</button>
-                  <button type="button" class="danger">删除服务</button>
+                  <button type="button" data-open-scale-service${externalDisabled}>扩缩容</button>
+                  <button type="button" class="danger" data-open-delete-service="${escapeHtml(item.id)}"${externalDisabled}>删除服务</button>
                 </span>
               </span>
             </header>
             <div class="svc-card-body">
               <dl class="svc-kv">
-                <div><dt>模型</dt><dd>${escapeHtml(item.model)}</dd></div>
+                <div><dt>模型访问名称</dt><dd>${escapeHtml(item.model)}</dd></div>
                 <div><dt>推理模式</dt><dd><span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode)}</span></dd></div>
                 <div><dt>集群</dt><dd class="mono">${escapeHtml(item.cluster)}</dd></div>
               </dl>
@@ -8215,8 +8858,7 @@ llm-d-modelservice:
                 <span class="svc-note">${escapeHtml(item.note)}</span>
               </div>
               <div class="svc-metric">
-                <div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>
-                <span class="svc-metric-l">${escapeHtml(item.pool)}</span>
+                ${metric}
               </div>
             </div>
           </article>`;
@@ -8230,6 +8872,14 @@ llm-d-modelservice:
       if (copyButton) { copyEndpoint(copyButton.dataset.copyEndpoint); return; }
       const syncButton = event.target.closest("[data-sync-service]");
       if (syncButton) { restoreServiceSync(syncButton.dataset.syncService); return; }
+      const jumpButton = event.target.closest("[data-detail-jump]");
+      if (jumpButton) {
+        const row = jumpButton.closest("[data-service-row]");
+        if (row) renderDetail(row.dataset.serviceRow);
+        showView("detail");
+        setDetailTab(jumpButton.dataset.detailJump);
+        return;
+      }
       const nameButton = event.target.closest("[data-service]");
       if (nameButton) { renderDetail(nameButton.dataset.service); showView("detail"); return; }
       const viewButton = event.target.closest("[data-view]");
@@ -8351,28 +9001,42 @@ llm-d-modelservice:
 
     function submitTemplateImportForm() {
       const title = templateImportValue("importTemplateName");
-      const model = templateImportValue("importTemplateModel");
-      const gpuBrand = templateImportValue("importTemplateGpuBrand");
-      const gpuModel = templateImportValue("importTemplateGpuModel");
-      const framework = templateImportValue("importTemplateFramework");
-      const engine = templateImportValue("importTemplateEngine");
-      const mode = templateImportValue("importTemplateMode");
       const status = templateImportValue("importTemplateStatus");
       const yaml = templateImportValue("importTemplateYaml");
-      if (!title || !model || !gpuBrand || !gpuModel || !framework || !engine || !mode || !status || !yaml) {
-        if (templateImportStatus) templateImportStatus.textContent = "请完整填写基本信息和 YAML 配置。";
+      if (!title || !status || !yaml) {
+        if (templateImportStatus) templateImportStatus.textContent = "请填写模板名称、模板状态和 YAML 配置。";
         return;
       }
+      const image = readYamlValue(yaml, ["image", "repository"]) || "";
+      const artifactName = yaml.match(/modelArtifacts:\s*[\s\S]*?\n\s+name:\s*([^\n#]+)/);
+      const gpuType = normalizeGpuType(readYamlValue(yaml, ["gpuType", "gpuModel", "acceleratorType", "nodeSelector"]));
+      const gpuModel = readYamlValue(yaml, ["gpuModel", "gpuModelName"])
+        || (/\bH800\b/i.test(yaml) ? "H800" : "")
+        || (/\bH20\b/i.test(yaml) ? "H20" : "")
+        || (/910/i.test(yaml) ? "Ascend 910" : "GPU");
+      const gpuBrand = /910|ascend|华为/i.test(gpuType || gpuModel || yaml)
+        ? "华为"
+        : /muxi|沐曦/i.test(gpuType || gpuModel || yaml)
+          ? "沐曦"
+          : "英伟达";
+      const normalizedMode = normalizeInferenceMode(readYamlValue(yaml, ["inferenceMode", "deployMode", "mode"]) || yaml);
+      const framework = normalizeServiceType(readYamlValue(yaml, ["serviceType", "framework", "type"]) || yaml) || "llm-d";
+      const model = cleanYamlValue(artifactName?.[1])
+        || readYamlValue(yaml, ["modelName", "servedModelName"])
+        || title;
+      const mode = normalizedMode === "colocated" ? "PD 共置" : "PD 分离";
+      const engine = /sglang/i.test(image) ? "SGLang" : "vLLM";
+      const resourceModel = gpuModel.replace(/^NVIDIA\s+/i, "");
       importedTemplates.unshift({
         title,
         model,
-        gpu: `${gpuBrandFilterValue(gpuBrand)} ${gpuBrand} ${gpuModel}`,
+        gpu: `${gpuBrandFilterValue(gpuBrand)} ${gpuBrand} ${resourceModel}`,
         framework,
         mode,
         engine,
         status,
         statusColor: templateStatusColor[status] || "",
-        resource: `${gpuModel} 节点`,
+        resource: `${resourceModel} 节点`,
         replicas: "YAML 导入配置",
         updated: currentMinuteText(),
         yaml
@@ -8478,6 +9142,11 @@ llm-d-modelservice:
       const serviceType = item.serviceType || activeServiceType || "llm-d";
       const mode = item.mode || "split";
       const splitMode = mode === "split";
+      const distributedBlock = item.distributedInference ? `
+      distributedInference:
+        enabled: true
+        nodes: ${item.distributedNodes || "2"}
+        gpusPerNode: ${item.machineGpus || item.gpus || "4"}` : "";
       if (serviceType === "dynamo") {
         return `kind: DynamoGraphDeployment
 metadata:
@@ -8494,7 +9163,9 @@ spec:
   workerPools:
     prefill:
       replicas: ${item.replicas || "4"}
-      gpuPerReplica: ${item.gpus || "4"}
+      gpuType: ${item.gpuType || "Nvidia GPU"}
+      gpuModel: ${item.nodePool || "NVIDIA H800"}
+      gpuPerReplica: ${item.gpus || "4"}${distributedBlock}
       cpu: "${item.cpu || "128 core"}"
       memory: ${item.memory || "1200Gi"}
     decode:
@@ -8521,6 +9192,10 @@ llm-d-modelservice:
   ${splitMode ? "prefill" : "modelServer"}:
     create: true
     replicas: ${item.replicas || "1"}
+    distributedInference:
+      enabled: ${item.distributedInference ? "true" : "false"}${item.distributedInference ? `
+      nodes: ${item.distributedNodes || "2"}
+      gpusPerNode: ${item.machineGpus || item.gpus || "1"}` : ""}
     parallelism:
       tensor: 1
       data: ${item.gpus || "1"}
@@ -8531,6 +9206,8 @@ llm-d-modelservice:
           repository: ${image.repository}
           tag: ${image.tag}
         resources:
+          gpuType: ${item.gpuType || "Nvidia GPU"}
+          gpuModel: ${item.nodePool || "NVIDIA H800"}
           limits:
             cpu: "${item.cpu || "16 core"}"
             memory: ${item.memory || "64Gi"}
@@ -8553,10 +9230,26 @@ llm-d-modelservice:
         mode: document.querySelector("[data-inference-mode].active")?.dataset.inferenceMode || "split",
         replicas: replicasInput.value,
         gpus: gpusInput.value,
+        distributedInference: distributedToggle?.classList.contains("is-checked") || false,
+        distributedNodes: distributedNodesInput?.value || "2",
+        machineGpus: machineGpusInput?.value || gpusInput.value,
+        gpuType: gpuTypeSelect?.value || "",
         nodePool: nodePoolSelect.value,
         cpu: cpuInput.value,
         memory: memoryInput.value
       };
+    }
+
+    function syncDistributedInference() {
+      const enabled = distributedToggle?.classList.contains("is-checked") || false;
+      if (gpusInput) gpusInput.hidden = enabled;
+      if (distributedGpuRow) distributedGpuRow.hidden = !enabled;
+      if (machineGpusInput && gpusInput) {
+        machineGpusInput.value = "8";
+        machineGpusInput.disabled = true;
+      }
+      const text = distributedToggle?.parentElement?.querySelector(".switch-text");
+      if (text) text.textContent = enabled ? "开启" : "关闭";
     }
 
     function defaultKeyForService(serviceId) {
@@ -8571,19 +9264,26 @@ llm-d-modelservice:
         values.service = service.id;
         values.serviceType = service.framework;
         values.mode = service.mode === "PD 分离" ? "split" : "colocated";
+        values.gpuType = "Nvidia GPU";
         values.nodePool = "NVIDIA H800";
       }
       return values;
     }
 
     function canEditService(service) {
+      if (service?.external) return false;
       const state = service?.serviceState?.[0] || "";
       const auxiliaryStates = (service?.auxiliaryTags || []).map(tag => tag.label);
       return state !== "部署中" && state !== "更新中" && !auxiliaryStates.includes("部署中") && !auxiliaryStates.includes("更新中");
     }
 
     function disabledServiceActionAttr(service) {
+      if (service?.external) return " disabled title=\"外部接入服务，不支持页面操作\"";
       return canEditService(service) ? "" : " disabled title=\"部署中或更新中的服务暂不可编辑\"";
+    }
+
+    function externalServiceDisabledAttr(service) {
+      return service?.external ? " disabled title=\"外部接入服务，不支持页面操作\"" : "";
     }
 
     function setEditYamlTab(tab) {
@@ -8628,9 +9328,17 @@ llm-d-modelservice:
       updateInferenceMode(values.mode || "colocated");
       replicasInput.value = values.replicas || "";
       gpusInput.value = values.gpus || "";
+      const distributedEnabled = Boolean(values.distributedInference);
+      if (distributedToggle) {
+        distributedToggle.classList.toggle("is-checked", distributedEnabled);
+        distributedToggle.setAttribute("aria-checked", String(distributedEnabled));
+      }
+      if (distributedNodesInput) distributedNodesInput.value = values.distributedNodes || "2";
+      if (gpuTypeSelect) gpuTypeSelect.value = values.gpuType || "Nvidia GPU";
       nodePoolSelect.value = values.nodePool || "NVIDIA H800";
       cpuInput.value = values.cpu || "";
       memoryInput.value = values.memory || "";
+      syncDistributedInference();
       if (values.command) {
         commandInput.value = values.command;
         commandInput.classList.remove("is-command-sample");
@@ -8703,9 +9411,10 @@ llm-d-modelservice:
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
       if (valuesTitle) valuesTitle.textContent = "查看 YAML";
+      currentYamlPreview.className = "code yaml-preview-code";
       currentYamlPreview.textContent = currentYaml;
-      templateYamlDiff.innerHTML = templateDiff;
-      currentYamlDiff.innerHTML = currentDiff;
+      if (templateYamlDiff) templateYamlDiff.innerHTML = templateDiff;
+      if (currentYamlDiff) currentYamlDiff.innerHTML = currentDiff;
       yamlModalTabs.forEach(button => {
         if (button.dataset.yamlModalTab === "diff") button.hidden = resourceOnly || hideDiff;
       });
@@ -8742,6 +9451,15 @@ llm-d-modelservice:
 
     function cleanYamlValue(value) {
       return String(value || "").trim().replace(/^['"]|['"]$/g, "");
+    }
+
+    function normalizeGpuType(value) {
+      const text = cleanYamlValue(value);
+      if (!text) return "";
+      const lower = text.toLowerCase();
+      if (lower.includes("ascend") || lower.includes("910")) return "Ascend 910";
+      if (lower.includes("nvidia") || lower.includes("gpu")) return "Nvidia GPU";
+      return text;
     }
 
     function readYamlValue(source, keys) {
@@ -8796,7 +9514,9 @@ llm-d-modelservice:
       const mode = normalizeInferenceMode(readYamlValue(yaml, ["inferenceMode", "deployMode", "mode"]));
       const replicas = readYamlValue(yaml, "replicas");
       const gpus = readYamlValue(yaml, ["gpusPerReplica", "gpuPerReplica", "gpus"]);
-      const gpuType = readYamlValue(yaml, ["gpuType", "nodePool", "acceleratorType"]);
+      const rawGpuType = readYamlValue(yaml, ["gpuType", "acceleratorType"]);
+      const gpuType = normalizeGpuType(rawGpuType);
+      const gpuModel = readYamlValue(yaml, ["gpuModel", "nodePool"]) || (/h800/i.test(rawGpuType) ? "NVIDIA H800" : /h20/i.test(rawGpuType) ? "NVIDIA H20" : /910/i.test(rawGpuType) ? "Ascend 910B" : "");
       const cpu = readYamlValue(yaml, "cpu");
       const memory = readYamlValue(yaml, "memory");
 
@@ -8842,7 +9562,11 @@ llm-d-modelservice:
         updates.push("单实例卡数");
       }
       if (gpuType) {
-        nodePoolSelect.value = gpuType;
+        gpuTypeSelect.value = gpuType;
+        updates.push("GPU 类型");
+      }
+      if (gpuModel) {
+        nodePoolSelect.value = gpuModel;
         updates.push("GPU型号");
       }
       if (cpu) {
@@ -8946,8 +9670,14 @@ llm-d-modelservice:
       if (gpusInput) gpusInput.value = "";
       if (cpuInput) cpuInput.value = "";
       if (memoryInput) memoryInput.value = "";
+      if (distributedToggle) {
+        distributedToggle.classList.remove("is-checked");
+        distributedToggle.setAttribute("aria-checked", "false");
+      }
+      if (distributedNodesInput) distributedNodesInput.value = "2";
       refreshCommandSamples(true);
       syncImagePreset();
+      syncDistributedInference();
       setAdvancedConfigOff();
     }
 
@@ -8958,13 +9688,15 @@ llm-d-modelservice:
       document.querySelectorAll("#roleTabs button").forEach(item => {
         item.classList.toggle("active", item.dataset.role === role);
       });
+      const noExtraConfigRole = role === "frontend" || role === "gateway" || role === "epp";
       document.querySelectorAll("[data-command-role]").forEach(card => {
-        card.hidden = card.dataset.commandRole !== role;
+        card.hidden = card.dataset.commandRole !== role || noExtraConfigRole;
       });
-      const noGpuRole = role === "frontend" || role === "gateway";
-      document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='gpus'], [data-resource-field='gpu-type']").forEach(field => {
+      const noGpuRole = noExtraConfigRole;
+      document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='distributed'], [data-resource-field='gpus'], [data-resource-field='gpu-brand'], [data-resource-field='gpu-type']").forEach(field => {
         field.hidden = noGpuRole;
       });
+      if (resourceAdvanced) resourceAdvanced.hidden = noExtraConfigRole;
 
       if (role === "prefill") {
         replicasInput.value = "2";
@@ -8984,7 +9716,7 @@ llm-d-modelservice:
         cpuInput.value = "96 core";
         memoryInput.value = "800Gi";
       }
-      if (role === "frontend" || role === "gateway") {
+      if (role === "frontend" || noExtraConfigRole) {
         replicasInput.value = "1";
         gpusInput.value = "0";
         cpuInput.value = "4 core";
@@ -9003,6 +9735,7 @@ llm-d-modelservice:
         clearBlankTemplateInputs();
       }
       activeResourceRole = role;
+      syncDistributedInference();
     }
 
     function bindRoleTabs() {
@@ -9045,12 +9778,13 @@ llm-d-modelservice:
       if (mode === "split") {
         deployChecklist.innerHTML = `
           <li>组件：llm-d、inferencepool、gateway、device-plugin、rdma-device-plugin、prometheus-agent</li>
-          <li>角色：prefill、decode 与 gateway 独立配置，gateway 配置项与 frontend 一致</li>
+          <li>角色：prefill、decode、gateway 与 EPP 独立配置，gateway 和 EPP 配置项一致</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="prefill">prefill</button>
           <button type="button" data-role="decode">decode</button>
           <button type="button" data-role="gateway">gateway</button>
+          <button type="button" data-role="epp">EPP</button>
         `;
       } else {
         deployChecklist.innerHTML = `
@@ -9217,6 +9951,11 @@ llm-d-modelservice:
     });
 
     if (newTestType) newTestType.addEventListener("change", syncNewTestType);
+    if (acceptanceDatasetField) {
+      acceptanceDatasetField.addEventListener("change", event => {
+        if (event.target.matches("input[name='acceptanceDataset']")) syncFunctionalCaseCounts();
+      });
+    }
     document.querySelectorAll("[data-new-test-type-option]").forEach(button => {
       button.addEventListener("click", () => {
         if (button.disabled || !newTestType) return;
@@ -9265,6 +10004,21 @@ llm-d-modelservice:
 
     if (submitScaleService) {
       submitScaleService.addEventListener("click", submitScaleServiceChange);
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-open-delete-service]");
+      if (!button) return;
+      const row = button.closest("[data-service-row]");
+      openDeleteService(button.dataset.openDeleteService || row?.dataset.serviceRow || activeDetailService);
+    });
+
+    if (deleteServiceInput) {
+      deleteServiceInput.addEventListener("input", updateDeleteServiceSubmitState);
+    }
+
+    if (submitDeleteService) {
+      submitDeleteService.addEventListener("click", submitDeleteServiceAction);
     }
 
     document.addEventListener("change", event => {
@@ -9378,6 +10132,10 @@ llm-d-modelservice:
         section.classList.toggle("is-template-locked", locked);
         section.querySelectorAll("input, select, textarea, button").forEach(control => {
           if (control.matches("[data-edit-from-template]")) return;
+          if (control.matches("#machineGpusInput")) {
+            control.disabled = true;
+            return;
+          }
           if (control.closest("#roleTabs")) {
             control.disabled = false;
             return;
@@ -9604,8 +10362,13 @@ llm-d-modelservice:
       if (body) body.hidden = !on;
       const summary = sw.closest("[data-adv]")?.querySelector("[data-adv-summary]");
       if (summary) summary.hidden = on;
+      if (sw.matches("[data-distributed-toggle]")) syncDistributedInference();
       syncAdvAccState(sw.closest("[data-adv-acc]"));
     });
+
+    if (gpusInput) {
+      gpusInput.addEventListener("input", syncDistributedInference);
+    }
 
     document.addEventListener("change", event => {
       const toggle = event.target.closest("[data-parallel-toggle]");
