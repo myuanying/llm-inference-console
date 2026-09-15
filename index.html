@@ -5305,8 +5305,16 @@
     .lc-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border-row); color: var(--meta); font-size: 12px; line-height: 16px; }
     #template-import.active, #template-detail.active { padding-bottom: 88px; }
     .template-import-shell { display: grid; gap: 16px; max-width: 1040px; }
-    #template-import .template-import-basic-grid {
+    #template-import .template-import-basic-grid,
+    #template-detail .template-import-basic-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* 查看模板：仅展示，YAML 只读但保留滚动与复制 */
+    .template-detail-shell.is-readonly .template-import-yaml {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--fg-input-disabled);
+      cursor: default;
     }
     .template-import-yaml {
       width: 100%;
@@ -8438,13 +8446,14 @@ llm-d-modelservice:
         "model-tests": "模型测试",
         "template-library": "部署模板库",
         "template-import": "导入模板",
+        "template-detail": "查看模板",
         deploy: "新建模型部署",
         "edit-yaml": "编辑YAML",
         "sync-restore": "Sync 恢复",
         detail: "模型服务详情"
       };
       crumbLabel.textContent = viewLabels[id] || "模型服务";
-      document.querySelector(".crumb-back").hidden = ["services", "service-observability", "model-tests", "template-library", "maas-models"].includes(id);
+      document.querySelector(".crumb-back").hidden = ["services", "service-observability", "model-tests", "template-library", "template-detail", "maas-models"].includes(id);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -9431,6 +9440,11 @@ llm-d-modelservice:
         applyTemplateLibraryFilters();
         return;
       }
+      const templateAction = event.target.closest("#templateLibraryGrid [data-template-action]");
+      if (templateAction) {
+        openTemplateDetail(templateAction.dataset.templateId, templateAction.dataset.templateAction);
+        return;
+      }
       const toggle = event.target.closest("#templateLibraryFilterToggle");
       if (toggle) {
         const on = toggle.getAttribute("aria-pressed") === "true";
@@ -10231,6 +10245,10 @@ llm-d-modelservice:
 
     if (submitTemplateImport) {
       submitTemplateImport.addEventListener("click", submitTemplateImportForm);
+    }
+
+    if (templateDetailPrimary) {
+      templateDetailPrimary.addEventListener("click", submitTemplateDetail);
     }
 
     navButtons.forEach(button => {
