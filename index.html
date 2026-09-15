@@ -8457,7 +8457,42 @@ llm-d-modelservice:
       }
     };
 
+    const viewLabels = {
+      "maas-models": "MaaS 模型管理",
+      "maas-create": "创建 MaaS 模型",
+      services: "模型服务",
+      "service-observability": "服务观测",
+      "model-tests": "模型测试",
+      "template-library": "部署模板库",
+      "template-import": "导入模板",
+      "template-detail": "查看模板",
+      deploy: "新建模型部署",
+      "edit-yaml": "编辑YAML",
+      "sync-restore": "Sync 恢复",
+      detail: "模型服务详情"
+    };
+
+    // 配置页的默认返回目标 = 自己所属的功能页，而不是一律回「模型服务」。
+    // 顶层列表页（模型服务 / 服务观测 / 模型测试 / 模板库 / MaaS 模型管理）没有返回目标，因此不显示返回箭头。
+    const viewReturnDefaults = {
+      deploy: "services",
+      "edit-yaml": "services",
+      "sync-restore": "services",
+      "maas-create": "maas-models",
+      "template-import": "template-library",
+      "template-detail": "template-library",
+      detail: "services"
+    };
+    // 实际返回目标按「从哪个页面进来」记录：从模型测试进详情就回模型测试，从模板库进部署就回模板库。
+    const viewReturnTargets = {};
+
+    function returnTargetFor(viewId) {
+      if (!viewReturnDefaults[viewId]) return "";
+      return viewReturnTargets[viewId] || viewReturnDefaults[viewId];
+    }
+
     function showView(id) {
+      const previousView = views.find(view => view.classList.contains("active"))?.id || "";
       views.forEach(view => view.classList.toggle("active", view.id === id));
       shell.classList.toggle("immersive-detail", id === "detail");
       if (id === "detail" && detailScroll) detailScroll.scrollTop = 0;
@@ -8471,22 +8506,24 @@ llm-d-modelservice:
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
       if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import", "template-detail"].includes(id));
-      const viewLabels = {
-        "maas-models": "MaaS 模型管理",
-        "maas-create": "创建 MaaS 模型",
-        services: "模型服务",
-        "service-observability": "服务观测",
-        "model-tests": "模型测试",
-        "template-library": "部署模板库",
-        "template-import": "导入模板",
-        "template-detail": "查看模板",
-        deploy: "新建模型部署",
-        "edit-yaml": "编辑YAML",
-        "sync-restore": "Sync 恢复",
-        detail: "模型服务详情"
-      };
+      // 记住来源，返回按钮据此回到对应的功能页
+      if (viewReturnDefaults[id] && previousView && previousView !== id) {
+        viewReturnTargets[id] = previousView;
+      }
       crumbLabel.textContent = viewLabels[id] || "模型服务";
-      document.querySelector(".crumb-back").hidden = ["services", "service-observability", "model-tests", "template-library", "template-detail", "maas-models"].includes(id);
+      const returnTarget = returnTargetFor(id);
+      const crumbBack = document.querySelector(".crumb-back");
+      if (crumbBack) {
+        crumbBack.hidden = !returnTarget;
+        if (returnTarget) {
+          const backLabel = `返回${viewLabels[returnTarget] || "上一页"}`;
+          crumbBack.dataset.view = returnTarget;
+          crumbBack.setAttribute("aria-label", backLabel);
+          crumbBack.title = backLabel;
+        }
+      }
+      const detailBack = document.querySelector("#detail .dt-back");
+      if (detailBack) detailBack.dataset.view = returnTargetFor("detail") || "services";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -10563,7 +10600,7 @@ llm-d-modelservice:
     });
 
     document.querySelectorAll("[data-cancel-deploy]").forEach(button => {
-      button.addEventListener("click", () => showView("services"));
+      button.addEventListener("click", () => showView(returnTargetFor("deploy") || "services"));
     });
 
     function selectTemplate(key) {
