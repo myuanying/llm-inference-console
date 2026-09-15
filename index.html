@@ -8220,9 +8220,15 @@ llm-d-modelservice:
 
     const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
     const importedTemplates = [];
+    // 模板库里的预置模板来自 #deploy，本身不可写；「编辑模板」保存后写进这里，渲染时覆盖上去。
+    const templateLibraryOverrides = {};
+    let importedTemplateSeq = 0;
+    let activeTemplateId = "";
+    let activeTemplateMode = "view";
 
     function deployPresetTemplates() {
       return Array.from(document.querySelectorAll("#deploy .template-grid [data-template-card]")).map(card => {
+        const key = card.dataset.templateCard || "";
         const detail = {};
         (card.querySelector(".template-detail")?.innerHTML || "").split("<br>").forEach(line => {
           const [key, value] = line.split("：");
@@ -8233,8 +8239,10 @@ llm-d-modelservice:
           el.tagName === "SPAN" && !el.classList.contains("template-detail") && (el.textContent || "").includes(" / "));
         const engine = (summary?.textContent || "").split("/").map(part => part.trim())[1] || "";
         const status = card.querySelector("small")?.textContent.trim() || "";
-        const extra = templateLibraryExtras[card.dataset.templateCard] || {};
+        const extra = templateLibraryExtras[key] || {};
         return {
+          id: key,
+          preset: true,
           title: card.querySelector("strong")?.textContent.trim() || "",
           model: detail["模型"] || "",
           gpu: card.dataset.gpu || "",
@@ -8247,9 +8255,22 @@ llm-d-modelservice:
           replicas: extra.replicas || "",
           resourceSummary: extra.resourceSummary || "",
           updated: extra.updated || "",
+          yaml: defaults[key] ? yamlFromValues(defaults[key]) : "",
           selected: card.classList.contains("active")
         };
       });
+    }
+
+    // 模板库最终数据 = 预置模板 ⊕ 本地编辑覆盖 ⊕ 导入模板
+    function templateLibraryItems() {
+      return [...deployPresetTemplates(), ...importedTemplates].map(item => {
+        const override = templateLibraryOverrides[item.id];
+        return override ? { ...item, ...override } : item;
+      });
+    }
+
+    function findTemplateLibraryItem(id) {
+      return templateLibraryItems().find(item => item.id === id) || null;
     }
 
     let activeScaleService = "";
@@ -8403,12 +8424,12 @@ llm-d-modelservice:
         ? "services"
         : id === "maas-create"
           ? "maas-models"
-          : id === "template-import"
+          : id === "template-import" || id === "template-detail"
             ? "template-library"
           : id;
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
-      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import"].includes(id));
+      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import", "template-detail"].includes(id));
       const viewLabels = {
         "maas-models": "MaaS 模型管理",
         "maas-create": "创建 MaaS 模型",
@@ -9234,15 +9255,15 @@ llm-d-modelservice:
 
     function renderTemplateLibrary() {
       if (!templateLibraryGrid) return;
-      const templates = [...deployPresetTemplates(), ...importedTemplates];
+      const templates = templateLibraryItems();
       templateLibraryGrid.innerHTML = templates.map(item => `
-                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-model="${escapeHtml(item.title)} ${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
+                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
                     <div class="lc-main">
                       <div class="lc-head">
                         <span class="lc-ic" aria-hidden="true">◎</span>
                         <strong class="lc-title">${escapeHtml(item.title)}</strong>
                         <span class="${tagClass(item.statusColor)}">${escapeHtml(item.status)}</span>
-                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">查看模板</button><button type="button">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button></span></span>
+                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-template-action="view" data-template-id="${escapeHtml(item.id)}">查看模板</button><button type="button" data-template-action="edit" data-template-id="${escapeHtml(item.id)}">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button></span></span>
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
                       <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resourceSummary || `${item.resource}，${item.replicas}`)}</p>
@@ -9283,14 +9304,8 @@ llm-d-modelservice:
       return brand.toLowerCase();
     }
 
-    function submitTemplateImportForm() {
-      const title = templateImportValue("importTemplateName");
-      const status = templateImportValue("importTemplateStatus");
-      const yaml = templateImportValue("importTemplateYaml");
-      if (!title || !status || !yaml) {
-        if (templateImportStatus) templateImportStatus.textContent = "请填写模板名称、模板状态和 YAML 配置。";
-        return;
-      }
+    // 从模板名称 / 状态 / YAML 推导模板库卡片要展示的字段，导入与编辑共用一份。
+    function deriveTemplateMeta(status, yaml) {
       const image = readYamlValue(yaml, ["image", "repository"]) || "";
       const artifactName = yaml.match(/modelArtifacts:\s*[\s\S]*?\n\s+name:\s*([^\n#]+)/);
       const gpuType = normalizeGpuType(readYamlValue(yaml, ["gpuType", "gpuModel", "acceleratorType", "nodeSelector"]));
@@ -9304,20 +9319,13 @@ llm-d-modelservice:
           ? "沐曦"
           : "英伟达";
       const normalizedMode = normalizeInferenceMode(readYamlValue(yaml, ["inferenceMode", "deployMode", "mode"]) || yaml);
-      const framework = normalizeServiceType(readYamlValue(yaml, ["serviceType", "framework", "type"]) || yaml) || "llm-d";
-      const model = cleanYamlValue(artifactName?.[1])
-        || readYamlValue(yaml, ["modelName", "servedModelName"])
-        || title;
-      const mode = normalizedMode === "colocated" ? "PD 共置" : "PD 分离";
-      const engine = /sglang/i.test(image) ? "SGLang" : "vLLM";
       const resourceModel = gpuModel.replace(/^NVIDIA\s+/i, "");
-      importedTemplates.unshift({
-        title,
-        model,
+      return {
+        model: cleanYamlValue(artifactName?.[1]) || readYamlValue(yaml, ["modelName", "servedModelName"]) || "",
         gpu: `${gpuBrandFilterValue(gpuBrand)} ${gpuBrand} ${resourceModel}`,
-        framework,
-        mode,
-        engine,
+        framework: normalizeServiceType(readYamlValue(yaml, ["serviceType", "framework", "type"]) || yaml) || "llm-d",
+        mode: normalizedMode === "colocated" ? "PD 共置" : "PD 分离",
+        engine: /sglang/i.test(image) ? "SGLang" : "vLLM",
         status,
         statusColor: templateStatusColor[status] || "",
         resource: `${resourceModel} 节点`,
@@ -9325,10 +9333,77 @@ llm-d-modelservice:
         resourceSummary: `${resourceModel} 节点，YAML 导入配置`,
         updated: currentMinuteText(),
         yaml
-      });
+      };
+    }
+
+    function submitTemplateImportForm() {
+      const title = templateImportValue("importTemplateName");
+      const status = templateImportValue("importTemplateStatus");
+      const yaml = templateImportValue("importTemplateYaml");
+      if (!title || !status || !yaml) {
+        if (templateImportStatus) templateImportStatus.textContent = "请填写模板名称、模板状态和 YAML 配置。";
+        return;
+      }
+      const meta = deriveTemplateMeta(status, yaml);
+      importedTemplates.unshift({ id: `imported-${++importedTemplateSeq}`, title, ...meta, model: meta.model || title });
       renderTemplateLibrary();
       bindGeneratedViewButtons();
       if (templateImportStatus) templateImportStatus.textContent = "";
+      showView("template-library");
+    }
+
+    // 「查看模板」只读展示，「编辑模板」可改名称 / 状态 / YAML，保存后回到模板库。
+    function applyTemplateDetailMode() {
+      const editing = activeTemplateMode === "edit";
+      if (templateDetailTitle) templateDetailTitle.textContent = editing ? "编辑模板" : "查看模板";
+      if (templateDetailName) templateDetailName.disabled = !editing;
+      if (templateDetailStatus) templateDetailStatus.disabled = !editing;
+      if (templateDetailYaml) {
+        templateDetailYaml.disabled = false;
+        templateDetailYaml.readOnly = !editing;
+      }
+      if (templateDetailShell) templateDetailShell.classList.toggle("is-readonly", !editing);
+      if (templateDetailPrimary) templateDetailPrimary.textContent = editing ? "保存" : "编辑模板";
+      if (crumbLabel) crumbLabel.textContent = editing ? "编辑模板" : "查看模板";
+    }
+
+    function openTemplateDetail(id, mode) {
+      const item = findTemplateLibraryItem(id);
+      if (!item || !templateDetailTitle) return;
+      activeTemplateId = id;
+      activeTemplateMode = mode === "edit" ? "edit" : "view";
+      if (templateDetailName) templateDetailName.value = item.title || "";
+      if (templateDetailStatus) templateDetailStatus.value = item.status || "生产可用";
+      if (templateDetailYaml) templateDetailYaml.value = item.yaml || "";
+      if (templateDetailHint) templateDetailHint.textContent = "";
+      showView("template-detail");
+      applyTemplateDetailMode();
+    }
+
+    function submitTemplateDetail() {
+      if (activeTemplateMode !== "edit") {
+        activeTemplateMode = "edit";
+        applyTemplateDetailMode();
+        return;
+      }
+      const title = (templateDetailName?.value || "").trim();
+      const status = templateDetailStatus?.value || "";
+      const yaml = (templateDetailYaml?.value || "").trim();
+      if (!title || !status || !yaml) {
+        if (templateDetailHint) templateDetailHint.textContent = "请填写模板名称、模板状态和 YAML 配置。";
+        return;
+      }
+      const meta = deriveTemplateMeta(status, yaml);
+      const patch = { ...meta, title, model: meta.model || title, updated: currentMinuteText() };
+      const imported = importedTemplates.find(item => item.id === activeTemplateId);
+      if (imported) {
+        Object.assign(imported, patch);
+      } else {
+        templateLibraryOverrides[activeTemplateId] = patch;
+      }
+      renderTemplateLibrary();
+      bindGeneratedViewButtons();
+      if (templateDetailHint) templateDetailHint.textContent = "";
       showView("template-library");
     }
 
