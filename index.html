@@ -8506,8 +8506,9 @@ llm-d-modelservice:
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
       if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import", "template-detail"].includes(id));
-      // 记住来源，返回按钮据此回到对应的功能页
-      if (viewReturnDefaults[id] && previousView && previousView !== id) {
+      // 记住来源，返回按钮据此回到对应的功能页；
+      // 如果目标页正是当前页的返回目标（说明这是一次「返回」），则不改写来源，避免来回互相覆盖。
+      if (viewReturnDefaults[id] && previousView && previousView !== id && viewReturnTargets[previousView] !== id) {
         viewReturnTargets[id] = previousView;
       }
       crumbLabel.textContent = viewLabels[id] || "模型服务";
