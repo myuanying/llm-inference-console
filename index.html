@@ -5303,7 +5303,7 @@
     .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .lc-desc { margin: 0; color: var(--muted); font-size: 13px; line-height: 20px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .lc-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border-row); color: var(--meta); font-size: 12px; line-height: 16px; }
-    #template-import.active { padding-bottom: 88px; }
+    #template-import.active, #template-detail.active { padding-bottom: 88px; }
     .template-import-shell { display: grid; gap: 16px; max-width: 1040px; }
     #template-import .template-import-basic-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6698,6 +6698,58 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           </div>
         </section>
 
+        <section id="template-detail" class="view" data-od-id="view-template-detail">
+          <div class="head">
+            <div>
+              <h1 id="templateDetailTitle">查看模板</h1>
+            </div>
+            <div class="tag-row">
+              <button class="btn" type="button" data-view="template-library">返回模板库</button>
+            </div>
+          </div>
+
+          <div class="template-import-shell template-detail-shell">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>基本信息</h2>
+              </div>
+              <div class="panel-body">
+                <div class="form-grid template-import-basic-grid">
+                  <label class="field">
+                    <span class="label"><span class="required">*</span> 模板名称</span>
+                    <input id="templateDetailName" placeholder="DeepSeek-V4-Flash-H800">
+                  </label>
+                  <label class="field">
+                    <span class="label"><span class="required">*</span> 模板状态</span>
+                    <select id="templateDetailStatus">
+                      <option value="生产可用">生产可用</option>
+                      <option value="抢先体验">抢先体验</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h2>配置信息</h2>
+              </div>
+              <div class="panel-body">
+                <label class="field wide">
+                  <span class="label"><span class="required">*</span> YAML 配置</span>
+                  <textarea id="templateDetailYaml" class="helm-values-editor template-import-yaml" spellcheck="false"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="deploy-bottom-bar template-import-actions template-detail-actions">
+              <span class="hint" id="templateDetailHint"></span>
+              <button class="btn" type="button" id="templateDetailCancel" data-view="template-library">取消</button>
+              <button class="btn primary" type="button" id="templateDetailPrimary">编辑模板</button>
+            </div>
+          </div>
+        </section>
+
         <section id="detail" class="view" data-od-id="view-detail">
           <header class="detail-topbar">
             <div class="dt-left">
@@ -7556,6 +7608,13 @@ llm-d-modelservice:
     const templateLibraryGrid = document.querySelector("#templateLibraryGrid");
     const submitTemplateImport = document.querySelector("#submitTemplateImport");
     const templateImportStatus = document.querySelector("#templateImportStatus");
+    const templateDetailTitle = document.querySelector("#templateDetailTitle");
+    const templateDetailName = document.querySelector("#templateDetailName");
+    const templateDetailStatus = document.querySelector("#templateDetailStatus");
+    const templateDetailYaml = document.querySelector("#templateDetailYaml");
+    const templateDetailHint = document.querySelector("#templateDetailHint");
+    const templateDetailPrimary = document.querySelector("#templateDetailPrimary");
+    const templateDetailShell = document.querySelector(".template-detail-shell");
     const observeRows = document.querySelector("#observeRows");
     const observeSearch = document.querySelector("#observeSearch");
     const observeStatusFilter = document.querySelector("#observeStatusFilter");
