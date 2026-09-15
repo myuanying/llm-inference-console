@@ -7435,6 +7435,27 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           </div>
         </section>
 
+        <section id="deleteTemplateModal" class="modal" aria-hidden="true">
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-shell compact delete-service-modal" role="dialog" aria-modal="true" aria-labelledby="deleteTemplateTitle">
+            <div class="delete-service-head">
+              <h1 id="deleteTemplateTitle">删除模板</h1>
+              <button class="delete-service-close" type="button" data-close-modal aria-label="关闭">×</button>
+            </div>
+            <div class="delete-service-message" id="deleteTemplateMessage"></div>
+            <div class="delete-service-confirm">
+              <label class="field wide">
+                <span class="label" id="deleteTemplateConfirmLabel">请输入模板名称确定删除</span>
+                <input id="deleteTemplateInput" autocomplete="off">
+              </label>
+              <div class="delete-service-actions">
+                <button class="btn danger delete-service-submit" type="button" id="submitDeleteTemplate" disabled>删除</button>
+                <button class="btn text delete-service-cancel" type="button" data-close-modal>取消</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="valuesModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal></div>
           <div class="modal-shell compact values-modal" role="dialog" aria-modal="true" aria-labelledby="valuesTitle">
@@ -7712,6 +7733,12 @@ llm-d-modelservice:
     const deleteServiceConfirmLabel = document.querySelector("#deleteServiceConfirmLabel");
     const deleteServiceInput = document.querySelector("#deleteServiceInput");
     const submitDeleteService = document.querySelector("#submitDeleteService");
+    const deleteTemplateModal = document.querySelector("#deleteTemplateModal");
+    const deleteTemplateTitle = document.querySelector("#deleteTemplateTitle");
+    const deleteTemplateMessage = document.querySelector("#deleteTemplateMessage");
+    const deleteTemplateConfirmLabel = document.querySelector("#deleteTemplateConfirmLabel");
+    const deleteTemplateInput = document.querySelector("#deleteTemplateInput");
+    const submitDeleteTemplate = document.querySelector("#submitDeleteTemplate");
     const detailScroll = document.querySelector(".detail-content");
     const detailSectionTitle = document.querySelector("#detailSectionTitle");
     const detailSectionNames = {
@@ -8230,9 +8257,13 @@ llm-d-modelservice:
     const importedTemplates = [];
     // 模板库里的预置模板来自 #deploy，本身不可写；「编辑模板」保存后写进这里，渲染时覆盖上去。
     const templateLibraryOverrides = {};
+    // 预置模板删不掉 #deploy 里的卡片，只能在模板库里隐藏；导入模板则直接从 importedTemplates 移除。
+    const templateLibraryDeleted = new Set();
     let importedTemplateSeq = 0;
     let activeTemplateId = "";
     let activeTemplateMode = "view";
+    let activeDeleteTemplate = "";
+    let activeDeleteTemplateTitle = "";
 
     function deployPresetTemplates() {
       return Array.from(document.querySelectorAll("#deploy .template-grid [data-template-card]")).map(card => {
@@ -8269,12 +8300,14 @@ llm-d-modelservice:
       });
     }
 
-    // 模板库最终数据 = 预置模板 ⊕ 本地编辑覆盖 ⊕ 导入模板
+    // 模板库最终数据 = 预置模板 ⊕ 本地编辑覆盖 ⊕ 导入模板 − 已删除
     function templateLibraryItems() {
-      return [...deployPresetTemplates(), ...importedTemplates].map(item => {
-        const override = templateLibraryOverrides[item.id];
-        return override ? { ...item, ...override } : item;
-      });
+      return [...deployPresetTemplates(), ...importedTemplates]
+        .filter(item => !templateLibraryDeleted.has(item.id))
+        .map(item => {
+          const override = templateLibraryOverrides[item.id];
+          return override ? { ...item, ...override } : item;
+        });
     }
 
     function findTemplateLibraryItem(id) {
@@ -9272,7 +9305,7 @@ llm-d-modelservice:
                         <span class="lc-ic" aria-hidden="true">◎</span>
                         <strong class="lc-title">${escapeHtml(item.title)}</strong>
                         <span class="${tagClass(item.statusColor)}">${escapeHtml(item.status)}</span>
-                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-template-action="view" data-template-id="${escapeHtml(item.id)}">查看模板</button><button type="button" data-template-action="edit" data-template-id="${escapeHtml(item.id)}">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button></span></span>
+                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-template-action="view" data-template-id="${escapeHtml(item.id)}">查看模板</button><button type="button" data-template-action="edit" data-template-id="${escapeHtml(item.id)}">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button><button type="button" class="danger" data-delete-template="${escapeHtml(item.id)}">删除模板</button></span></span>
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
                       <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resourceSummary || `${item.resource}，${item.replicas}`)}</p>
@@ -9414,6 +9447,46 @@ llm-d-modelservice:
       bindGeneratedViewButtons();
       if (templateDetailHint) templateDetailHint.textContent = "";
       showView("template-library");
+    }
+
+    // 「删除模板」二次确认：需输入模板名称才能点删除，弹窗与「删除服务」一致。
+    function updateDeleteTemplateSubmitState() {
+      if (!submitDeleteTemplate || !deleteTemplateInput) return;
+      submitDeleteTemplate.disabled = deleteTemplateInput.value.trim() !== activeDeleteTemplateTitle;
+    }
+
+    function openDeleteTemplate(id) {
+      const item = findTemplateLibraryItem(id);
+      if (!item || !deleteTemplateModal) return;
+      activeDeleteTemplate = id;
+      activeDeleteTemplateTitle = item.title || id;
+      if (deleteTemplateTitle) deleteTemplateTitle.textContent = `删除模板 ${item.title}`;
+      if (deleteTemplateMessage) {
+        deleteTemplateMessage.innerHTML = `确定删除模板 <strong>${escapeHtml(item.title)}</strong> 吗？删除后该模板将从模板库移除且无法恢复，请谨慎操作。`;
+      }
+      if (deleteTemplateConfirmLabel) {
+        deleteTemplateConfirmLabel.innerHTML = `请输入 <strong>${escapeHtml(item.title)}</strong> 确定删除`;
+      }
+      if (deleteTemplateInput) deleteTemplateInput.value = "";
+      updateDeleteTemplateSubmitState();
+      openModal(deleteTemplateModal);
+      window.setTimeout(() => deleteTemplateInput?.focus(), 0);
+    }
+
+    function submitDeleteTemplateAction() {
+      if (!activeDeleteTemplate || !submitDeleteTemplate || submitDeleteTemplate.disabled) return;
+      const index = importedTemplates.findIndex(item => item.id === activeDeleteTemplate);
+      if (index >= 0) {
+        importedTemplates.splice(index, 1);
+      } else {
+        templateLibraryDeleted.add(activeDeleteTemplate);
+        delete templateLibraryOverrides[activeDeleteTemplate];
+      }
+      renderTemplateLibrary();
+      bindGeneratedViewButtons();
+      closeModals();
+      activeDeleteTemplate = "";
+      activeDeleteTemplateTitle = "";
     }
 
     function setTemplateLibraryChipFilter(controlId, value) {
@@ -10433,6 +10506,20 @@ llm-d-modelservice:
 
     if (submitDeleteService) {
       submitDeleteService.addEventListener("click", submitDeleteServiceAction);
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-delete-template]");
+      if (!button) return;
+      openDeleteTemplate(button.dataset.deleteTemplate);
+    });
+
+    if (deleteTemplateInput) {
+      deleteTemplateInput.addEventListener("input", updateDeleteTemplateSubmitState);
+    }
+
+    if (submitDeleteTemplate) {
+      submitDeleteTemplate.addEventListener("click", submitDeleteTemplateAction);
     }
 
     document.addEventListener("change", event => {
