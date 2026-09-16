@@ -790,6 +790,7 @@
     #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy,
     #deploy .field > .distributed-gpu-row,
+    #deploy .field > .num-field,
     #deploy .field > .role-command-grid {
       grid-column: 2 / 4;
     }
@@ -797,6 +798,7 @@
     #deploy .field > input,
     #deploy .field > select,
     #deploy .field > .segmented,
+    #deploy .field > .num-field,
     #deploy .field > .switch-row {
       max-width: 320px;
     }
@@ -922,7 +924,7 @@
     #deploy .is-template-locked [data-template-unlocked] {
       cursor: text;
       background-color: var(--surface);
-      color: var(--text);
+      color: var(--fg);
       opacity: 1;
     }
 
@@ -1331,6 +1333,24 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
+    }
+    .template-detail > span {
+      display: block;
+    }
+    .template-detail .td-title {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+    .template-detail .td-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+      line-height: 1;
     }
 
     .template-card:hover .template-detail,
@@ -5034,8 +5054,97 @@
       line-height: 16px;
     }
 
-    .distributed-part input {
+    .distributed-part input,
+    .distributed-part .num-field {
       width: 100%;
+    }
+
+    /* ---- 数值输入（参考样式）：输入区 + 内置上下步进 + 灰底单位后缀，30px r3 ---- */
+    .num-field {
+      --num-h: 30px;
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: var(--num-h);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      overflow: hidden;
+      transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+    }
+    .num-field:hover { border-color: var(--icon-hover); }
+    .num-field:focus-within { border-color: var(--info); box-shadow: var(--focus-ring); }
+    .num-field > input,
+    .field .num-field > input,
+    #deploy .field .num-field > input {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+      max-width: none;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+      padding: 0 8px 0 10px;
+      font-size: 13px;
+      line-height: 20px;
+      color: var(--fg);
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .num-field > input::-webkit-outer-spin-button,
+    .num-field > input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .num-field > input:focus,
+    .field .num-field > input:focus,
+    .num-field > input:hover,
+    .field .num-field > input:hover { outline: none; border: 0; box-shadow: none; }
+    .num-steps {
+      flex: none;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      width: 22px;
+      border-left: 1px solid var(--border);
+    }
+    .num-steps button {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: var(--surface);
+      color: var(--icon-hover);
+      cursor: pointer;
+      transition: background var(--motion-fast), color var(--motion-fast);
+    }
+    .num-steps button + button { border-top: 1px solid var(--border); }
+    .num-steps button:hover { background: var(--bg-subtle); color: var(--fg); }
+    .num-steps button:active { background: var(--bg); color: var(--info); }
+    .num-steps svg { display: block; }
+    .num-unit {
+      flex: none;
+      display: grid;
+      place-items: center;
+      min-width: 40px;
+      padding: 0 10px;
+      border-left: 1px solid var(--border-soft);
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .num-field:has(> input:disabled) { background: var(--bg); border-color: var(--border); }
+    .num-field:has(> input:disabled):hover { border-color: var(--border); }
+    .num-field:has(> input:disabled) > input { color: var(--fg-input-disabled); -webkit-text-fill-color: var(--fg-input-disabled); cursor: not-allowed; background: transparent; opacity: 1; }
+    .num-field:has(> input:disabled) .num-steps button { background: var(--bg); color: var(--fg-input-disabled); cursor: not-allowed; pointer-events: none; }
+    .num-field:has(> input:disabled) .num-unit { color: var(--fg-input-disabled); }
+    .num-field[hidden] { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .num-field, .num-steps button { transition: none; }
     }
 
     .multiply {
@@ -5868,18 +5977,6 @@ resources:
                       <span class="label">别名</span>
                       <input id="serviceAliasInput" value="DeepSeek V4 Flash 生产服务" data-template-unlocked="">
                     </label>
-                    <label class="field">
-                      <span class="label"><span class="required">*</span> 推理镜像</span>
-                      <span class="combo-row">
-                        <select id="imagePresetSelect" data-template-unlocked="">
-                          <option value="docker.m.daocloud.io/vllm/vllm-openai:nightly">vLLM OpenAI nightly</option>
-                          <option value="docker.m.daocloud.io/vllm/vllm-openai:v0.8.5">vLLM OpenAI v0.8.5</option>
-                          <option value="ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17.iaas.dev.202608251235">SGLang v0.5.17</option>
-                          <option value="custom">自定义镜像</option>
-                        </select>
-                        <input id="imageInput" value="docker.m.daocloud.io/vllm/vllm-openai:nightly" disabled="" data-template-unlocked="">
-                      </span>
-                    </label>
                   </div>
 
                   <input id="modelPathInput" type="hidden" value="/mnt/data">
@@ -5972,7 +6069,19 @@ resources:
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 实例数</span>
-                      <input id="replicasInput" type="number" min="0" value="2">
+                      <input id="replicasInput" type="number" min="0" value="2" data-template-unlocked="">
+                    </label>
+                    <label class="field wide">
+                      <span class="label"><span class="required">*</span> 镜像</span>
+                      <span class="combo-row">
+                        <select id="imagePresetSelect" data-template-unlocked="">
+                          <option value="docker.m.daocloud.io/vllm/vllm-openai:nightly">vLLM OpenAI nightly</option>
+                          <option value="docker.m.daocloud.io/vllm/vllm-openai:v0.8.5">vLLM OpenAI v0.8.5</option>
+                          <option value="ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17.iaas.dev.202608251235">SGLang v0.5.17</option>
+                          <option value="custom">自定义镜像</option>
+                        </select>
+                        <input id="imageInput" value="docker.m.daocloud.io/vllm/vllm-openai:nightly" data-template-unlocked="">
+                      </span>
                     </label>
                     <label class="field" data-resource-field="gpu-brand">
                       <span class="label"><span class="required">*</span> GPU 类型</span>
@@ -5995,26 +6104,46 @@ resources:
                     </label>
                     <label class="field" data-resource-field="gpus">
                       <span class="label"><span class="required">*</span> 单实例卡数</span>
-                      <input id="gpusInput" type="number" min="0" value="4">
+                      <span class="num-field" id="gpusField">
+                        <input id="gpusInput" type="number" min="0" step="1" inputmode="numeric" value="4">
+                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                        <span class="num-unit">卡</span>
+                      </span>
                       <span class="distributed-gpu-row" id="distributedGpuRow" hidden="">
                         <span class="distributed-part">
-                          <input id="distributedNodesInput" type="number" min="1" value="2">
+                          <span class="num-field">
+                            <input id="distributedNodesInput" type="number" min="1" step="1" inputmode="numeric" value="2">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <span class="num-unit">节点</span>
+                          </span>
                           <span class="mini-label">节点数</span>
                         </span>
                         <span class="multiply" aria-hidden="true">×</span>
                         <span class="distributed-part">
-                          <input id="machineGpusInput" type="number" min="0" value="8" disabled="">
+                          <span class="num-field">
+                            <input id="machineGpusInput" type="number" min="0" step="1" inputmode="numeric" value="8" disabled="">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <span class="num-unit">卡</span>
+                          </span>
                           <span class="mini-label">单机卡数</span>
                         </span>
                       </span>
                     </label>
                     <label class="field">
                       <span class="label">单实例CPU</span>
-                      <input id="cpuInput" value="64 core">
+                      <span class="num-field">
+                        <input id="cpuInput" type="number" min="1" step="1" inputmode="numeric" value="64" data-unit=" core">
+                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                        <span class="num-unit">Core</span>
+                      </span>
                     </label>
                     <label class="field">
                       <span class="label">单实例内存</span>
-                      <input id="memoryInput" value="600Gi">
+                      <span class="num-field">
+                        <input id="memoryInput" type="number" min="1" step="1" inputmode="numeric" value="600" data-unit="Gi">
+                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                        <span class="num-unit">Gi</span>
+                      </span>
                     </label>
                   </div>
 
@@ -6939,7 +7068,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <div class="panel-body">
                 <label class="field wide">
                   <span class="label"><span class="required">*</span> YAML 配置</span>
-                  <textarea id="importTemplateYaml" class="helm-values-editor template-import-yaml" placeholder="kind: HelmValues
+                  <textarea id="importTemplateYaml" class="helm-values-editor template-import-yaml" placeholder="kind: well-lit-path
 metadata:
   name: inferx-template
 llm-d-modelservice:
@@ -7951,6 +8080,43 @@ llm-d-modelservice:
     const nodePoolSelect = document.querySelector("#nodePoolSelect");
     const cpuInput = document.querySelector("#cpuInput");
     const memoryInput = document.querySelector("#memoryInput");
+    const gpusField = document.querySelector("#gpusField");
+
+    // 带单位后缀的数值输入（.num-field）：输入框内只保存数字，单位由 data-unit 声明（" core" / "Gi"）。
+    // 这里在元素上代理 value：写入 "64 core" / "600Gi" 时自动剥离单位，读取时自动补回单位，
+    // 这样表单回填、模板预设、YAML 生成等既有读写点无需逐一改动。
+    function bindUnitNumberInput(input) {
+      if (!input || !input.dataset.unit) return;
+      const unit = input.dataset.unit;
+      const proto = Object.getPrototypeOf(input);
+      const native = Object.getOwnPropertyDescriptor(proto, "value");
+      Object.defineProperty(input, "value", {
+        configurable: true,
+        get() {
+          const raw = native.get.call(input);
+          return raw === "" ? "" : `${raw}${unit}`;
+        },
+        set(next) {
+          const digits = String(next ?? "").match(/\d+(?:\.\d+)?/);
+          native.set.call(input, digits ? digits[0] : "");
+        }
+      });
+    }
+    bindUnitNumberInput(cpuInput);
+    bindUnitNumberInput(memoryInput);
+
+    // 步进按钮：点击 ▲/▼ 调整数值并派发 input/change，保持与手动输入一致的联动。
+    document.addEventListener("click", (event) => {
+      const stepButton = event.target.closest(".num-steps [data-step]");
+      if (!stepButton) return;
+      event.preventDefault();
+      const input = stepButton.closest(".num-field")?.querySelector("input");
+      if (!input || input.disabled) return;
+      if (stepButton.dataset.step === "up") input.stepUp(); else input.stepDown();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      input.focus();
+    });
     const commandInput = document.querySelector("#commandInput");
     const detailTitle = document.querySelector("#detailTitle");
     const detailAlias = document.querySelector("#detailAlias");
@@ -8540,6 +8706,33 @@ llm-d-modelservice:
     let activeDeleteTemplateTitle = "";
     let activeTemplateDetailBaseYaml = "";
 
+    function templateYamlFromValues(values) {
+      return yamlFromValues(values).replace(/^kind:\s*.+$/m, "kind: well-lit-path");
+    }
+
+    function syncDeployTemplateCardDetails() {
+      document.querySelectorAll("#deploy .template-grid [data-template-card]").forEach(card => {
+        const key = card.dataset.templateCard || "";
+        const extra = templateLibraryExtras[key] || {};
+        const detail = card.querySelector(".template-detail");
+        if (!detail) return;
+        const title = card.querySelector("strong")?.textContent.trim() || "";
+        const status = card.querySelector("small")?.textContent.trim() || "";
+        const summary = Array.from(card.children).find(el =>
+          el.tagName === "SPAN" && !el.classList.contains("template-detail") && (el.textContent || "").includes(" / "));
+        const [resource = "", engine = "", mode = card.dataset.mode || ""] = (summary?.textContent || "").split("/").map(part => part.trim());
+        const framework = card.dataset.framework || "";
+        detail.innerHTML = `
+          <strong class="td-title">${escapeHtml(title)}</strong>
+          <span>别名：${escapeHtml(extra.alias || "-")}</span>
+          <span class="td-tags"><span class="tag blue">${escapeHtml(framework)}</span><span class="tag">${escapeHtml(mode)}</span><span class="tag">${escapeHtml(engine)}</span></span>
+          <span>描述：${escapeHtml(extra.description || "-")}</span>
+          <span>${escapeHtml(title)} · ${escapeHtml(extra.resourceSummary || `${resource}，${extra.replicas || ""}`)}</span>
+          <span>${escapeHtml(extra.updated || "2026-08-30 10:00")} · ${escapeHtml(status)}</span>
+        `;
+      });
+    }
+
     function deployPresetTemplates() {
       return Array.from(document.querySelectorAll("#deploy .template-grid [data-template-card]")).map(card => {
         const key = card.dataset.templateCard || "";
@@ -8551,7 +8744,14 @@ llm-d-modelservice:
         // 卡片摘要行形如「H800 / vLLM / PD 分离」= 硬件 / 推理引擎 / 部署方式
         const summary = Array.from(card.children).find(el =>
           el.tagName === "SPAN" && !el.classList.contains("template-detail") && (el.textContent || "").includes(" / "));
-        const engine = (summary?.textContent || "").split("/").map(part => part.trim())[1] || "";
+        const summaryParts = (summary?.textContent || "").split("/").map(part => part.trim());
+        const engine = summaryParts[1] || "";
+        const modelFallback = {
+          deepseek: "DeepSeek-V4-Flash-0731",
+          glm: "Qwen3-32B",
+          qwen: "Qwen3-235B-A22B-FP8",
+          dynamoScout: "Llama-4-Scout"
+        };
         const status = card.querySelector("small")?.textContent.trim() || "";
         const extra = templateLibraryExtras[key] || {};
         return {
@@ -8560,18 +8760,18 @@ llm-d-modelservice:
           title: card.querySelector("strong")?.textContent.trim() || "",
           alias: extra.alias || "",
           description: extra.description || "",
-          model: detail["模型"] || "",
+          model: detail["模型"] || modelFallback[key] || "",
           gpu: card.dataset.gpu || "",
           framework: card.dataset.framework || "",
           mode: card.dataset.mode || "",
           status,
           statusColor: templateStatusColor[status] || "",
           engine,
-          resource: detail["硬件"] || "",
+          resource: detail["硬件"] || (summaryParts[0] ? `${summaryParts[0]} 8卡节点` : ""),
           replicas: extra.replicas || "",
           resourceSummary: extra.resourceSummary || "",
           updated: extra.updated || "",
-          yaml: defaults[key] ? yamlFromValues(defaults[key]) : "",
+          yaml: defaults[key] ? templateYamlFromValues(defaults[key]) : "",
           selected: card.classList.contains("active")
         };
       });
@@ -9677,6 +9877,7 @@ llm-d-modelservice:
                       <div class="lc-foot"><span class="lc-time">${escapeHtml(item.updated || "2026-08-30 10:00")}</span></div>
                     </div>
                   </article>`).join("");
+      syncDeployTemplateCardDetails();
       applyTemplateLibraryFilters();
     }
 
@@ -10138,7 +10339,8 @@ llm-d-modelservice:
 
     function syncDistributedInference() {
       const enabled = distributedToggle?.classList.contains("is-checked") || false;
-      if (gpusInput) gpusInput.hidden = enabled;
+      if (gpusField) gpusField.hidden = enabled;
+      else if (gpusInput) gpusInput.hidden = enabled;
       if (distributedGpuRow) distributedGpuRow.hidden = !enabled;
       if (machineGpusInput && gpusInput) {
         machineGpusInput.value = "8";
@@ -10370,7 +10572,7 @@ llm-d-modelservice:
       }
       const matched = Array.from(imagePresetSelect.options).some(option => option.value === imageInput.value);
       imagePresetSelect.value = matched ? imageInput.value : "custom";
-      imageInput.disabled = imagePresetSelect.value !== "custom";
+      imageInput.disabled = false;
     }
 
     function cleanYamlValue(value) {
