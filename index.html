@@ -813,8 +813,7 @@
     }
 
     #deploy .hint,
-    #deploy .template-empty,
-    #deploy .yaml-import-actions {
+    #deploy .template-empty {
       grid-column: 2 / 4;
       max-width: 620px;
       margin-top: -4px;
@@ -1570,41 +1569,6 @@
     .yaml-entry textarea { min-height: 220px; }
     .yaml-entry textarea::placeholder { color: var(--subtle); opacity: 1; }
     .helm-values-editor { min-height: 360px !important; background: var(--fg) !important; color: var(--bg) !important; border-color: var(--icon-pressed) !important; font-family: var(--font-mono); line-height: 1.6 !important; }
-    #helmDeployPanel:not([hidden]) {
-      display: flex;
-      flex-direction: column;
-      min-height: calc(100vh - 180px);
-      margin-bottom: 74px;
-    }
-    #helmDeployPanel .panel-body {
-      flex: 1;
-      min-height: 0;
-    }
-    #helmDeployPanel .form-grid {
-      height: 100%;
-      grid-template-rows: auto auto minmax(0, 1fr);
-    }
-    #helmDeployPanel .field.wide {
-      display: grid;
-      grid-template-columns: 128px minmax(320px, 620px) minmax(0, 1fr);
-      grid-column: 1 / -1;
-      min-height: 0;
-      align-items: stretch;
-    }
-    #helmDeployPanel .field.wide > .label {
-      grid-column: 1;
-      justify-content: flex-end;
-      align-items: flex-start;
-      padding-top: 9px;
-    }
-    #helmDeployPanel .field.wide > .helm-values-editor {
-      grid-column: 2 / 4;
-      width: 100%;
-      max-width: 720px !important;
-      height: 100%;
-      min-height: 0 !important;
-      resize: none;
-    }
     .yaml-import-toggle {
       width: 100%;
       border: 0;
@@ -1628,6 +1592,7 @@
     .template-library-picker[hidden], .template-yaml-panel[hidden] { display: none; }
     .template-yaml-panel { margin-top: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); padding: 14px; }
     #yamlImportPanel {
+      display: grid;
       gap: 12px;
     }
     #yamlImportPanel .field {
@@ -1640,38 +1605,33 @@
       padding-top: 0;
       font-weight: 600;
     }
-    #yamlImportInput {
+    /* 导入 YAML = 自定义部署：集群 / 命名空间两列，values.yaml 占满整行 */
+    .yaml-custom-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    #deploy #yamlImportPanel .yaml-custom-grid > .field.wide {
+      grid-column: 1 / -1 !important;
+    }
+    #deploy #yamlImportPanel .field > .label,
+    #deploy #yamlImportPanel .field > input,
+    #deploy #yamlImportPanel .field > select,
+    #deploy #yamlImportPanel .field > textarea {
       grid-column: auto !important;
-      width: 100%;
       max-width: none !important;
-      min-height: 220px;
-      border: 1px solid var(--icon-pressed);
-      border-radius: 4px;
-      background: var(--topbar-bg);
-      color: var(--bg);
-      padding: 14px;
+    }
+    #deploy #yamlImportPanel .field > .helm-values-editor {
+      width: 100%;
+      height: calc(100vh - 430px) !important;
+      min-height: 320px !important;
       resize: vertical;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.55;
     }
-    #yamlImportInput::placeholder {
-      color: rgba(246, 248, 251, .56);
-      opacity: 1;
+    /* 导入 YAML 模式下隐藏结构化配置，只留部署方式与 values.yaml */
+    #templateDeployLayout.is-yaml-config [data-structured-field],
+    #templateDeployLayout.is-yaml-config [data-template-locked-section] {
+      display: none !important;
     }
-    .yaml-import-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 2px;
-    }
-    #deploy #yamlImportPanel .yaml-import-actions {
-      grid-column: auto;
-      max-width: none;
-      margin-top: 12px;
-    }
-    .yaml-import-file { display: none; }
 
     .advanced-stack {
       display: grid;
@@ -2215,8 +2175,7 @@
       #deploy .field > .parallel-strategy,
       #deploy .field > .role-command-grid,
       #deploy .hint,
-      #deploy .template-empty,
-      #deploy .yaml-import-actions {
+      #deploy .template-empty {
         grid-column: auto;
         max-width: none;
       }
@@ -5634,30 +5593,11 @@
     }
     @media (max-width: 1200px) { .template-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 1180px) { .template-import-actions { left: 24px; } }
-    @media (max-width: 760px) { .tl-layout { grid-template-columns: 1fr; } .template-card-grid { grid-template-columns: 1fr; } .template-import-yaml { height: 360px !important; } }
-
-    #helmDeployPanel:not([hidden]) {
-      min-height: auto;
-      margin-bottom: 74px;
-    }
-
-    #helmDeployPanel .form-grid {
-      height: auto;
-      grid-template-rows: none;
-    }
-
-    #helmDeployPanel .field.wide > .helm-values-editor {
-      height: calc(100vh - 300px) !important;
-      min-height: 420px !important;
-      max-width: 720px !important;
-      resize: vertical;
-    }
-
     @media (max-width: 760px) {
-      #helmDeployPanel .field.wide > .helm-values-editor {
-        height: calc(100vh - 330px) !important;
-        min-height: 360px !important;
-      }
+      .tl-layout { grid-template-columns: 1fr; }
+      .template-card-grid { grid-template-columns: 1fr; }
+      .template-import-yaml { height: 360px !important; }
+      .yaml-custom-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -8980,7 +8920,6 @@ llm-d-modelservice:
     function setDeployMode(mode) {
       isEditingServiceConfig = false;
       const yamlOnly = mode === "yaml";
-      const helmMode = mode === "helm";
       if (deployTitle) deployTitle.textContent = yamlOnly ? "YAML 部署" : "新建模型部署";
       if (deployLead) {
         deployLead.textContent = "";
@@ -8991,13 +8930,12 @@ llm-d-modelservice:
         updateParseNotice.setAttribute("aria-hidden", "true");
       }
       yamlDeployPanel.hidden = !yamlOnly;
-      if (helmDeployPanel) helmDeployPanel.hidden = !helmMode;
       yamlEntry.hidden = false;
-      templateDeployLayout.hidden = yamlOnly || helmMode;
-      deployPreviewButton.hidden = yamlOnly || helmMode;
+      templateDeployLayout.hidden = yamlOnly;
+      deployPreviewButton.hidden = yamlOnly;
       if (deployCancelButton) deployCancelButton.hidden = yamlOnly;
-      deploySubmitButton.textContent = yamlOnly ? "部署" : helmMode ? "确定部署" : "提交并部署";
-      if (!yamlOnly && !helmMode) setDeployTemplateMode("preset");
+      deploySubmitButton.textContent = yamlOnly ? "部署" : "提交并部署";
+      if (!yamlOnly) setDeployTemplateMode("preset");
       syncServiceConfigScopeLock();
     }
 
@@ -10560,93 +10498,6 @@ llm-d-modelservice:
       return "";
     }
 
-    function parseYamlToDeployForm() {
-      const yaml = yamlImportInput.value.trim();
-      if (!yaml) {
-        yamlImportStatus.textContent = "请先导入或填写 YAML 文件。";
-        return;
-      }
-
-      const updates = [];
-      const serviceName = readYamlValue(yaml, ["serviceName", "service", "servedModelName"]);
-      let image = readYamlValue(yaml, "image");
-      const registry = readYamlValue(yaml, "registry");
-      const repository = readYamlValue(yaml, "repository");
-      const tag = readYamlValue(yaml, "tag");
-      const source = normalizeSource(readYamlValue(yaml, ["source", "modelSource"]));
-      const pvcName = readYamlValue(yaml, ["pvcName", "claimName", "persistentVolumeClaim"]);
-      const modelPath = readYamlValue(yaml, ["mountPath", "modelPath", "path"]);
-      const serviceType = normalizeServiceType(readYamlValue(yaml, ["serviceType", "type", "framework"]));
-      const mode = normalizeInferenceMode(readYamlValue(yaml, ["inferenceMode", "deployMode", "mode"]));
-      const replicas = readYamlValue(yaml, "replicas");
-      const gpus = readYamlValue(yaml, ["gpusPerReplica", "gpuPerReplica", "gpus"]);
-      const rawGpuType = readYamlValue(yaml, ["gpuType", "acceleratorType"]);
-      const gpuType = normalizeGpuType(rawGpuType);
-      const gpuModel = readYamlValue(yaml, ["gpuModel", "nodePool"]) || (/h800/i.test(rawGpuType) ? "NVIDIA H800" : /h20/i.test(rawGpuType) ? "NVIDIA H20" : /910/i.test(rawGpuType) ? "Ascend 910B" : "");
-      const cpu = readYamlValue(yaml, "cpu");
-      const memory = readYamlValue(yaml, "memory");
-
-      if (!image && registry && repository) {
-        image = `${registry}/${repository}${tag ? `:${tag}` : ""}`;
-      }
-      if (serviceName) {
-        serviceNameInput.value = serviceName;
-        updates.push("服务名称");
-      }
-      if (source) {
-        updateSource(source);
-        updates.push("模型来源");
-      }
-      if (pvcName && modelPvcNameSelect) {
-        const matched = Array.from(modelPvcNameSelect.options).some(option => option.value === pvcName);
-        modelPvcNameSelect.value = matched ? pvcName : "model-pvc-shared";
-        updates.push("PVC 名称");
-      }
-      if (modelPath) {
-        modelPathInput.value = "/mnt/data";
-        updates.push("挂载路径");
-      }
-      if (serviceType) {
-        updateServiceType(serviceType);
-        updates.push("编排框架");
-      }
-      if (image) {
-        imageInput.value = image;
-        syncImagePreset();
-        updates.push("推理镜像");
-      }
-      if (mode) {
-        updateInferenceMode(mode);
-        updates.push("推理模式");
-      }
-      if (replicas) {
-        replicasInput.value = replicas;
-        updates.push("实例数");
-      }
-      if (gpus) {
-        gpusInput.value = gpus;
-        updates.push("单实例卡数");
-      }
-      if (gpuType) {
-        gpuTypeSelect.value = gpuType;
-        updates.push("GPU 类型");
-      }
-      if (gpuModel) {
-        nodePoolSelect.value = gpuModel;
-        updates.push("GPU型号");
-      }
-      if (cpu) {
-        cpuInput.value = cpu;
-        updates.push("单实例CPU");
-      }
-      if (memory) {
-        memoryInput.value = memory;
-        updates.push("单实例内存");
-      }
-
-      yamlImportStatus.textContent = updates.length ? `已解析：${updates.join("、")}` : "未找到可解析字段。";
-    }
-
     function syncFormStateAttributes(root) {
       if (!root) return;
       root.querySelectorAll("input").forEach(input => {
@@ -11157,23 +11008,13 @@ llm-d-modelservice:
       button.addEventListener("click", () => setYamlModalTab(button.dataset.yamlModalTab));
     });
 
+    // 「新建部署」不再弹选择弹窗，直接进入模板部署页（自定义部署挪到「导入 YAML」标签下）
     document.addEventListener("click", event => {
       const button = event.target.closest("[data-open-deploy-choice]");
-      if (button) openModal(deployChoiceModal);
-    });
-
-    document.querySelectorAll("[data-start-deploy]").forEach(button => {
-      button.addEventListener("click", () => {
-        if (button.dataset.startDeploy === "helm") {
-          closeModals();
-          setDeployMode("helm");
-          showView("deploy");
-          return;
-        }
-        closeModals();
-        setDeployMode(button.dataset.startDeploy);
-        showView("deploy");
-      });
+      if (!button) return;
+      closeModals();
+      setDeployMode("template");
+      showView("deploy");
     });
 
     document.querySelectorAll("[data-close-modal]").forEach(button => {
@@ -11236,6 +11077,8 @@ llm-d-modelservice:
       });
       if (templateLibraryPicker) templateLibraryPicker.hidden = mode !== "preset";
       if (yamlImportPanel) yamlImportPanel.hidden = mode !== "yaml";
+      // 导入 YAML = 自定义部署：只保留部署方式与 values.yaml，隐藏结构化配置面板
+      if (templateDeployLayout) templateDeployLayout.classList.toggle("is-yaml-config", mode === "yaml");
       if (mode === "preset") {
         if (activeTemplate === "blank") selectTemplate("deepseek");
         deployHint.textContent = "先选择模板库中的模板，推理模式和资源配置将按模板锁定；如需修改，可点击「编辑部署」。";
@@ -11244,7 +11087,7 @@ llm-d-modelservice:
         selectTemplate("blank");
       }
       if (mode === "yaml") {
-        deployHint.textContent = "导入或填写 YAML 后解析到下方部署表单，解析结果仍可继续修改。";
+        deployHint.textContent = "填写 values.yaml，并选择目标集群与命名空间，将按自定义 YAML 直接部署。";
       }
       applyPresetTemplateState();
     }
@@ -11286,6 +11129,7 @@ llm-d-modelservice:
       });
       if (templateLibraryPicker) templateLibraryPicker.hidden = true;
       if (yamlImportPanel) yamlImportPanel.hidden = true;
+      if (templateDeployLayout) templateDeployLayout.classList.remove("is-yaml-config");
       deployHint.textContent = "已基于当前预置模板进入通用模板配置，预填数据已保留，字段可继续修改。";
       applyPresetTemplateState();
     }
@@ -11353,36 +11197,6 @@ llm-d-modelservice:
     imageInput.addEventListener("input", () => {
       syncImagePreset();
     });
-
-    if (yamlImportToggle && yamlImportPanel && yamlImportBody) {
-      yamlImportToggle.addEventListener("click", () => {
-        const expanded = yamlImportToggle.getAttribute("aria-expanded") === "true";
-        yamlImportToggle.setAttribute("aria-expanded", String(!expanded));
-        yamlImportPanel.classList.toggle("open", !expanded);
-        yamlImportBody.hidden = expanded;
-      });
-    }
-
-    if (yamlImportButton && yamlImportFile && yamlImportInput && yamlImportStatus) {
-      yamlImportButton.addEventListener("click", () => {
-        yamlImportFile.click();
-      });
-
-      yamlImportFile.addEventListener("change", () => {
-        const file = yamlImportFile.files && yamlImportFile.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.addEventListener("load", () => {
-          yamlImportInput.value = String(reader.result || "");
-          yamlImportStatus.textContent = `已导入 ${file.name}`;
-        });
-        reader.readAsText(file);
-      });
-    }
-
-    if (yamlParseButton) {
-      yamlParseButton.addEventListener("click", parseYamlToDeployForm);
-    }
 
     if (maasUpstreamService) {
       maasUpstreamService.addEventListener("change", () => updateMaasEndpoint(maasUpstreamService.value));
