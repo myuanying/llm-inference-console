@@ -5783,50 +5783,6 @@ resources:
               </label>
             </div>
           </div>
-          <div class="panel deploy-mode-panel" id="helmDeployPanel" hidden="">
-            <div class="panel-head">
-              <h2>自定义部署</h2>
-            </div>
-            <div class="panel-body">
-              <div class="form-grid">
-                <label class="field">
-                  <span class="label"><span class="required">*</span> 目标集群</span>
-                  <select id="helmClusterSelect">
-                    <option>prod-gpu-beijing-01</option>
-                    <option>delivery-h800-lab</option>
-                    <option>ascend-910b-site-a</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span class="label"><span class="required">*</span> 命名空间</span>
-                  <select>
-                    <option>inferx-prod</option>
-                    <option>model-serving</option>
-                    <option>default</option>
-                  </select>
-                </label>
-                <label class="field wide">
-                  <span class="label">values.yaml</span>
-                  <textarea id="helmValuesInput" class="helm-values-editor">llm-d-modelservice:
-  modelArtifacts:
-    name: deepseek-ai/DeepSeek-V4-Flash-0731
-    mountPath: /data/model/deepseek-v4-flash-0731
-  routing:
-    proxy:
-      enabled: true
-  prefill:
-    replicas: 2
-  decode:
-    replicas: 1
-    containers:
-      - name: vllm
-        image:
-          repository: vllm/vllm-openai
-          tag: nightly</textarea>
-                </label>
-              </div>
-            </div>
-          </div>
           <div class="deploy-layout" id="templateDeployLayout">
             <div>
               <div class="panel">
@@ -5848,7 +5804,7 @@ resources:
                         </button>
                         <button type="button" class="template-mode-card" data-deploy-template-mode="yaml">
                           <strong>导入 YAML</strong>
-                          <span>导入文件并解析到部署表单</span>
+                          <span>填写 values.yaml 自定义部署</span>
                         </button>
                       </span>
                       <span class="template-library-picker" id="templateLibraryPicker">
@@ -5909,27 +5865,42 @@ resources:
                         <span class="template-empty" id="templateEmpty">暂无匹配模板</span>
                       </span>
                       <div class="template-yaml-panel" id="yamlImportPanel" hidden="">
-                        <label class="field wide">
-                          <span class="label">YAML 文件</span>
-                          <textarea id="yamlImportInput" placeholder="serviceName: deepseek-v4-flash-h800-prod
-model:
-  source: market
-  mountPath: /mnt/data
-image: docker.m.daocloud.io/vllm/vllm-openai:nightly
-inferenceMode: split
-resources:
-  replicas: 2
-  gpuType: Nvidia GPU
-  gpuModel: NVIDIA H800
-  gpusPerReplica: 4
-  cpu: 64 core
-  memory: 600Gi"></textarea>
-                        </label>
-                        <div class="yaml-import-actions">
-                          <input class="yaml-import-file" id="yamlImportFile" type="file" accept=".yaml,.yml,text/yaml,text/plain">
-                          <button class="btn" type="button" id="yamlImportButton">导入 YAML 文件</button>
-                          <button class="btn primary" type="button" id="yamlParseButton">解析到表单</button>
-                          <span class="muted" id="yamlImportStatus"></span>
+                        <div class="yaml-custom-grid">
+                          <label class="field">
+                            <span class="label"><span class="required">*</span> 目标集群</span>
+                            <select id="customDeployClusterSelect">
+                              <option>prod-gpu-beijing-01</option>
+                              <option>delivery-h800-lab</option>
+                              <option>ascend-910b-site-a</option>
+                            </select>
+                          </label>
+                          <label class="field">
+                            <span class="label"><span class="required">*</span> 命名空间</span>
+                            <select id="customDeployNamespaceSelect">
+                              <option>inferx-prod</option>
+                              <option>model-serving</option>
+                              <option>default</option>
+                            </select>
+                          </label>
+                          <label class="field wide">
+                            <span class="label">values.yaml</span>
+                            <textarea id="customDeployValues" class="helm-values-editor">llm-d-modelservice:
+  modelArtifacts:
+    name: deepseek-ai/DeepSeek-V4-Flash-0731
+    mountPath: /data/model/deepseek-v4-flash-0731
+  routing:
+    proxy:
+      enabled: true
+  prefill:
+    replicas: 2
+  decode:
+    replicas: 1
+    containers:
+      - name: vllm
+        image:
+          repository: vllm/vllm-openai
+          tag: nightly</textarea>
+                          </label>
                         </div>
                       </div>
                       <div class="hint" id="deployHint">当前使用预置模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
@@ -5941,7 +5912,7 @@ resources:
                         <option value="blank">通用模板</option>
                       </select>
                     </label>
-                    <label class="field">
+                    <label class="field" data-structured-field>
                       <span class="label"><span class="required">*</span> 目标集群</span>
                       <select id="deployClusterSelect">
                         <option>prod-gpu-beijing-01</option>
@@ -5950,7 +5921,7 @@ resources:
                         <option data-preset-only-disabled="" disabled="">muxi-gpu-shanghai-01（GPU型号不匹配）</option>
                       </select>
                     </label>
-                    <label class="field">
+                    <label class="field" data-structured-field>
                       <span class="label"><span class="required">*</span> 命名空间</span>
                       <select id="deployNamespaceSelect">
                         <option>inferx-prod</option>
@@ -7925,29 +7896,6 @@ llm-d-modelservice:
           </div>
         </section>
 
-        <section id="deployChoiceModal" class="modal" aria-hidden="true">
-          <div class="modal-backdrop" data-close-modal=""></div>
-          <div class="modal-shell compact deploy-choice-modal" role="dialog" aria-modal="true" aria-labelledby="deployChoiceTitle">
-            <div class="modal-head">
-              <div>
-                <h1 id="deployChoiceTitle">新建部署</h1>
-                <p class="modal-sub">选择部署方式后进入对应的配置页。</p>
-              </div>
-              <button class="btn" type="button" data-close-modal="">关闭</button>
-            </div>
-            <div class="deploy-choice-grid">
-              <button class="deploy-choice-card" type="button" data-start-deploy="template">
-                <strong>模板部署</strong>
-                <span>选择部署模板后进入结构化表单，模板只负责预填默认值。</span>
-              </button>
-              <button class="deploy-choice-card" type="button" data-start-deploy="helm" data-cluster="prod-gpu-beijing-01">
-                <strong>自定义部署</strong>
-                <span>编写 YAML 文件并部署。</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
         <section id="updateParseNotice" class="modal" aria-hidden="true">
           <div class="modal-backdrop"></div>
           <div class="modal-shell compact parse-error-modal" role="alertdialog" aria-modal="true" aria-labelledby="updateParseTitle" aria-describedby="updateParseMessage">
@@ -7982,7 +7930,6 @@ llm-d-modelservice:
     const views = Array.from(document.querySelectorAll(".view"));
     const crumbLabel = document.querySelector("#crumbLabel");
     const valuesModal = document.querySelector("#valuesModal");
-    const deployChoiceModal = document.querySelector("#deployChoiceModal");
     const valuesTitle = document.querySelector("#valuesTitle");
     const detailExternalTag = document.querySelector("#detailExternalTag");
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
@@ -8002,21 +7949,13 @@ llm-d-modelservice:
     const deployTitle = document.querySelector("#deployTitle");
     const deployLead = document.querySelector("#deployLead");
     const yamlDeployPanel = document.querySelector("#yamlDeployPanel");
-    const helmDeployPanel = document.querySelector("#helmDeployPanel");
     const templateDeployLayout = document.querySelector("#templateDeployLayout");
     const deployPreviewButton = document.querySelector("#deployPreviewButton");
     const deployCancelButton = document.querySelector("#deployCancelButton");
     const deploySubmitButton = document.querySelector("#deploySubmitButton");
     const yamlEntry = document.querySelector("#yamlEntry");
     const yamlInput = document.querySelector("#yamlInput");
-    const yamlImportInput = document.querySelector("#yamlImportInput");
     const yamlImportPanel = document.querySelector("#yamlImportPanel");
-    const yamlImportBody = document.querySelector("#yamlImportBody");
-    const yamlImportToggle = document.querySelector("#yamlImportToggle");
-    const yamlImportFile = document.querySelector("#yamlImportFile");
-    const yamlImportButton = document.querySelector("#yamlImportButton");
-    const yamlParseButton = document.querySelector("#yamlParseButton");
-    const yamlImportStatus = document.querySelector("#yamlImportStatus");
     const templateLibraryPicker = document.querySelector("#templateLibraryPicker");
     const templateModelFilter = document.querySelector("#templateModelFilter");
     const templateGpuFilter = document.querySelector("#templateGpuFilter");
