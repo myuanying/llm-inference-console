@@ -173,7 +173,7 @@
       margin: 0;
       padding-top: 48px;
       background: var(--bg);
-      color: var(--text);
+      color: var(--muted);
       font-size: 13px;
       letter-spacing: 0;
     }
@@ -4201,6 +4201,77 @@
       grid-column: 1 / 4;
       max-width: none !important;
     }
+    #deploy .runtime-param-form {
+      align-items: start;
+    }
+    #deploy .runtime-param-list {
+      grid-column: 2 / 4;
+      display: grid;
+      gap: 8px;
+      width: min(620px, 100%);
+    }
+    #deploy .runtime-param-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 24px;
+      gap: 8px;
+      align-items: center;
+    }
+    #deploy .runtime-param-input {
+      width: 100%;
+      height: 32px;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: #fff;
+      color: var(--fg);
+      font-size: 12px;
+      padding: 0 10px;
+      outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+    #deploy .runtime-param-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(42, 130, 228, .12);
+    }
+    #deploy .runtime-param-input.is-invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 2px rgba(232, 79, 79, .12);
+    }
+    #deploy .runtime-param-input::placeholder {
+      color: var(--meta);
+      opacity: 1;
+    }
+    #deploy .runtime-param-error {
+      grid-column: 2 / 4;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 18px;
+      margin-top: -4px;
+    }
+    #deploy .runtime-param-delete {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--text-subtle);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 22px;
+      padding: 0;
+    }
+    #deploy .runtime-param-delete:hover {
+      background: var(--bg-subtle);
+      color: var(--text);
+    }
+    #deploy .runtime-param-add {
+      min-width: 0;
+      height: 22px;
+      padding: 0 2px;
+      color: var(--accent);
+      font-weight: 500;
+      line-height: 22px;
+    }
     #deploy .deploy-config-mode .resource-advanced {
       margin: 0 !important;
       display: grid;
@@ -5367,18 +5438,42 @@
     .tl-side .filter-chip.active { border-color: var(--info); background: var(--info-soft); color: var(--fg); font-weight: 600; }
 
     .template-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-    .library-card { display: block; min-height: 0; padding: 20px; border: 0; border-radius: 10px; background: var(--surface); box-shadow: var(--elev-raised); transition: box-shadow var(--motion-fast); }
+    .library-card { display: block; min-width: 0; min-height: 0; box-sizing: border-box; padding: 20px; border: 0; border-radius: 10px; background: var(--surface); box-shadow: var(--elev-raised); transition: box-shadow var(--motion-fast); }
     .library-card:hover { background: var(--surface); box-shadow: 0 6px 16px rgb(0 0 0 / 0.14); }
     .library-card.selected { border: 0; background: var(--surface); box-shadow: var(--elev-raised), 0 0 0 1px var(--selection); }
     .library-card[hidden] { display: none; }
     .lc-ic { width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; background: var(--bg-subtle); color: var(--nav-icon-selected); font-size: 24px; line-height: 1; }
-    .lc-main { min-width: 0; display: grid; gap: 10px; }
-    .lc-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .lc-main { width: 100%; min-width: 0; max-width: 100%; display: grid; gap: 10px; }
+    .lc-head { width: 100%; max-width: 100%; display: flex; align-items: center; gap: 12px; min-width: 0; }
     .lc-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-2); font-size: 14px; line-height: 20px; font-weight: 600; }
-    .lc-ops { margin-left: 0; }
+    .lc-head > .tag { flex: 0 1 auto; min-width: 0; max-width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lc-ops { flex: 0 0 auto; margin-left: 0; }
     .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .lc-alias { margin: 0; color: var(--muted); font-size: 12px; line-height: 18px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lc-desc { margin: 0; color: var(--muted); font-size: 13px; line-height: 20px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .lc-description { position: relative; min-width: 0; max-width: 100%; margin: -2px 0 0; color: var(--muted); font-size: 12px; line-height: 18px; cursor: help; }
+    .lc-description > span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .template-desc-tooltip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 360px;
+      padding: 8px 10px;
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      background: var(--surface);
+      box-shadow: var(--elev-popper);
+      color: var(--fg);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: normal;
+      word-break: break-word;
+      pointer-events: none;
+    }
+    .lc-desc { min-width: 0; max-width: 100%; margin: 0; color: var(--muted); font-size: 13px; line-height: 20px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
     .lc-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border-row); color: var(--meta); font-size: 12px; line-height: 16px; }
     #template-import.active, #template-detail.active { padding-bottom: 88px; }
     .template-import-shell { display: grid; gap: 16px; max-width: 1040px; }
@@ -5386,8 +5481,17 @@
     #template-detail .template-import-basic-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    #template-import .template-description-input,
+    #template-detail .template-description-input {
+      grid-column: 2 / 4;
+      width: 100%;
+      min-height: 72px;
+      max-width: none;
+      resize: vertical;
+    }
     /* 查看模板：仅展示，YAML 只读但保留滚动与复制 */
-    .template-detail-shell.is-readonly .template-import-yaml {
+    .template-detail-shell.is-readonly .template-import-yaml,
+    .template-detail-shell.is-readonly .template-description-input {
       background: var(--bg);
       border-color: var(--border);
       color: var(--fg-input-disabled);
@@ -5842,7 +5946,7 @@ resources:
                     <strong>部署清单</strong>
                     <ul id="deployChecklist">
                       <li>组件：llm-d、inferencepool、gateway、nvidia-device-plugin、rdma-device-plugin、prometheus-agent</li>
-                      <li>角色：prefill、decode、gateway 与 EPP 独立配置，gateway 和 EPP 配置项一致</li>
+                      <li>角色：prefill、decode、gateway 与 llm-d router 独立配置，gateway 和 llm-d router 配置项一致</li>
                     </ul>
                   </div>
                 </div>
@@ -5858,7 +5962,7 @@ resources:
                     <button type="button" class="active" data-role="prefill">prefill</button>
                     <button type="button" data-role="decode">decode</button>
                     <button type="button" data-role="gateway">gateway</button>
-                    <button type="button" data-role="epp">EPP</button>
+                    <button type="button" data-role="router">llm-d router</button>
                   </div>
 
                   <div class="form-grid three">
@@ -6043,8 +6147,8 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                         </label>
                       </div>
                     </div>
-                    <div class="role-command" data-command-role="epp" hidden="">
-                      <h3>EPP 启动命令</h3>
+                    <div class="role-command" data-command-role="router" hidden="">
+                      <h3>llm-d router 启动命令</h3>
                       <div class="form-grid">
                         <label class="field wide">
                           <span class="label">启动命令</span>
@@ -6222,6 +6326,29 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                           </div>
                         </div>
                       </div>
+                      </div>
+                      </div>
+                    </div>
+
+                    <!-- map: <dao-form-item> 容器运行参数配置 -->
+                    <div class="adv-item adv-acc" data-adv="" data-adv-acc="" id="adv-runtime-params">
+                      <button type="button" class="adv-acc-head" aria-expanded="false" aria-controls="adv-runtime-params-panel" data-adv-acc-toggle=""><svg class="adv-acc-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="adv-acc-title">运行参数</span><span class="tag">选填</span><span class="adv-acc-state" data-adv-acc-state=""></span></button>
+                      <div class="adv-acc-panel" id="adv-runtime-params-panel" hidden="">
+                      <div class="nest-head"><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" aria-label="运行参数" data-dao="switch" data-switch="" data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
+                      <div class="nest nest--compact" data-adv-body="" hidden="">
+                        <div class="form-grid runtime-param-form">
+                          <span class="label">运行参数</span>
+                          <div class="runtime-param-list" id="runtimeParamRows">
+                            <div class="runtime-param-row">
+                              <input class="runtime-param-input" placeholder="控制容器运行命令的运行参数">
+                              <button type="button" class="runtime-param-delete" data-runtime-param-delete="" aria-label="删除运行参数">×</button>
+                            </div>
+                          </div>
+                          <div class="runtime-param-error" id="runtimeParamError" hidden="">运行参数不能为空</div>
+                          <div class="inline-actions runtime-param-actions">
+                            <button type="button" class="btn text runtime-param-add" id="runtimeParamAddButton">+ 添加</button>
+                          </div>
+                        </div>
                       </div>
                       </div>
                     </div>
@@ -6790,6 +6917,10 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                     <span class="label">别名</span>
                     <input id="importTemplateAlias" placeholder="DeepSeek V4 Flash 生产模板">
                   </label>
+                  <label class="field wide">
+                    <span class="label">描述信息</span>
+                    <textarea id="importTemplateDescription" class="template-description-input" placeholder="描述模板适用模型、硬件规格、推理方式或使用场景"></textarea>
+                  </label>
                   <label class="field">
                     <span class="label"><span class="required">*</span> 模板状态</span>
                     <select id="importTemplateStatus">
@@ -6843,6 +6974,10 @@ llm-d-modelservice:
                   <label class="field">
                     <span class="label">别名</span>
                     <input id="templateDetailAlias" placeholder="DeepSeek V4 Flash 生产模板">
+                  </label>
+                  <label class="field wide">
+                    <span class="label">描述信息</span>
+                    <textarea id="templateDetailDescription" class="template-description-input" placeholder="描述模板适用模型、硬件规格、推理方式或使用场景"></textarea>
                   </label>
                   <label class="field">
                     <span class="label"><span class="required">*</span> 模板状态</span>
@@ -7766,9 +7901,11 @@ llm-d-modelservice:
     const templateLibraryGrid = document.querySelector("#templateLibraryGrid");
     const submitTemplateImport = document.querySelector("#submitTemplateImport");
     const templateImportStatus = document.querySelector("#templateImportStatus");
+    const importTemplateDescription = document.querySelector("#importTemplateDescription");
     const templateDetailTitle = document.querySelector("#templateDetailTitle");
     const templateDetailName = document.querySelector("#templateDetailName");
     const templateDetailAlias = document.querySelector("#templateDetailAlias");
+    const templateDetailDescription = document.querySelector("#templateDetailDescription");
     const templateDetailStatus = document.querySelector("#templateDetailStatus");
     const templateDetailYaml = document.querySelector("#templateDetailYaml");
     const templateDetailHint = document.querySelector("#templateDetailHint");
@@ -8384,10 +8521,10 @@ llm-d-modelservice:
     // 名称 / 模型 / 编排框架 / 部署方式 / GPU / 状态 / 推理引擎 / 硬件全部直接读那份定义，不在这里再抄一份，
     // 避免「模板库」与「部署配置」两处数据漂移。只有副本数与更新时间是模板库特有的展示信息。
     const templateLibraryExtras = {
-      deepseek: { alias: "DeepSeek V4 Flash 生产模板", replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2*H800*4卡，decode 1*H800*4卡 · DP4", updated: "2026-08-31 16:28" },
-      glm: { alias: "Qwen3 32B Dynamo 模板", replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2*H800*4卡 · DP2", updated: "2026-09-04 09:18" },
-      qwen: { alias: "Qwen3 235B 生产模板", replicas: "model-server 1 副本", resourceSummary: "model-server 1*H800*8卡 · TP8", updated: "2026-08-28 10:42" },
-      dynamoScout: { alias: "Llama 4 Scout 实验模板", replicas: "prefill / decode worker pool", resourceSummary: "prefill 2*H800*4卡，decode 2*H800*4卡 · KV router", updated: "2026-09-03 15:22" }
+      deepseek: { alias: "DeepSeek V4 Flash 生产模板", description: "面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。", replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2*H800*4卡，decode 1*H800*4卡 · DP4", updated: "2026-08-31 16:28" },
+      glm: { alias: "Qwen3 32B Dynamo 模板", description: "适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。", replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2*H800*4卡 · DP2", updated: "2026-09-04 09:18" },
+      qwen: { alias: "Qwen3 235B 生产模板", description: "面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。", replicas: "model-server 1 副本", resourceSummary: "model-server 1*H800*8卡 · TP8", updated: "2026-08-28 10:42" },
+      dynamoScout: { alias: "Llama 4 Scout 实验模板", description: "用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。", replicas: "prefill / decode worker pool", resourceSummary: "prefill 2*H800*4卡，decode 2*H800*4卡 · KV router", updated: "2026-09-03 15:22" }
     };
 
     const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
@@ -8422,6 +8559,7 @@ llm-d-modelservice:
           preset: true,
           title: card.querySelector("strong")?.textContent.trim() || "",
           alias: extra.alias || "",
+          description: extra.description || "",
           model: detail["模型"] || "",
           gpu: card.dataset.gpu || "",
           framework: card.dataset.framework || "",
@@ -8576,7 +8714,7 @@ llm-d-modelservice:
         decode: "vllm serve ${MODEL_PATH} --port 8200 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --enable-expert-parallel --kv-transfer-config ${KV_TRANSFER_CONFIG}",
         server: "vllm serve ${MODEL_PATH} --port 8000 --served-model-name ${SERVED_MODEL_NAME} --trust-remote-code --max-model-len 128K",
         gateway: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080",
-        epp: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080"
+        router: "llm-d-gateway --service-name ${SERVICE_NAME} --port 8080"
       },
       dynamo: {
         prefill: "python -m dynamo.worker --role prefill --model ${MODEL_PATH} --served-model-name ${SERVED_MODEL_NAME} --enable-kv-router",
@@ -9524,7 +9662,7 @@ llm-d-modelservice:
       if (!templateLibraryGrid) return;
       const templates = templateLibraryItems();
       templateLibraryGrid.innerHTML = templates.map(item => `
-                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.alias || "")} ${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
+                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.alias || "")} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
                     <div class="lc-main">
                       <div class="lc-head">
                         <span class="lc-ic" aria-hidden="true">◎</span>
@@ -9534,11 +9672,35 @@ llm-d-modelservice:
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
                       <p class="lc-alias">别名：${escapeHtml(item.alias || "-")}</p>
+                      <p class="lc-description" data-full="${escapeHtml(item.description || "-")}"><span>描述：${escapeHtml(item.description || "-")}</span></p>
                       <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resourceSummary || `${item.resource}，${item.replicas}`)}</p>
                       <div class="lc-foot"><span class="lc-time">${escapeHtml(item.updated || "2026-08-30 10:00")}</span></div>
                     </div>
                   </article>`).join("");
       applyTemplateLibraryFilters();
+    }
+
+    let templateDescTooltip = null;
+    function ensureTemplateDescTooltip() {
+      if (!templateDescTooltip) {
+        templateDescTooltip = document.createElement("div");
+        templateDescTooltip.className = "template-desc-tooltip";
+        templateDescTooltip.hidden = true;
+        document.body.append(templateDescTooltip);
+      }
+      return templateDescTooltip;
+    }
+
+    function positionTemplateDescTooltip(event) {
+      if (!templateDescTooltip || templateDescTooltip.hidden) return;
+      const gap = 12;
+      const width = Math.min(360, window.innerWidth - 32);
+      templateDescTooltip.style.maxWidth = `${width}px`;
+      const rect = templateDescTooltip.getBoundingClientRect();
+      const left = Math.min(event.clientX + gap, window.innerWidth - rect.width - gap);
+      const top = Math.min(event.clientY + gap, window.innerHeight - rect.height - gap);
+      templateDescTooltip.style.left = `${Math.max(gap, left)}px`;
+      templateDescTooltip.style.top = `${Math.max(gap, top)}px`;
     }
 
     function matchesTemplateLibraryFilter(row) {
@@ -9607,6 +9769,7 @@ llm-d-modelservice:
     function submitTemplateImportForm() {
       const title = templateImportValue("importTemplateName");
       const alias = templateImportValue("importTemplateAlias");
+      const description = templateImportValue("importTemplateDescription");
       const status = templateImportValue("importTemplateStatus");
       const yaml = templateImportValue("importTemplateYaml");
       if (!title || !status || !yaml) {
@@ -9614,7 +9777,7 @@ llm-d-modelservice:
         return;
       }
       const meta = deriveTemplateMeta(status, yaml);
-      importedTemplates.unshift({ id: `imported-${++importedTemplateSeq}`, title, alias, ...meta, model: meta.model || title });
+      importedTemplates.unshift({ id: `imported-${++importedTemplateSeq}`, title, alias, description, ...meta, model: meta.model || title });
       renderTemplateLibrary();
       bindGeneratedViewButtons();
       if (templateImportStatus) templateImportStatus.textContent = "";
@@ -9642,6 +9805,7 @@ llm-d-modelservice:
       if (templateDetailTitle) templateDetailTitle.textContent = editing ? "编辑模板" : "查看模板";
       if (templateDetailName) templateDetailName.disabled = true;
       if (templateDetailAlias) templateDetailAlias.disabled = !editing;
+      if (templateDetailDescription) templateDetailDescription.disabled = !editing;
       if (templateDetailStatus) templateDetailStatus.disabled = !editing;
       if (templateDetailYaml) {
         templateDetailYaml.disabled = false;
@@ -9659,6 +9823,7 @@ llm-d-modelservice:
       activeTemplateMode = mode === "edit" ? "edit" : "view";
       if (templateDetailName) templateDetailName.value = item.title || "";
       if (templateDetailAlias) templateDetailAlias.value = item.alias || "";
+      if (templateDetailDescription) templateDetailDescription.value = item.description || "";
       if (templateDetailStatus) templateDetailStatus.value = item.status || "生产可用";
       if (templateDetailYaml) templateDetailYaml.value = item.yaml || "";
       activeTemplateDetailBaseYaml = item.yaml || "";
@@ -9677,6 +9842,7 @@ llm-d-modelservice:
       }
       const title = (templateDetailName?.value || "").trim();
       const alias = (templateDetailAlias?.value || "").trim();
+      const description = (templateDetailDescription?.value || "").trim();
       const status = templateDetailStatus?.value || "";
       const yaml = (templateDetailYaml?.value || "").trim();
       if (!title || !status || !yaml) {
@@ -9684,7 +9850,7 @@ llm-d-modelservice:
         return;
       }
       const meta = deriveTemplateMeta(status, yaml);
-      const patch = { ...meta, title, alias, model: meta.model || title, updated: currentMinuteText() };
+      const patch = { ...meta, title, alias, description, model: meta.model || title, updated: currentMinuteText() };
       const imported = importedTemplates.find(item => item.id === activeTemplateId);
       if (imported) {
         Object.assign(imported, patch);
@@ -9745,6 +9911,27 @@ llm-d-modelservice:
       });
       applyTemplateLibraryFilters();
     }
+
+    templateLibraryGrid?.addEventListener("mouseover", event => {
+      const desc = event.target.closest(".lc-description");
+      if (!desc || !templateLibraryGrid.contains(desc)) return;
+      const text = desc.dataset.full || "";
+      if (!text || text === "-") return;
+      const tooltip = ensureTemplateDescTooltip();
+      tooltip.textContent = text;
+      tooltip.hidden = false;
+      positionTemplateDescTooltip(event);
+    });
+    templateLibraryGrid?.addEventListener("mousemove", event => {
+      if (event.target.closest(".lc-description")) positionTemplateDescTooltip(event);
+    });
+    templateLibraryGrid?.addEventListener("mouseout", event => {
+      const desc = event.target.closest(".lc-description");
+      if (!desc) return;
+      const next = event.relatedTarget;
+      if (next instanceof Node && desc.contains(next)) return;
+      if (templateDescTooltip) templateDescTooltip.hidden = true;
+    });
 
     document.addEventListener("click", event => {
       const observeButton = event.target.closest("#observeRows [data-service], #observeRows [data-view], #observeRows [data-detail-jump]");
@@ -9837,6 +10024,10 @@ llm-d-modelservice:
       const serviceType = item.serviceType || activeServiceType || "llm-d";
       const mode = item.mode || "split";
       const splitMode = mode === "split";
+      const runtimeArgs = Array.isArray(item.runtimeArgs) ? item.runtimeArgs.filter(Boolean) : [];
+      const runtimeArgsBlock = runtimeArgs.length ? `
+        args:${runtimeArgs.map(arg => `
+          - "${String(arg).replace(/"/g, '\\"')}"`).join("")}` : "";
       const distributedBlock = item.distributedInference ? `
       distributedInference:
         enabled: true
@@ -9899,7 +10090,7 @@ llm-d-modelservice:
       tensor: 1
       data: ${item.gpus || "1"}
     containers:
-      - name: ${serviceType === "dynamo" ? "dynamo" : "vllm"}
+      - name: ${serviceType === "dynamo" ? "dynamo" : "vllm"}${runtimeArgsBlock}
         image:
           registry: ${image.registry}
           repository: ${image.repository}
@@ -9936,7 +10127,12 @@ llm-d-modelservice:
         gpuType: gpuTypeSelect?.value || "",
         nodePool: nodePoolSelect.value,
         cpu: cpuInput.value,
-        memory: memoryInput.value
+        memory: memoryInput.value,
+        runtimeArgs: document.querySelector("#adv-runtime-params [data-switch]")?.classList.contains("is-checked")
+          ? Array.from(document.querySelectorAll("#runtimeParamRows .runtime-param-input"))
+            .map(input => input.value.trim())
+            .filter(Boolean)
+          : []
       };
     }
 
@@ -10417,7 +10613,7 @@ llm-d-modelservice:
       document.querySelectorAll("#roleTabs button").forEach(item => {
         item.classList.toggle("active", item.dataset.role === role);
       });
-      const noExtraConfigRole = role === "frontend" || role === "gateway" || role === "epp";
+      const noExtraConfigRole = role === "frontend" || role === "gateway" || role === "router";
       document.querySelectorAll("[data-command-role]").forEach(card => {
         card.hidden = card.dataset.commandRole !== role || noExtraConfigRole;
       });
@@ -10508,21 +10704,22 @@ llm-d-modelservice:
       if (mode === "split") {
         deployChecklist.innerHTML = `
           <li>组件：llm-d、inferencepool、gateway、device-plugin、rdma-device-plugin、prometheus-agent</li>
-          <li>角色：prefill、decode、gateway 与 EPP 独立配置，gateway 和 EPP 配置项一致</li>
+          <li>角色：prefill、decode、gateway 与 llm-d router 独立配置，gateway 和 llm-d router 配置项一致</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="prefill">prefill</button>
           <button type="button" data-role="decode">decode</button>
           <button type="button" data-role="gateway">gateway</button>
-          <button type="button" data-role="epp">EPP</button>
+          <button type="button" data-role="router">llm-d router</button>
         `;
       } else {
         deployChecklist.innerHTML = `
-          <li>组件：llm-d、device-plugin、prometheus-agent</li>
-          <li>角色：model-server 同时承担 prefill 与 decode，适合快速部署和中低复杂度场景</li>
+          <li>组件：llm-d、llm-d-router、device-plugin、prometheus-agent</li>
+          <li>角色：model-server 同时承担 prefill 与 decode，llm-d router 负责请求路由</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="server">model-server</button>
+          <button type="button" data-role="router">llm-d router</button>
         `;
       }
       bindRoleTabs();
@@ -11232,6 +11429,64 @@ llm-d-modelservice:
       acc.classList.toggle("is-open", open);
       head.setAttribute("aria-expanded", String(open));
       panel.hidden = !open;
+    });
+    function createRuntimeParamRow(value = "") {
+      const row = document.createElement("div");
+      row.className = "runtime-param-row";
+      const input = document.createElement("input");
+      input.className = "runtime-param-input";
+      input.placeholder = "控制容器运行命令的运行参数";
+      input.value = value;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "runtime-param-delete";
+      button.dataset.runtimeParamDelete = "";
+      button.setAttribute("aria-label", "删除运行参数");
+      button.textContent = "×";
+      row.append(input, button);
+      return row;
+    }
+    function validateRuntimeParams() {
+      const rows = document.querySelector("#runtimeParamRows");
+      const inputs = Array.from(rows?.querySelectorAll(".runtime-param-input") || []);
+      const emptyInputs = inputs.filter(input => !input.value.trim());
+      inputs.forEach(input => {
+        input.classList.toggle("is-invalid", emptyInputs.includes(input));
+      });
+      const error = document.querySelector("#runtimeParamError");
+      if (error) error.hidden = emptyInputs.length === 0;
+      if (emptyInputs.length) {
+        emptyInputs[0].focus();
+        return false;
+      }
+      return true;
+    }
+    document.addEventListener("click", event => {
+      const addButton = event.target.closest("#runtimeParamAddButton");
+      if (addButton) {
+        if (!validateRuntimeParams()) return;
+        document.querySelector("#runtimeParamRows")?.append(createRuntimeParamRow());
+        return;
+      }
+      const deleteButton = event.target.closest("[data-runtime-param-delete]");
+      if (!deleteButton) return;
+      const row = deleteButton.closest(".runtime-param-row");
+      const rows = row?.closest("#runtimeParamRows");
+      if (!row || !rows) return;
+      if (rows.querySelectorAll(".runtime-param-row").length <= 1) {
+        row.querySelector(".runtime-param-input").value = "";
+        return;
+      }
+      row.remove();
+      validateRuntimeParams();
+    });
+    document.addEventListener("input", event => {
+      const input = event.target.closest(".runtime-param-input");
+      if (!input) return;
+      input.classList.toggle("is-invalid", !input.value.trim());
+      const hasEmpty = Array.from(document.querySelectorAll("#runtimeParamRows .runtime-param-input")).some(item => !item.value.trim());
+      const error = document.querySelector("#runtimeParamError");
+      if (error) error.hidden = !hasEmpty;
     });
     document.addEventListener("click", event => {
       const addButton = event.target.closest("#envVarAddButton");
