@@ -5831,12 +5831,12 @@ resources:
             <div>
               <div class="panel">
                 <div class="panel-head">
-                  <h2>部署模板</h2>
+                  <h2>基本信息</h2>
                 </div>
                 <div class="panel-body">
                   <div class="form-grid">
                     <label class="field wide">
-                      <span class="label"><span class="required">*</span> 部署模板</span>
+                      <span class="label"><span class="required">*</span> 部署方式</span>
                       <span class="template-mode-grid">
                         <button type="button" class="template-mode-card active" data-deploy-template-mode="preset">
                           <strong>预置模板</strong>
@@ -7241,7 +7241,7 @@ llm-d-modelservice:
                 </div>
 
                 <div class="panel-head" id="detailConfigHead" style="padding-left:0;padding-right:0;margin-top:18px;">
-                  <h2>结构化配置</h2>
+                  <h2>模型服务配置</h2>
                 </div>
                 <div class="config-groups" id="detailConfig">
                   <table>
@@ -8673,6 +8673,10 @@ llm-d-modelservice:
       { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
 
+    const detailOnlyIssueTags = {
+      "dynamo-qwen3-colocated-prod": [{ label: "性能异常", color: "amber" }]
+    };
+
     const observeRowsData = [
       { service: "deepseek-v4-flash-h800-prod", metrics: [["21.4", "blue", "0,24 12,21 24,23 36,18 48,20 60,14 72,17 84,12 96,15 108,9 120,12"], ["428", "green", "0,25 12,22 24,23 36,19 48,20 60,16 72,18 84,13 96,15 108,10 120,11"], ["286 ms", "amber", "0,24 12,23 24,25 36,21 48,22 60,20 72,19 84,18 96,17 108,15 120,16"], ["24 ms", "purple", "0,20 12,21 24,19 36,20 48,18 60,19 72,17 84,18 96,16 108,17 120,15"], ["91.8%", "green", "0,22 12,20 24,21 36,18 48,19 60,16 72,17 84,14 96,15 108,12 120,13"], ["6", "green", "0,24 12,23 24,25 36,21 48,22 60,18 72,20 84,16 96,18 108,14 120,15"]] },
       { service: "qwen3-235b-prod", metrics: [["3.2", "amber", "0,16 12,20 24,18 36,24 48,21 60,26 72,23 84,28 96,25 108,30 120,27"], ["72", "amber", "0,15 12,19 24,17 36,22 48,20 60,25 72,24 84,28 96,26 108,30 120,29"], ["690 ms", "amber", "0,15 12,17 24,16 36,20 48,19 60,22 72,21 84,25 96,24 108,28 120,27"], ["47 ms", "purple", "0,16 12,18 24,17 36,19 48,18 60,21 72,20 84,22 96,21 108,24 120,23"], ["68.5%", "amber", "0,18 12,20 24,19 36,22 48,21 60,24 72,23 84,26 96,25 108,28 120,27"], ["31", "amber", "0,14 12,16 24,15 36,19 48,18 60,22 72,21 84,25 96,24 108,28 120,27"]] },
@@ -9070,13 +9074,6 @@ llm-d-modelservice:
       }
       if (!detailConfig) return;
       detailConfig.querySelectorAll("[data-detail-alias-row]").forEach(row => row.remove());
-      const firstList = detailConfig.querySelector(".cfg-sub .kv-list");
-      if (!firstList) return;
-      const row = document.createElement("div");
-      row.className = "kvr";
-      row.dataset.detailAliasRow = "";
-      row.innerHTML = `<span class="kvr-l">别名</span><span class="kvr-v">${escapeHtml(value)}</span>`;
-      firstList.prepend(row);
     }
 
     function renderDetail(service) {
@@ -9091,7 +9088,11 @@ llm-d-modelservice:
       const alias = serviceRow?.alias || "";
       const isExternalService = Boolean(serviceRow?.external);
       const serviceState = serviceRow?.serviceState || profile.health;
-      const serviceIssues = [...(serviceRow?.auxiliaryTags || []), ...(serviceRow?.issueTags || [])];
+      const serviceIssues = [
+        ...(serviceRow?.auxiliaryTags || []),
+        ...(serviceRow?.issueTags || []),
+        ...(detailOnlyIssueTags[serviceRow?.id] || [])
+      ];
       detailHealthTag.textContent = serviceState[0];
       detailHealthTag.className = tagClass(serviceState[1]);
       detailSyncTag.className = "detail-issue-tags";
