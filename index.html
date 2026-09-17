@@ -6364,8 +6364,8 @@ resources:
                   <div class="notice">
                     <strong>部署清单</strong>
                     <ul id="deployChecklist">
-                      <li>组件：llm-d、gateway、nvidia-device-plugin、prometheus-agent</li>
-                      <li>角色：prefill、decode、gateway 与 llm-d router 独立配置</li>
+                      <li>组件：llm-d、routing-proxy、nvidia-device-plugin、prometheus-agent</li>
+                      <li>角色：prefill、decode、routing-proxy 与 llm-d router 独立配置</li>
                     </ul>
                   </div>
                 </div>
@@ -6380,7 +6380,7 @@ resources:
                   <div class="role-tabs" id="roleTabs">
                     <button type="button" class="active" data-role="prefill">prefill</button>
                     <button type="button" data-role="decode">decode</button>
-                    <button type="button" data-role="gateway">gateway</button>
+                    <button type="button" data-role="gateway">routing-proxy</button>
                     <button type="button" data-role="router">llm-d router</button>
                   </div>
 
@@ -11122,13 +11122,13 @@ llm-d-modelservice:
       }
       if (mode === "split") {
         deployChecklist.innerHTML = `
-          <li>组件：llm-d、gateway、prometheus-agent</li>
-          <li>角色：prefill、decode、gateway 与 llm-d router 独立配置</li>
+          <li>组件：llm-d、routing-proxy、prometheus-agent</li>
+          <li>角色：prefill、decode、routing-proxy 与 llm-d router 独立配置</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="prefill">prefill</button>
           <button type="button" data-role="decode">decode</button>
-          <button type="button" data-role="gateway">gateway</button>
+          <button type="button" data-role="gateway">routing-proxy</button>
           <button type="button" data-role="router">llm-d router</button>
         `;
       } else {
