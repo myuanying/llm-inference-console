@@ -895,6 +895,26 @@
       background: var(--accent-soft);
     }
 
+    #deploy .template-card {
+      min-height: 138px;
+    }
+
+    #deploy .template-card strong,
+    #deploy .template-card > span:not(.template-detail) {
+      padding-right: 0;
+    }
+
+    #deploy .template-card-head {
+      padding-right: 92px;
+    }
+
+    #deploy .template-resource-line {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      word-break: break-word;
+    }
+
     #deploy .template-edit-inline {
       margin-left: auto;
       min-height: 26px;
@@ -913,7 +933,7 @@
       opacity: .62;
     }
 
-    #deploy .is-template-locked button:not([data-edit-from-template]),
+    #deploy .is-template-locked button:not([data-edit-from-template]):not([data-template-unlocked]),
     #deploy .is-template-locked input,
     #deploy .is-template-locked select,
     #deploy .is-template-locked textarea {
@@ -934,6 +954,10 @@
       background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
+    }
+
+    #deploy .is-template-locked button[data-template-unlocked] {
+      cursor: pointer;
     }
 
     #deploy .is-template-locked #roleTabs button {
@@ -1294,7 +1318,7 @@
     }
 
     .template-card {
-      min-height: 104px;
+      min-height: 132px;
       position: relative;
       display: grid;
       align-content: start;
@@ -1316,6 +1340,51 @@
     .template-card strong { font-size: 14px; line-height: 1.35; }
     .template-card span { color: var(--muted); font-size: 12px; line-height: 1.45; }
     .template-card small { color: var(--blue); font-size: 12px; font-weight: 600; }
+    .template-card-head {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      padding-right: 24px;
+    }
+    .template-card-head strong {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--fg-2);
+    }
+    .template-ic {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      color: var(--nav-icon-selected) !important;
+      font-size: 16px !important;
+      line-height: 1 !important;
+    }
+    .template-name-line,
+    .template-resource-line {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .template-name-line b,
+    .template-resource-line b {
+      color: var(--fg);
+      font-weight: 600;
+    }
+    .template-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .template-tags .tag {
+      line-height: 18px;
+    }
 
     .template-detail {
       display: none;
@@ -5084,9 +5153,13 @@
     }
     #deploy .rdma-param-grid {
       display: grid;
-      grid-template-columns: minmax(220px, 1.2fr) minmax(150px, .8fr) minmax(150px, .8fr);
+      gap: 8px;
+    }
+    #deploy .rdma-param-row {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.2fr) minmax(150px, .8fr) 24px;
       gap: 10px;
-      align-items: start;
+      align-items: end;
     }
     #deploy .rdma-param {
       display: grid !important;
@@ -5107,6 +5180,41 @@
     #deploy .rdma-param > .num-field {
       width: 100%;
       max-width: none;
+    }
+    #deploy .rdma-param-delete {
+      width: 24px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      color: var(--icon);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    #deploy .rdma-param-delete:hover {
+      color: var(--icon-hover);
+    }
+    #deploy .rdma-param-add {
+      width: max-content;
+      min-width: 0;
+      height: 24px;
+      padding: 0;
+      color: var(--accent);
+      background: transparent;
+      justify-content: flex-start;
+    }
+    #deploy .rdma-param-error {
+      color: var(--red);
+      font-size: 12px;
+      line-height: 16px;
+    }
+    #deploy .rdma-param .is-invalid,
+    #deploy .rdma-param .num-field:has(.is-invalid) {
+      border-color: var(--red) !important;
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 20%, transparent);
     }
 
     /* ---- 数值输入（参考样式）：输入区 + 内置上下步进 + 灰底单位后缀，30px r3 ---- */
@@ -5503,6 +5611,30 @@
     .case-group .dataset-grid {
       padding: 0 12px 12px;
     }
+    .case-required-item {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      min-height: 58px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-subtle);
+    }
+    .case-required-icon {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      border-radius: 3px;
+      background: var(--info);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
     .dataset-option {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
@@ -5609,6 +5741,15 @@
     .lc-ops { flex: 0 0 auto; margin-left: 0; }
     .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .lc-alias { margin: 0; color: var(--muted); font-size: 12px; line-height: 18px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lc-field { min-width: 0; margin: 0; color: var(--muted); font-size: 12px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lc-field > span { color: var(--meta); }
+    .lc-field > strong { color: var(--fg); font-weight: 600; }
+    .lc-resource {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      word-break: break-word;
+    }
     .lc-description { position: relative; min-width: 0; max-width: 100%; margin: -2px 0 0; color: var(--muted); font-size: 12px; line-height: 18px; cursor: help; }
     .lc-description > span {
       display: block;
@@ -5860,37 +6001,41 @@ resources:
                           </select>
                         </span>
                         <span class="template-grid">
-                          <span role="button" tabindex="0" class="template-card active" data-template-card="deepseek" data-model="DeepSeek-V4-Flash DeepSeek-V4-Flash-0731" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 分离">
+                          <span role="button" tabindex="0" class="template-card active" data-template-card="deepseek" data-template-name="DeepSeek-V4-Flash" data-model-name="DeepSeek-V4-Flash-0731" data-model="DeepSeek-V4-Flash DeepSeek-V4-Flash-0731" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 分离" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>DeepSeek-V4-Flash-0731</strong></span>
+                          <span class="template-name-line">模板名称：<b>DeepSeek-V4-Flash</b></span>
+                          <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 分离</span><span class="tag">vLLM</span></span>
+                          <span class="template-resource-line">资源配置：<b>prefill 2副本 * H800 * 4卡，decode 1副本 * H800 * 4卡</b></span>
+                          <small>生产可用</small>
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 DeepSeek-V4-Flash 部署">编辑部署</button>
-                          <strong>DeepSeek-V4-Flash</strong>
-                          <span>编排框架：llm-d</span>
-                          <span>H800 / vLLM / PD 分离</span>
-                          <small>生产可用</small>
-                          <span class="template-detail">编排框架：llm-d<br>模型：DeepSeek-V4-Flash-0731<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 分离</span>
+                          <span class="template-detail">创建时间：2026-08-31 16:28<br>描述：面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。</span>
                           </span>
-                          <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置">
+                          <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-template-name="Qwen3-32B" data-model-name="Qwen3-32B" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Qwen3-32B</strong></span>
+                          <span class="template-name-line">模板名称：<b>Qwen3-32B</b></span>
+                          <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 共置</span><span class="tag">vLLM</span></span>
+                          <span class="template-resource-line">资源配置：<b>worker-pool 2副本 * H800 * 4卡</b></span>
+                          <small>生产可用</small>
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-32B 部署">编辑部署</button>
-                          <strong>Qwen3-32B</strong>
-                          <span>编排框架：dynamo</span>
-                          <span>H800 / vLLM / PD 共置</span>
-                          <small>生产可用</small>
-                          <span class="template-detail">编排框架：dynamo<br>模型：Qwen3-32B<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 共置</span>
+                          <span class="template-detail">创建时间：2026-09-04 09:18<br>描述：适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。</span>
                           </span>
-                          <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 共置">
+                          <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-template-name="Qwen3-235B" data-model-name="Qwen3-235B-A22B-FP8" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 共置" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Qwen3-235B-A22B-FP8</strong></span>
+                          <span class="template-name-line">模板名称：<b>Qwen3-235B</b></span>
+                          <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 共置</span><span class="tag">vLLM</span></span>
+                          <span class="template-resource-line">资源配置：<b>model-server 1副本 * H800 * 8卡</b></span>
+                          <small>生产可用</small>
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-235B 部署">编辑部署</button>
-                          <strong>Qwen3-235B</strong>
-                          <span>编排框架：llm-d</span>
-                          <span>H800 / vLLM / PD 共置</span>
-                          <small>生产可用</small>
-                          <span class="template-detail">编排框架：llm-d<br>模型：Qwen3-235B-A22B-FP8<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 共置</span>
+                          <span class="template-detail">创建时间：2026-08-28 10:42<br>描述：面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。</span>
                           </span>
-                          <span role="button" tabindex="0" class="template-card" data-template-card="dynamoScout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离">
-                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Llama-4-Scout 部署">编辑部署</button>
-                          <strong>Llama-4-Scout</strong>
-                          <span>编排框架：dynamo</span>
-                          <span>H800 / vLLM / PD 分离</span>
+                          <span role="button" tabindex="0" class="template-card" data-template-card="dynamoScout" data-template-name="Llama-4-Scout" data-model-name="Llama-4-Scout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Llama-4-Scout</strong></span>
+                          <span class="template-name-line">模板名称：<b>Llama-4-Scout</b></span>
+                          <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 分离</span><span class="tag">vLLM</span></span>
+                          <span class="template-resource-line">资源配置：<b>prefill 2副本 * H800 * 4卡，decode 2副本 * H800 * 4卡</b></span>
                           <small>抢先体验</small>
-                          <span class="template-detail">编排框架：dynamo<br>模型：Llama-4-Scout<br>硬件：H800 8卡节点<br>推理引擎：vLLM<br>部署方式：PD 分离</span>
+                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Llama-4-Scout 部署">编辑部署</button>
+                          <span class="template-detail">创建时间：2026-09-03 15:22<br>描述：用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。</span>
                           </span>
                         </span>
                         <span class="template-empty" id="templateEmpty">暂无匹配模板</span>
@@ -6134,29 +6279,27 @@ resources:
                     <div class="rdma-network-config" data-rdma-config="">
                       <span class="label"><span class="required">*</span> 网络资源参数</span>
                       <div class="rdma-network-body">
-                        <div class="rdma-param-grid">
-                          <label class="field rdma-param">
-                            <span class="label">资源名称</span>
-                            <select id="rdmaResourceNameSelect">
-                              <option selected="">spidernet.io/mellanoxrdma</option>
-                              <option>spidernet.io/hca_shared_devices</option>
-                            </select>
-                          </label>
-                          <label class="field rdma-param">
-                            <span class="label">请求量</span>
-                            <span class="num-field">
-                              <input id="rdmaRequestInput" type="number" min="0" step="1" inputmode="numeric" value="1" placeholder="请求量">
-                              <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
-                            </span>
-                          </label>
-                          <label class="field rdma-param">
-                            <span class="label">限制量</span>
-                            <span class="num-field">
-                              <input id="rdmaLimitInput" type="number" min="0" step="1" inputmode="numeric" value="1" placeholder="限制量">
-                              <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
-                            </span>
-                          </label>
+                        <div class="rdma-param-grid" id="rdmaParamRows">
+                          <div class="rdma-param-row">
+                            <label class="field rdma-param">
+                              <span class="label">资源名称</span>
+                              <select class="rdma-resource-name" data-template-unlocked="">
+                                <option selected="">spidernet.io/mellanoxrdma</option>
+                                <option>spidernet.io/hca_shared_devices</option>
+                              </select>
+                            </label>
+                            <label class="field rdma-param">
+                              <span class="label">请求量</span>
+                              <span class="num-field">
+                                <input class="rdma-request" type="number" min="0" step="1" inputmode="numeric" value="1" placeholder="请求量" data-template-unlocked="">
+                                <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                              </span>
+                            </label>
+                            <button type="button" class="rdma-param-delete" data-rdma-param-delete="" data-template-unlocked="" aria-label="删除网络资源参数">×</button>
+                          </div>
                         </div>
+                        <div class="rdma-param-error" id="rdmaParamError" hidden="">网络资源参数不能为空</div>
+                        <button type="button" class="btn text rdma-param-add" id="rdmaParamAddButton" data-template-unlocked="">+ 添加</button>
                       </div>
                     </div>
                     <label class="field">
@@ -7031,6 +7174,16 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 </div>
               </div>
               <div class="tl-group" data-tl-group="">
+                <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">模型名称<span class="tl-caret" aria-hidden="true">⌄</span></button>
+                <select class="hidden-control" id="templateLibraryModelFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="DeepSeek-V4-Flash-0731">DeepSeek-V4-Flash-0731</option><option value="Qwen3-32B">Qwen3-32B</option><option value="Qwen3-235B-A22B-FP8">Qwen3-235B-A22B-FP8</option><option value="Llama-4-Scout">Llama-4-Scout</option></select>
+                <div class="filter-chip-list" data-template-library-filter="templateLibraryModelFilter" role="group" aria-label="模型名称">
+                  <button type="button" class="filter-chip" data-filter-value="DeepSeek-V4-Flash-0731">DeepSeek-V4-Flash-0731</button>
+                  <button type="button" class="filter-chip" data-filter-value="Qwen3-32B">Qwen3-32B</button>
+                  <button type="button" class="filter-chip" data-filter-value="Qwen3-235B-A22B-FP8">Qwen3-235B</button>
+                  <button type="button" class="filter-chip" data-filter-value="Llama-4-Scout">Llama-4-Scout</button>
+                </div>
+              </div>
+              <div class="tl-group" data-tl-group="">
                 <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">编排框架<span class="tl-caret" aria-hidden="true">⌄</span></button>
                 <select class="hidden-control" id="templateLibraryFrameworkFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="llm-d">llm-d</option><option value="dynamo">dynamo</option></select>
                 <div class="filter-chip-list" data-template-library-filter="templateLibraryFrameworkFilter" role="group" aria-label="编排框架">
@@ -7602,7 +7755,6 @@ llm-d-modelservice:
             <div class="modal-head">
               <div>
                 <h1 id="newTestTitle">新建测试</h1>
-                <p class="modal-sub">对在线模型服务发起测试任务。当前仅支持功能测试，用于验证协议、鉴权、流式、结构化输出、工具调用与网关参数适配。</p>
               </div>
               <button class="btn" type="button" data-close-modal="">关闭</button>
             </div>
@@ -7640,13 +7792,14 @@ llm-d-modelservice:
               <div class="field wide" id="acceptanceDatasetField">
                 <span class="label"><span class="required">*</span> 功能用例</span>
                 <div class="case-group-stack" aria-label="功能用例">
+                  <div class="case-required-item">
+                    <span class="case-required-icon" aria-hidden="true">✓</span>
+                    <span><span class="dataset-name">健康检查</span><span class="dataset-desc">服务可达、模型可请求。</span></span>
+                    <span class="tag blue">必选</span>
+                  </div>
                   <details class="case-group">
-                    <summary><span>基本功能</span><small data-case-count="basic">已选 14/14</small></summary>
+                    <summary><span>基本功能</span><small data-case-count="basic">已选 10/10</small></summary>
                     <div class="dataset-grid">
-                      <label class="dataset-option">
-                        <input type="checkbox" name="acceptanceDataset" value="鉴权失败响应" data-case-category="basic" checked="">
-                        <span><span class="dataset-name">鉴权失败响应</span><span class="dataset-desc">缺失、假 Key、空 Bearer 统一返回 401。</span></span>
-                      </label>
                       <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="messages 结构校验" data-case-category="basic" checked="">
                         <span><span class="dataset-name">Messages 结构</span><span class="dataset-desc">role、content、空内容与内容块校验。</span></span>
@@ -7654,10 +7807,6 @@ llm-d-modelservice:
                       <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="message_elements" data-case-category="basic" checked="">
                         <span><span class="dataset-name">Messages 内容块</span><span class="dataset-desc">字符串内容、文本块和基础结构错误。</span></span>
-                      </label>
-                      <label class="dataset-option">
-                        <input type="checkbox" name="acceptanceDataset" value="JSON Schema" data-case-category="basic" checked="">
-                        <span><span class="dataset-name">结构化输出</span><span class="dataset-desc">json_object、json_schema 与 enum/items 约束。</span></span>
                       </label>
                       <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="SSE 流式输出" data-case-category="basic" checked="">
@@ -7676,16 +7825,8 @@ llm-d-modelservice:
                         <span><span class="dataset-name">多轮上下文</span><span class="dataset-desc">十轮记忆读取与 prompt_tokens 单调增长。</span></span>
                       </label>
                       <label class="dataset-option">
-                        <input type="checkbox" name="acceptanceDataset" value="Unicode 编解码" data-case-category="basic" checked="">
-                        <span><span class="dataset-name">Unicode 编解码</span><span class="dataset-desc">中日文、emoji、非 BMP 与组合字符回显。</span></span>
-                      </label>
-                      <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="max_tokens" data-case-category="basic" checked="">
                         <span><span class="dataset-name">max_tokens 限制</span><span class="dataset-desc">生成长度限制与 finish_reason=length。</span></span>
-                      </label>
-                      <label class="dataset-option">
-                        <input type="checkbox" name="acceptanceDataset" value="stop 参数" data-case-category="basic" checked="">
-                        <span><span class="dataset-name">Stop 截断</span><span class="dataset-desc">文本 stop 与 EOS token 截断。</span></span>
                       </label>
                       <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="system_prompt" data-case-category="basic" checked="">
@@ -7702,11 +7843,19 @@ llm-d-modelservice:
                     </div>
                   </details>
                   <details class="case-group">
-                    <summary><span>可选功能</span><small data-case-count="optional">已选 0/6</small></summary>
+                    <summary><span>可选功能</span><small data-case-count="optional">已选 0/8</small></summary>
                     <div class="dataset-grid">
                       <label class="dataset-option">
-                        <input type="checkbox" name="acceptanceDataset" value="健康检查" data-case-category="optional">
-                        <span><span class="dataset-name">健康检查门禁</span><span class="dataset-desc">服务可达、鉴权有效、模型 ID 可请求。</span></span>
+                        <input type="checkbox" name="acceptanceDataset" value="JSON Schema" data-case-category="optional">
+                        <span><span class="dataset-name">结构化输出</span><span class="dataset-desc">json_object、json_schema 与 enum/items 约束。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="Unicode 编解码" data-case-category="optional">
+                        <span><span class="dataset-name">Unicode 编解码</span><span class="dataset-desc">中日文、emoji、非 BMP 与组合字符回显。</span></span>
+                      </label>
+                      <label class="dataset-option">
+                        <input type="checkbox" name="acceptanceDataset" value="stop 参数" data-case-category="optional">
+                        <span><span class="dataset-name">Stop 截断</span><span class="dataset-desc">文本 stop 与 EOS token 截断。</span></span>
                       </label>
                       <label class="dataset-option">
                         <input type="checkbox" name="acceptanceDataset" value="context_cache" data-case-category="optional">
@@ -8022,6 +8171,7 @@ llm-d-modelservice:
     const templateModeFilter = document.querySelector("#templateModeFilter");
     const templateLibrarySearch = document.querySelector("#templateLibrarySearch");
     const templateLibraryGpuFilter = document.querySelector("#templateLibraryGpuFilter");
+    const templateLibraryModelFilter = document.querySelector("#templateLibraryModelFilter");
     const templateLibraryFrameworkFilter = document.querySelector("#templateLibraryFrameworkFilter");
     const templateLibraryModeFilter = document.querySelector("#templateLibraryModeFilter");
     const templateLibraryStatusFilter = document.querySelector("#templateLibraryStatusFilter");
@@ -8689,10 +8839,10 @@ llm-d-modelservice:
     // 名称 / 模型 / 编排框架 / 部署方式 / GPU / 状态 / 推理引擎 / 硬件全部直接读那份定义，不在这里再抄一份，
     // 避免「模板库」与「部署配置」两处数据漂移。只有副本数与更新时间是模板库特有的展示信息。
     const templateLibraryExtras = {
-      deepseek: { alias: "DeepSeek V4 Flash 生产模板", description: "面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。", replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2*H800*4卡，decode 1*H800*4卡 · DP4", updated: "2026-08-31 16:28" },
-      glm: { alias: "Qwen3 32B Dynamo 模板", description: "适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。", replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2*H800*4卡 · DP2", updated: "2026-09-04 09:18" },
-      qwen: { alias: "Qwen3 235B 生产模板", description: "面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。", replicas: "model-server 1 副本", resourceSummary: "model-server 1*H800*8卡 · TP8", updated: "2026-08-28 10:42" },
-      dynamoScout: { alias: "Llama 4 Scout 实验模板", description: "用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。", replicas: "prefill / decode worker pool", resourceSummary: "prefill 2*H800*4卡，decode 2*H800*4卡 · KV router", updated: "2026-09-03 15:22" }
+      deepseek: { alias: "DeepSeek V4 Flash 生产模板", description: "面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。", replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2副本 * H800 * 4卡，decode 1副本 * H800 * 4卡", updated: "2026-08-31 16:28" },
+      glm: { alias: "Qwen3 32B Dynamo 模板", description: "适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。", replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2副本 * H800 * 4卡", updated: "2026-09-04 09:18" },
+      qwen: { alias: "Qwen3 235B 生产模板", description: "面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。", replicas: "model-server 1 副本", resourceSummary: "model-server 1副本 * H800 * 8卡", updated: "2026-08-28 10:42" },
+      dynamoScout: { alias: "Llama 4 Scout 实验模板", description: "用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。", replicas: "prefill / decode worker pool", resourceSummary: "prefill 2副本 * H800 * 4卡，decode 2副本 * H800 * 4卡", updated: "2026-09-03 15:22" }
     };
 
     const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
@@ -8718,19 +8868,9 @@ llm-d-modelservice:
         const extra = templateLibraryExtras[key] || {};
         const detail = card.querySelector(".template-detail");
         if (!detail) return;
-        const title = card.querySelector("strong")?.textContent.trim() || "";
-        const status = card.querySelector("small")?.textContent.trim() || "";
-        const summary = Array.from(card.children).find(el =>
-          el.tagName === "SPAN" && !el.classList.contains("template-detail") && (el.textContent || "").includes(" / "));
-        const [resource = "", engine = "", mode = card.dataset.mode || ""] = (summary?.textContent || "").split("/").map(part => part.trim());
-        const framework = card.dataset.framework || "";
         detail.innerHTML = `
-          <strong class="td-title">${escapeHtml(title)}</strong>
-          <span>别名：${escapeHtml(extra.alias || "-")}</span>
-          <span class="td-tags"><span class="tag blue">${escapeHtml(framework)}</span><span class="tag">${escapeHtml(mode)}</span><span class="tag">${escapeHtml(engine)}</span></span>
+          <span>创建时间：${escapeHtml(extra.updated || "2026-08-30 10:00")}</span>
           <span>描述：${escapeHtml(extra.description || "-")}</span>
-          <span>${escapeHtml(title)} · ${escapeHtml(extra.resourceSummary || `${resource}，${extra.replicas || ""}`)}</span>
-          <span>${escapeHtml(extra.updated || "2026-08-30 10:00")} · ${escapeHtml(status)}</span>
         `;
       });
     }
@@ -8738,16 +8878,6 @@ llm-d-modelservice:
     function deployPresetTemplates() {
       return Array.from(document.querySelectorAll("#deploy .template-grid [data-template-card]")).map(card => {
         const key = card.dataset.templateCard || "";
-        const detail = {};
-        (card.querySelector(".template-detail")?.innerHTML || "").split("<br>").forEach(line => {
-          const [key, value] = line.split("：");
-          if (key && value) detail[key.trim()] = value.trim();
-        });
-        // 卡片摘要行形如「H800 / vLLM / PD 分离」= 硬件 / 推理引擎 / 部署方式
-        const summary = Array.from(card.children).find(el =>
-          el.tagName === "SPAN" && !el.classList.contains("template-detail") && (el.textContent || "").includes(" / "));
-        const summaryParts = (summary?.textContent || "").split("/").map(part => part.trim());
-        const engine = summaryParts[1] || "";
         const modelFallback = {
           deepseek: "DeepSeek-V4-Flash-0731",
           glm: "Qwen3-32B",
@@ -8759,17 +8889,17 @@ llm-d-modelservice:
         return {
           id: key,
           preset: true,
-          title: card.querySelector("strong")?.textContent.trim() || "",
+          title: card.dataset.templateName || card.querySelector(".template-name-line b")?.textContent.trim() || "",
           alias: extra.alias || "",
           description: extra.description || "",
-          model: detail["模型"] || modelFallback[key] || "",
+          model: card.dataset.modelName || modelFallback[key] || "",
           gpu: card.dataset.gpu || "",
           framework: card.dataset.framework || "",
           mode: card.dataset.mode || "",
           status,
           statusColor: templateStatusColor[status] || "",
-          engine,
-          resource: detail["硬件"] || (summaryParts[0] ? `${summaryParts[0]} 8卡节点` : ""),
+          engine: card.dataset.engine || "",
+          resource: card.dataset.resource || "",
           replicas: extra.replicas || "",
           resourceSummary: extra.resourceSummary || "",
           updated: extra.updated || "",
@@ -9193,21 +9323,19 @@ llm-d-modelservice:
     }
 
     const functionalCaseCatalog = [
-      { id: "auth_security", label: "鉴权失败响应", name: "鉴权失败响应与凭据保护", category: "basic", required: "必选", note: "缺失、假 Key、空 Bearer 统一返回 401，且错误体不回显凭据。" },
       { id: "messages_structure", label: "messages 结构校验", name: "messages 基础结构、角色与空内容校验", category: "basic", required: "必选", note: "messages 存在性、role 合法性与空内容校验符合预期。" },
       { id: "message_elements", label: "message_elements", name: "messages 内容块与空内容校验", category: "basic", required: "必选", note: "字符串内容、文本块和基础结构错误按预期处理。" },
-      { id: "json_object_case", label: "JSON Schema", name: "JSON Object/Schema 结构化输出", category: "basic", required: "必选", note: "json_object/json_schema 的 type、required、enum、items 校验通过。" },
+      { id: "json_object_case", label: "JSON Schema", name: "JSON Object/Schema 结构化输出", category: "optional", required: "可选", note: "json_object/json_schema 的 type、required、enum、items 校验通过。" },
       { id: "sse_stream", label: "SSE 流式输出", name: "SSE 流式输出协议与中断处理", category: "basic", required: "必选", note: "chunk 格式、delta.content、finish_reason、usage 与 [DONE] 正常。" },
       { id: "stream_usage", label: "stream usage", name: "流式累计 Token 用量回传", category: "basic", required: "必选", note: "usage 仅在最终 chunk 出现，total_tokens 计算正确。" },
       { id: "function_calling", label: "工具调用", name: "tools 并行调用、多轮回传与二次回答", category: "basic", required: "必选", note: "新版 tools/tool_calls 协议、多轮回传与二次回答正常。" },
       { id: "multi_turn", label: "多轮上下文", name: "十轮记忆读取与 Token 统计", category: "basic", required: "必选", note: "十轮读取携带完整历史，prompt_tokens 单调增长。" },
-      { id: "encoding_special", label: "Unicode 编解码", name: "Unicode 编解码与特殊控制字符", category: "basic", required: "必选", note: "中日文、emoji、非 BMP 与组合字符回显正常。" },
+      { id: "encoding_special", label: "Unicode 编解码", name: "Unicode 编解码与特殊控制字符", category: "optional", required: "可选", note: "中日文、emoji、非 BMP 与组合字符回显正常。" },
       { id: "max_tokens_user", label: "max_tokens", name: "max_tokens 用户设置与生成长度限制", category: "basic", required: "必选", note: "completion_tokens 命中限制且 finish_reason=length。" },
-      { id: "stop_sequence", label: "stop 参数", name: "stop 文本序列与 EOS token 截断", category: "basic", required: "必选", note: "文本 stop 与可选 stop_token_ids EOS 截断符合预期。" },
+      { id: "stop_sequence", label: "stop 参数", name: "stop 文本序列与 EOS token 截断", category: "optional", required: "可选", note: "文本 stop 与可选 stop_token_ids EOS 截断符合预期。" },
       { id: "system_prompt", label: "system_prompt", name: "System Prompt 优先级与提示词隔离", category: "basic", required: "必选", note: "system 高于 user，canary 未泄露到最终答案。" },
       { id: "no_default_system_prompt", label: "默认 system prompt 隔离", name: "默认请求不添加 System Prompt", category: "basic", required: "必选", note: "仅 user 消息时未注入默认 system prompt。" },
       { id: "thinking_control_vllm", label: "Thinking 控制", name: "vLLM chat_template_kwargs 思考开关", category: "basic", required: "必选", note: "thinking / enable_thinking 至少一组开关生效。" },
-      { id: "health_gate", label: "健康检查", name: "健康检查门禁", category: "optional", required: "可选", note: "服务可达、鉴权有效、模型 ID 可请求。" },
       { id: "context_cache", label: "context_cache", name: "长上下文缓存命中与 nonce 反向验证", category: "optional", required: "可选", note: "核心缓存命中；随机 nonce 请求出现部分前缀复用。" },
       { id: "thinking_control", label: "Anthropic Thinking", name: "Anthropic 风格思考启停控制", category: "optional", required: "可选", note: "thinking.type 未确认生效，建议以 vLLM 原生开关为准。" },
       { id: "input_length_cloud", label: "input_length_cloud", name: "云 API 最大上下文窗口边界", category: "optional", required: "可选", note: "指数增长与二分搜索定位最大成功长度。" },
@@ -9341,7 +9469,6 @@ llm-d-modelservice:
       if (!testConfigModal || !testConfigBody) return;
       const config = getTestConfigFromRow(row);
       const service = serviceById(config.service);
-      const protocolConfig = "Chat Completions /v1/chat/completions；OpenAI-compatible tools、response_format、SSE、长输入/长输出";
       if (testConfigTitle) testConfigTitle.textContent = config.name || "查看配置";
       const selectedLabels = config.cases.split(",");
       testConfigBody.innerHTML = `
@@ -9354,8 +9481,6 @@ llm-d-modelservice:
           <div><dt>状态</dt><dd>${escapeHtml(config.status)}</dd></div>
           <div><dt>创建时间</dt><dd>${escapeHtml(config.created)}</dd></div>
           <div class="config-view-wide"><dt>功能用例</dt><dd>${groupedCasesHtml(selectedLabels, { compact: true })}</dd></div>
-          <div><dt>协议配置</dt><dd>${escapeHtml(protocolConfig)}</dd></div>
-          <div><dt>网关适配</dt><dd>默认参数：temperature=1.0、top_p=0.95；ThinkingAdapter 按需注入 reasoning_effort</dd></div>
         </dl>`;
       openModal(testConfigModal);
     }
@@ -9857,9 +9982,10 @@ llm-d-modelservice:
 
     function renderTemplateLibrary() {
       if (!templateLibraryGrid) return;
+      const templateCardResource = item => item.resourceSummary || `${item.resource}，${item.replicas}`;
       const templates = templateLibraryItems();
       templateLibraryGrid.innerHTML = templates.map(item => `
-                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.alias || "")} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
+                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.alias || "")} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-model-name="${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
                     <div class="lc-main">
                       <div class="lc-head">
                         <span class="lc-ic" aria-hidden="true">◎</span>
@@ -9868,9 +9994,9 @@ llm-d-modelservice:
                         <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-template-action="view" data-template-id="${escapeHtml(item.id)}">查看模板</button><button type="button" data-template-action="edit" data-template-id="${escapeHtml(item.id)}">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button><button type="button" class="danger" data-delete-template="${escapeHtml(item.id)}">删除模板</button></span></span>
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
-                      <p class="lc-alias">别名：${escapeHtml(item.alias || "-")}</p>
+                      <p class="lc-field"><span>模型名称：</span><strong>${escapeHtml(item.model || "-")}</strong></p>
+                      <p class="lc-field lc-resource"><span>资源配置：</span><strong>${escapeHtml(templateCardResource(item))}</strong></p>
                       <p class="lc-description" data-full="${escapeHtml(item.description || "-")}"><span>描述：${escapeHtml(item.description || "-")}</span></p>
-                      <p class="lc-desc">${escapeHtml(item.model)} · ${escapeHtml(item.resourceSummary || `${item.resource}，${item.replicas}`)}</p>
                       <div class="lc-foot"><span class="lc-time">${escapeHtml(item.updated || "2026-08-30 10:00")}</span></div>
                     </div>
                   </article>`).join("");
@@ -9904,12 +10030,14 @@ llm-d-modelservice:
     function matchesTemplateLibraryFilter(row) {
       const search = (templateLibrarySearch?.value || "").trim().toLowerCase();
       const gpu = templateLibraryGpuFilter?.value || "";
+      const model = templateLibraryModelFilter?.value || "";
       const framework = templateLibraryFrameworkFilter?.value || "";
       const mode = templateLibraryModeFilter?.value || "";
       const status = templateLibraryStatusFilter?.value || "";
       const searchable = `${row.dataset.model || ""} ${row.textContent || ""}`.toLowerCase();
       return (!search || searchable.includes(search))
         && (!gpu || (row.dataset.gpu || "").includes(gpu))
+        && (!model || row.dataset.modelName === model)
         && (!framework || row.dataset.framework === framework)
         && (!mode || row.dataset.mode === mode)
         && (!status || row.dataset.status === status);
@@ -10182,6 +10310,7 @@ llm-d-modelservice:
     [
       templateLibrarySearch,
       templateLibraryGpuFilter,
+      templateLibraryModelFilter,
       templateLibraryFrameworkFilter,
       templateLibraryModeFilter,
       templateLibraryStatusFilter
@@ -11572,6 +11701,119 @@ llm-d-modelservice:
       const error = document.querySelector("#runtimeParamError");
       if (error) error.hidden = !hasEmpty;
     });
+    const rdmaResourceNames = ["spidernet.io/mellanoxrdma", "spidernet.io/hca_shared_devices"];
+    function getNextRdmaResourceName() {
+      const used = new Set(Array.from(document.querySelectorAll("#rdmaParamRows .rdma-resource-name")).map(select => select.value));
+      return rdmaResourceNames.find(name => !used.has(name)) || rdmaResourceNames[0];
+    }
+    function updateRdmaResourceChoices() {
+      const selects = Array.from(document.querySelectorAll("#rdmaParamRows .rdma-resource-name"));
+      selects.forEach(select => {
+        const usedByOtherRows = new Set(selects.filter(item => item !== select).map(item => item.value));
+        Array.from(select.options).forEach(option => {
+          option.disabled = usedByOtherRows.has(option.value);
+        });
+      });
+      const addButton = document.querySelector("#rdmaParamAddButton");
+      if (addButton) addButton.disabled = selects.length >= rdmaResourceNames.length;
+    }
+    function createRdmaParamRow(values = {}) {
+      const selectedName = values.name || getNextRdmaResourceName();
+      const row = document.createElement("div");
+      row.className = "rdma-param-row";
+      row.innerHTML = `
+        <label class="field rdma-param">
+          <span class="label">资源名称</span>
+          <select class="rdma-resource-name">
+            <option${selectedName === "spidernet.io/hca_shared_devices" ? "" : " selected"}>spidernet.io/mellanoxrdma</option>
+            <option${selectedName === "spidernet.io/hca_shared_devices" ? " selected" : ""}>spidernet.io/hca_shared_devices</option>
+          </select>
+        </label>
+        <label class="field rdma-param">
+          <span class="label">请求量</span>
+          <span class="num-field">
+            <input class="rdma-request" type="number" min="0" step="1" inputmode="numeric" value="${escapeHtml(values.request || "1")}" placeholder="请求量" data-template-unlocked>
+            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+          </span>
+        </label>
+        <button type="button" class="rdma-param-delete" data-rdma-param-delete data-template-unlocked aria-label="删除网络资源参数">×</button>
+      `;
+      row.querySelector(".rdma-resource-name")?.setAttribute("data-template-unlocked", "");
+      return row;
+    }
+    function validateRdmaParams() {
+      const rows = Array.from(document.querySelectorAll("#rdmaParamRows .rdma-param-row"));
+      const invalidControls = [];
+      const selectedNames = new Map();
+      rows.forEach(row => {
+        const resourceSelect = row.querySelector(".rdma-resource-name");
+        const resourceName = resourceSelect?.value || "";
+        selectedNames.set(resourceName, (selectedNames.get(resourceName) || 0) + 1);
+        const controls = [
+          resourceSelect,
+          row.querySelector(".rdma-request")
+        ].filter(Boolean);
+        controls.forEach(control => {
+          const invalid = !String(control.value || "").trim();
+          control.classList.toggle("is-invalid", invalid);
+          if (invalid) invalidControls.push(control);
+        });
+      });
+      rows.forEach(row => {
+        const resourceSelect = row.querySelector(".rdma-resource-name");
+        if (!resourceSelect) return;
+        const duplicate = selectedNames.get(resourceSelect.value) > 1;
+        resourceSelect.classList.toggle("is-invalid", duplicate || resourceSelect.classList.contains("is-invalid"));
+        if (duplicate && !invalidControls.includes(resourceSelect)) invalidControls.push(resourceSelect);
+      });
+      const error = document.querySelector("#rdmaParamError");
+      if (error) {
+        error.textContent = "网络资源参数不能为空，资源名称不可重复";
+        error.hidden = invalidControls.length === 0;
+      }
+      if (invalidControls.length) {
+        invalidControls[0].focus();
+        return false;
+      }
+      return true;
+    }
+    document.addEventListener("click", event => {
+      const addButton = event.target.closest("#rdmaParamAddButton");
+      if (addButton) {
+        if (!validateRdmaParams()) return;
+        document.querySelector("#rdmaParamRows")?.append(createRdmaParamRow());
+        updateRdmaResourceChoices();
+        validateRdmaParams();
+        return;
+      }
+      const deleteButton = event.target.closest("[data-rdma-param-delete]");
+      if (!deleteButton) return;
+      const row = deleteButton.closest(".rdma-param-row");
+      const rows = row?.closest("#rdmaParamRows");
+      if (!row || !rows) return;
+      if (rows.querySelectorAll(".rdma-param-row").length <= 1) {
+        row.querySelector(".rdma-resource-name").value = "spidernet.io/mellanoxrdma";
+        row.querySelector(".rdma-request").value = "1";
+        updateRdmaResourceChoices();
+        validateRdmaParams();
+        return;
+      }
+      row.remove();
+      updateRdmaResourceChoices();
+      validateRdmaParams();
+    });
+    document.addEventListener("input", event => {
+      const input = event.target.closest(".rdma-request");
+      if (!input) return;
+      validateRdmaParams();
+    });
+    document.addEventListener("change", event => {
+      const select = event.target.closest(".rdma-resource-name");
+      if (!select) return;
+      updateRdmaResourceChoices();
+      validateRdmaParams();
+    });
+    updateRdmaResourceChoices();
     document.addEventListener("click", event => {
       const addButton = event.target.closest("#envVarAddButton");
       if (addButton) {
