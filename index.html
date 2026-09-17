@@ -294,7 +294,7 @@
     .platform-section {
       color: var(--icon);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 400;
       padding: 10px 28px 8px;
     }
 
@@ -1589,8 +1589,30 @@
     .template-mode-card span { color: var(--muted); font-size: 12px; }
     .template-mode-card.active { border-color: var(--blue); background: var(--blue-2); box-shadow: 0 0 0 1px var(--info); }
     .template-library-picker { margin-top: 14px; }
+    #deploy .template-library-picker {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 12px 10px;
+      align-items: start;
+    }
+    #deploy .template-library-picker > .label {
+      grid-column: 1;
+      min-height: 30px;
+      padding-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      justify-content: flex-end;
+      text-align: right;
+    }
+    #deploy .template-library-picker > .template-filter-row,
+    #deploy .template-library-picker > .template-grid,
+    #deploy .template-library-picker > .template-empty {
+      grid-column: 2;
+      min-width: 0;
+    }
     .template-library-picker[hidden], .template-yaml-panel[hidden] { display: none; }
-    .template-yaml-panel { margin-top: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); padding: 14px; }
+    .template-yaml-panel { margin-top: 14px; border: 0; border-radius: 0; background: transparent; padding: 0; }
     #yamlImportPanel {
       display: grid;
       gap: 12px;
@@ -1608,17 +1630,30 @@
     /* 导入 YAML = 自定义部署：集群 / 命名空间两列，values.yaml 占满整行 */
     .yaml-custom-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 12px 10px;
+      align-items: start;
+    }
+    #deploy #yamlImportPanel .yaml-custom-grid > .field {
+      display: contents !important;
     }
     #deploy #yamlImportPanel .yaml-custom-grid > .field.wide {
       grid-column: 1 / -1 !important;
     }
-    #deploy #yamlImportPanel .field > .label,
+    #deploy #yamlImportPanel .field > .label {
+      grid-column: 1 !important;
+      min-height: 30px;
+      padding-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: right;
+      justify-content: flex-end;
+    }
     #deploy #yamlImportPanel .field > input,
     #deploy #yamlImportPanel .field > select,
     #deploy #yamlImportPanel .field > textarea {
-      grid-column: auto !important;
+      grid-column: 2 !important;
       max-width: none !important;
     }
     #deploy #yamlImportPanel .field > .helm-values-editor {
@@ -4123,10 +4158,13 @@
       grid-template-columns: 128px minmax(320px, 620px) minmax(0, 1fr) !important;
     }
     #deploy .field > .template-mode-grid,
-    #deploy .field > .template-library-picker,
-    #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy {
       grid-column: 2 / -1 !important;
+      max-width: none !important;
+    }
+    #deploy .field > .template-yaml-panel,
+    #deploy .field > .template-library-picker {
+      grid-column: 1 / -1 !important;
       max-width: none !important;
     }
     #deploy .template-mode-grid {
@@ -5018,6 +5056,59 @@
       width: 100%;
     }
 
+    #deploy .rdma-network-config {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 12px 10px;
+      align-items: start;
+      max-width: 760px;
+    }
+    #deploy .rdma-network-config[hidden] {
+      display: none !important;
+    }
+    #deploy .rdma-network-config > .label {
+      min-height: 30px;
+      padding-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 600;
+      text-align: right;
+      justify-content: flex-end;
+    }
+    #deploy .rdma-network-body {
+      min-width: 0;
+      display: grid;
+      gap: 12px;
+    }
+    #deploy .rdma-param-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(150px, .8fr) minmax(150px, .8fr);
+      gap: 10px;
+      align-items: start;
+    }
+    #deploy .rdma-param {
+      display: grid !important;
+      gap: 6px;
+      min-width: 0;
+    }
+    #deploy .rdma-param > .label {
+      min-height: 20px;
+      padding-top: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 400;
+      justify-content: flex-start;
+      text-align: left;
+    }
+    #deploy .rdma-param > select,
+    #deploy .rdma-param > .num-field {
+      width: 100%;
+      max-width: none;
+    }
+
     /* ---- 数值输入（参考样式）：输入区 + 内置上下步进 + 灰底单位后缀，30px r3 ---- */
     .num-field {
       --num-h: 30px;
@@ -5748,7 +5839,7 @@ resources:
                         </button>
                       </span>
                       <span class="template-library-picker" id="templateLibraryPicker">
-                        <span class="label">模板库</span>
+                        <span class="label"><span class="required">*</span> 模板库</span>
                         <span class="template-filter-row">
                           <input class="mini-input" id="templateModelFilter" placeholder="搜索模型名称">
                           <select class="mini-select" id="templateGpuFilter">
@@ -5823,7 +5914,7 @@ resources:
                             </select>
                           </label>
                           <label class="field wide">
-                            <span class="label">values.yaml</span>
+                            <span class="label"><span class="required">*</span> values.yaml</span>
                             <textarea id="customDeployValues" class="helm-values-editor">llm-d-modelservice:
   modelArtifacts:
     name: deepseek-ai/DeepSeek-V4-Flash-0731
@@ -5974,10 +6065,6 @@ resources:
                   </div>
 
                   <div class="form-grid three">
-                    <label class="field" data-resource-field="rdma">
-                      <span class="label">RDMA 网络</span>
-                      <span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch=""><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span>
-                    </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> 实例数</span>
                       <input id="replicasInput" type="number" min="0" value="2" data-template-unlocked="">
@@ -6040,6 +6127,38 @@ resources:
                         </span>
                       </span>
                     </label>
+                    <label class="field" data-resource-field="rdma">
+                      <span class="label">RDMA 网络</span>
+                      <span class="switch-row"><button type="button" class="switch is-checked" role="switch" aria-checked="true" data-dao="switch" data-switch="" data-rdma-toggle=""><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">开启</span></span>
+                    </label>
+                    <div class="rdma-network-config" data-rdma-config="">
+                      <span class="label"><span class="required">*</span> 网络资源参数</span>
+                      <div class="rdma-network-body">
+                        <div class="rdma-param-grid">
+                          <label class="field rdma-param">
+                            <span class="label">资源名称</span>
+                            <select id="rdmaResourceNameSelect">
+                              <option selected="">spidernet.io/mellanoxrdma</option>
+                              <option>spidernet.io/hca_shared_devices</option>
+                            </select>
+                          </label>
+                          <label class="field rdma-param">
+                            <span class="label">请求量</span>
+                            <span class="num-field">
+                              <input id="rdmaRequestInput" type="number" min="0" step="1" inputmode="numeric" value="1" placeholder="请求量">
+                              <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            </span>
+                          </label>
+                          <label class="field rdma-param">
+                            <span class="label">限制量</span>
+                            <span class="num-field">
+                              <input id="rdmaLimitInput" type="number" min="0" step="1" inputmode="numeric" value="1" placeholder="限制量">
+                              <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                     <label class="field">
                       <span class="label">单实例CPU</span>
                       <span class="num-field">
@@ -10615,6 +10734,11 @@ llm-d-modelservice:
       document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='distributed'], [data-resource-field='gpus'], [data-resource-field='gpu-brand'], [data-resource-field='gpu-type']").forEach(field => {
         field.hidden = noGpuRole;
       });
+      const rdmaConfig = document.querySelector("[data-rdma-config]");
+      if (rdmaConfig) {
+        const rdmaEnabled = document.querySelector("[data-rdma-toggle]")?.classList.contains("is-checked");
+        rdmaConfig.hidden = noGpuRole || !rdmaEnabled;
+      }
       if (resourceAdvanced) resourceAdvanced.hidden = noExtraConfigRole;
 
       if (role === "prefill") {
@@ -11318,6 +11442,10 @@ llm-d-modelservice:
       const summary = sw.closest("[data-adv]")?.querySelector("[data-adv-summary]");
       if (summary) summary.hidden = on;
       if (sw.matches("[data-distributed-toggle]")) syncDistributedInference();
+      if (sw.matches("[data-rdma-toggle]")) {
+        const rdmaConfig = document.querySelector("[data-rdma-config]");
+        if (rdmaConfig) rdmaConfig.hidden = !on;
+      }
       syncAdvAccState(sw.closest("[data-adv-acc]"));
     });
 
