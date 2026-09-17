@@ -2087,6 +2087,162 @@
 
     .monitor-section { margin-top: 18px; }
     .monitor-section h3 { margin: 0 0 10px; font-size: 14px; }
+    .monitor-dashboard-image-wrap {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      box-shadow: var(--elev-raised);
+      overflow: visible;
+    }
+    .monitor-dashboard-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 48px;
+      padding: 8px 14px;
+      background: var(--surface-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .monitor-dashboard-filters {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+    .monitor-time-picker {
+      position: relative;
+    }
+    .monitor-time-trigger {
+      height: 32px;
+      min-width: 150px;
+      padding: 0 30px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background:
+        linear-gradient(45deg, transparent 50%, var(--meta) 50%) calc(100% - 17px) 13px / 5px 5px no-repeat,
+        linear-gradient(135deg, var(--meta) 50%, transparent 50%) calc(100% - 13px) 13px / 5px 5px no-repeat,
+        var(--surface);
+      color: var(--fg);
+      font: inherit;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .monitor-time-trigger[aria-expanded="true"] {
+      border-color: var(--info);
+      box-shadow: var(--focus-ring);
+    }
+    .monitor-time-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 170px minmax(360px, 1fr);
+      width: min(590px, calc(100vw - 360px));
+      min-height: 262px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 16px 38px rgba(15, 23, 42, .18);
+      overflow: hidden;
+    }
+    .monitor-time-popover[hidden] {
+      display: none;
+    }
+    .monitor-time-presets {
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .monitor-time-title {
+      padding: 13px 16px;
+      color: var(--meta);
+      font-size: 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--line);
+    }
+    .monitor-time-presets button {
+      display: block;
+      width: 100%;
+      height: 30px;
+      padding: 0 16px;
+      border: 0;
+      background: transparent;
+      color: var(--fg);
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .monitor-time-presets button:hover {
+      background: var(--surface-warm);
+    }
+    .monitor-time-presets button.active {
+      background: var(--fill-subtle);
+      color: var(--info);
+      font-weight: 700;
+    }
+    .monitor-time-custom {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      background: var(--surface);
+    }
+    .monitor-time-custom .monitor-time-title {
+      border-bottom: 0;
+    }
+    .monitor-time-label {
+      padding: 6px 28px 10px;
+      color: var(--fg-2);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .monitor-time-range {
+      display: grid;
+      grid-template-columns: 1fr 28px 1fr;
+      align-items: center;
+      width: min(450px, calc(100% - 56px));
+      height: 34px;
+      margin: 0 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--fg);
+      font-size: 13px;
+      text-align: center;
+    }
+    .monitor-time-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding: 12px 28px;
+      border-top: 1px solid var(--line);
+    }
+    .monitor-time-actions .btn {
+      min-width: 72px;
+      height: 32px;
+    }
+    .monitor-refresh {
+      display: inline-grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--fg-2);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .monitor-refresh:hover {
+      background: var(--border);
+    }
+    .monitor-dashboard-image {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
     .metrics.realtime { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .metric .metric-delta { display: block; margin-top: 8px; color: var(--green); font-size: 12px; }
     .metric .metric-delta.warn { color: var(--amber); }
@@ -4786,6 +4942,9 @@
     body .shell.immersive-detail .rail-nav button { height: 46px !important; padding: 0 20px !important; border-radius: 0 !important; font-size: 13px !important; font-weight: 600 !important; color: var(--fg-2) !important; }
     body .shell.immersive-detail .rail-nav button:hover { background: var(--nav-hover) !important; color: var(--fg-2) !important; }
     body .shell.immersive-detail .rail-nav button.active { background: var(--nav-hover) !important; color: var(--fg-2) !important; font-weight: 700 !important; }
+    body .shell.immersive-detail .rail-nav button:nth-child(4),
+    body .shell.immersive-detail .rail-nav button:nth-child(4):hover,
+    body .shell.immersive-detail .rail-nav button:nth-child(4).active,
     body .shell.immersive-detail .rail-nav button:nth-child(n+5),
     body .shell.immersive-detail .rail-nav button:nth-child(n+5):hover,
     body .shell.immersive-detail .rail-nav button:nth-child(n+5).active { color: var(--muted) !important; }
@@ -5331,7 +5490,8 @@
     #deploy .nest--compact .field > .label { padding-top: 5px; }
     #deploy .env-grid {
       display: grid;
-      grid-template-columns: 150px 150px 26px;
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(180px, .9fr) minmax(160px, .9fr) minmax(220px, 1.2fr) 26px;
       gap: 8px 10px;
       align-items: center;
     }
@@ -5339,6 +5499,21 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
+    }
+    #deploy .env-var-row {
+      display: contents;
+    }
+    #deploy .env-var-row input,
+    #deploy .env-var-row select {
+      min-width: 0;
+      width: 100%;
+      height: 30px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--surface);
+      color: var(--fg);
+      padding: 0 10px;
+      font-size: 12px;
     }
     #deploy .inline-actions {
       grid-column: 2;
@@ -5904,7 +6079,7 @@
         <button type="button" data-view="maas-models">◉ MaaS 模型管理</button>
         <button type="button" class="active ai-only" data-view="services">模型服务</button>
         <button type="button" class="ai-only nav-muted" data-view="service-observability">服务观测</button>
-        <button type="button" class="ai-only" data-view="model-tests">模型测试</button>
+        <button type="button" class="ai-only nav-muted" data-view="model-tests">模型测试</button>
         <button type="button" class="ai-only" data-view="template-library">部署模板库</button>
         <button type="button" class="ai-only nav-muted">◫ 容量规划</button>
         <button type="button" class="ai-only nav-muted">▣ 高速缓存服务</button>
@@ -5975,7 +6150,7 @@ resources:
                           <span>按现场模型、硬件和引擎配置</span>
                         </button>
                         <button type="button" class="template-mode-card" data-deploy-template-mode="yaml">
-                          <strong>导入 YAML</strong>
+                          <strong>自定义部署</strong>
                           <span>填写 values.yaml 自定义部署</span>
                         </button>
                       </span>
@@ -6111,7 +6286,7 @@ resources:
 
               <div class="panel" data-template-locked-section="">
                 <div class="panel-head">
-                  <h2>模型与镜像</h2>
+                  <h2>模型配置</h2>
                   <button type="button" class="btn text template-edit-inline" data-edit-from-template="">编辑部署</button>
                 </div>
                 <div class="panel-body">
@@ -6189,8 +6364,8 @@ resources:
                   <div class="notice">
                     <strong>部署清单</strong>
                     <ul id="deployChecklist">
-                      <li>组件：llm-d、inferencepool、gateway、nvidia-device-plugin、rdma-device-plugin、prometheus-agent</li>
-                      <li>角色：prefill、decode、gateway 与 llm-d router 独立配置，gateway 和 llm-d router 配置项一致</li>
+                      <li>组件：llm-d、gateway、nvidia-device-plugin、prometheus-agent</li>
+                      <li>角色：prefill、decode、gateway 与 llm-d router 独立配置</li>
                     </ul>
                   </div>
                 </div>
@@ -6488,14 +6663,25 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                       <div class="nest-head"><span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" aria-label="环境变量" data-dao="switch" data-switch="" data-switch-wording="enable"><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">未启用</span></span></div>
                       <div class="nest nest--compact" data-adv-body="" hidden="">
                         <div class="form-grid">
-                          <span class="label">环境变量</span>
                           <div class="env-grid" id="envVarRows">
-                            <span class="env-grid-head">键 <span class="required">*</span></span>
+                            <span class="env-grid-head">类型</span>
+                            <span class="env-grid-head">变量名 <span class="required">*</span></span>
                             <span class="env-grid-head">值</span>
                             <span></span>
-                            <input>
-                            <input>
-                            <button type="button" class="btn text" data-env-delete="" aria-label="删除环境变量">×</button>
+                            <span class="env-var-row">
+                              <select aria-label="环境变量类型">
+                                <option>键值对 (Key/Value Pair)</option>
+                                <option>资源引用 (Resource)</option>
+                                <option>配置项键值导入 (ConfigMap Key)</option>
+                                <option>密钥键值导入 (Secret Key)</option>
+                                <option>变量引用 (Pod Field)</option>
+                                <option>配置项导入 (ConfigMap)</option>
+                                <option>密钥导入 (Secret)</option>
+                              </select>
+                              <input aria-label="环境变量变量名">
+                              <input aria-label="环境变量值">
+                              <button type="button" class="btn text" data-env-delete="" aria-label="删除环境变量">×</button>
+                            </span>
                           </div>
                           <div class="inline-actions">
                             <button type="button" class="btn text" id="envVarAddButton">+ 添加</button>
@@ -6975,7 +7161,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                       </label>
                       <label class="field">
                         <span class="label"><span class="required">*</span> 访问路径</span>
-                        <input value="/v1/chat/completions">
+                        <input value="/V1">
                       </label>
                       <label class="field">
                         <span class="label">API Key</span>
@@ -7102,7 +7288,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-model-tests-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">模型测试</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-model-tests-body" hidden="">模型测试面向已部署模型服务发起测试任务。当前仅支持功能测试，用于校验健康检查、鉴权、Chat Completions 协议、流式输出、结构化输出、工具调用、长上下文、Thinking 开关与网关参数适配等工程能力。</div>
+            <div class="concept-body" id="concept-model-tests-body" hidden="">模型测试面向已部署模型服务发起测试任务，对模型调用功能、性能等进行测试验收。</div>
           </div>
           <div class="tb" data-dao="toolbar">
             <label class="tb-field"><span class="tb-label">测试范围</span>
@@ -7225,10 +7411,6 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                     <span class="label"><span class="required">*</span> 模板名称</span>
                     <input id="importTemplateName" placeholder="DeepSeek-V4-Flash-H800">
                   </label>
-                  <label class="field">
-                    <span class="label">别名</span>
-                    <input id="importTemplateAlias" placeholder="DeepSeek V4 Flash 生产模板">
-                  </label>
                   <label class="field wide">
                     <span class="label">描述信息</span>
                     <textarea id="importTemplateDescription" class="template-description-input" placeholder="描述模板适用模型、硬件规格、推理方式或使用场景"></textarea>
@@ -7282,10 +7464,6 @@ llm-d-modelservice:
                   <label class="field">
                     <span class="label"><span class="required">*</span> 模板名称</span>
                     <input id="templateDetailName" placeholder="DeepSeek-V4-Flash-H800">
-                  </label>
-                  <label class="field">
-                    <span class="label">别名</span>
-                    <input id="templateDetailAlias" placeholder="DeepSeek V4 Flash 生产模板">
                   </label>
                   <label class="field wide">
                     <span class="label">描述信息</span>
@@ -7358,7 +7536,6 @@ llm-d-modelservice:
               <h1 class="detail-h1">
                 <span class="dh-module">模型服务：</span>
                 <span class="dh-name" id="detailTitle">deepseek-v4-flash-h800-prod</span>
-                <span class="detail-alias-tag" id="detailAlias">DeepSeek V4 Flash 生产服务</span>
                 <span class="tag external-access-tag" id="detailExternalTag" hidden="">外部接入</span>
                 <span class="dh-slash" aria-hidden="true">/</span>
                 <span class="dh-section" id="detailSectionTitle">拓扑与配置</span>
@@ -7445,7 +7622,7 @@ llm-d-modelservice:
                   <table>
                     <tbody><tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">deepseek-v4-flash-h800-prod.inferx-prod.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/V1/chat/completions</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
                   </tbody></table>
                 </div>
@@ -7559,48 +7736,44 @@ llm-d-modelservice:
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-detail-metrics-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">运行监控</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-detail-metrics-body" hidden="">运行监控展示该服务的实时指标与趋势曲线，数据来自 Insight 可观测性，默认时间范围为最近 1 小时。</div>
+            <div class="concept-body" id="concept-detail-metrics-body" hidden="">运行监控展示该模型推理服务的实时推理指标与趋势曲线。</div>
           </div>
-                <div class="panel-head" style="padding-left:0;padding-right:0;padding-top:0;">
-                  <h2>运行监控</h2>
-                  <button class="btn" data-dao="button" data-props="type=secondary">打开观测大盘</button>
-                </div>
-                <div class="monitor-section">
-                  <div class="metrics realtime">
-                    <div class="metric"><span>近 30 天可用性</span><strong>99.96%</strong><span class="metric-note">服务可用性</span></div>
-                    <div class="metric"><span>请求量</span><strong>1,284 req/min</strong><span class="metric-delta">较上一小时 +8.4%</span></div>
-                    <div class="metric"><span>TPS</span><strong>428 tok/s</strong><span class="metric-delta">实时吞吐</span><svg class="metric-inline-chart" viewBox="0 0 300 42" role="img" aria-label="TPS 实时趋势"><polyline class="chart-line blue" points="0,30 25,26 50,28 75,22 100,24 125,18 150,21 175,16 200,19 225,13 250,16 275,10 300,13"></polyline></svg></div>
-                    <div class="metric"><span>RPS</span><strong>21.4 req/s</strong><span class="metric-delta">实时请求速率</span><svg class="metric-inline-chart" viewBox="0 0 300 42" role="img" aria-label="RPS 实时趋势"><polyline class="chart-line blue" points="0,29 25,25 50,27 75,21 100,23 125,17 150,20 175,15 200,18 225,12 250,15 275,9 300,12"></polyline></svg></div>
-                    <div class="metric"><span>排队请求数</span><strong>6</strong><span class="metric-delta warn">当前排队</span><svg class="metric-inline-chart" viewBox="0 0 300 42" role="img" aria-label="排队请求数实时趋势"><polyline class="chart-line amber" points="0,28 25,25 50,29 75,18 100,24 125,15 150,21 175,12 200,19 225,10 250,17 275,8 300,14"></polyline></svg></div>
-                    <div class="metric"><span>GPU 利用率</span><strong>82%</strong><svg class="metric-inline-chart" viewBox="0 0 300 42" role="img" aria-label="GPU 利用率实时趋势"><polyline class="chart-line green" points="0,27 25,24 50,26 75,20 100,22 125,16 150,19 175,14 200,17 225,11 250,14 275,8 300,11"></polyline></svg></div>
-                    <div class="metric"><span>KV Cache 命中率</span><strong>91.8%</strong><svg class="metric-inline-chart" viewBox="0 0 300 42" role="img" aria-label="KV Cache 命中率实时趋势"><polyline class="chart-line green" points="0,24 25,21 50,23 75,17 100,19 125,13 150,16 175,11 200,14 225,8 250,11 275,6 300,9"></polyline></svg></div>
-                  </div>
-                </div>
-                <div class="monitor-section">
-                  <div class="monitor-charts">
-                    <div class="monitor-chart">
-                      <div class="monitor-chart-head"><strong>TTFT</strong><span>avg 286 ms</span></div>
-                      <svg class="chart" viewBox="0 0 300 112" role="img" aria-label="TTFT 平均值和分位数趋势">
-                        <path class="chart-grid" d="M0 20H300 M0 56H300 M0 92H300"></path>
-                        <polyline class="chart-line blue" points="0,70 25,66 50,68 75,62 100,64 125,58 150,60 175,55 200,57 225,52 250,54 275,49 300,51"></polyline>
-                        <polyline class="chart-line green" points="0,54 25,51 50,55 75,48 100,50 125,45 150,47 175,42 200,44 225,39 250,42 275,36 300,38"></polyline>
-                        <polyline class="chart-line amber" points="0,38 25,35 50,39 75,32 100,35 125,29 150,31 175,26 200,28 225,23 250,26 275,20 300,22"></polyline>
-                        <polyline class="chart-line purple" points="0,26 25,24 50,27 75,22 100,24 125,19 150,21 175,17 200,19 225,15 250,17 275,12 300,14"></polyline>
-                      </svg>
-                      <div class="chart-legend"><span class="blue">avg</span><span class="green">P50</span><span class="amber">P90</span><span class="purple">P99</span></div>
+                <div class="monitor-dashboard-image-wrap">
+                  <div class="monitor-dashboard-toolbar" aria-label="运行监控筛选">
+                    <div class="monitor-dashboard-filters">
+                      <div class="monitor-time-picker" data-monitor-time-default="最近 1 小时">
+                        <button type="button" class="monitor-time-trigger" data-monitor-time-trigger aria-expanded="false">最近 1 小时</button>
+                        <div class="monitor-time-popover" data-monitor-time-popover hidden>
+                          <div class="monitor-time-presets" role="listbox" aria-label="选择时间范围">
+                            <div class="monitor-time-title">选择时间范围</div>
+                            <button type="button" data-monitor-time-option="最近 5 分钟">最近 5 分钟</button>
+                            <button type="button" data-monitor-time-option="最近 15 分钟">最近 15 分钟</button>
+                            <button type="button" data-monitor-time-option="最近 30 分钟">最近 30 分钟</button>
+                            <button type="button" class="active" data-monitor-time-option="最近 1 小时">最近 1 小时</button>
+                            <button type="button" data-monitor-time-option="最近 6 小时">最近 6 小时</button>
+                            <button type="button" data-monitor-time-option="最近 12 小时">最近 12 小时</button>
+                            <button type="button" data-monitor-time-option="最近 24 小时">最近 24 小时</button>
+                            <button type="button" data-monitor-time-option="最近 3 天">最近 3 天</button>
+                            <button type="button" data-monitor-time-option="最近 7 天">最近 7 天</button>
+                          </div>
+                          <div class="monitor-time-custom">
+                            <div class="monitor-time-title">自定义时间范围</div>
+                            <div class="monitor-time-label">开始时间 - 结束时间</div>
+                            <div class="monitor-time-range">
+                              <span>2026-09-17 16:26</span>
+                              <span>-</span>
+                              <span>2026-09-17 17:26</span>
+                            </div>
+                            <div class="monitor-time-actions">
+                              <button type="button" class="btn primary" data-monitor-time-confirm>确定</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="monitor-chart">
-                      <div class="monitor-chart-head"><strong>TPOT</strong><span>avg 24 ms</span></div>
-                      <svg class="chart" viewBox="0 0 300 112" role="img" aria-label="TPOT 平均值和分位数趋势">
-                        <path class="chart-grid" d="M0 20H300 M0 56H300 M0 92H300"></path>
-                        <polyline class="chart-line blue" points="0,74 25,70 50,72 75,66 100,68 125,63 150,65 175,59 200,61 225,56 250,58 275,53 300,55"></polyline>
-                        <polyline class="chart-line green" points="0,61 25,58 50,60 75,54 100,56 125,51 150,53 175,47 200,49 225,45 250,47 275,41 300,43"></polyline>
-                        <polyline class="chart-line amber" points="0,47 25,44 50,47 75,40 100,43 125,37 150,39 175,34 200,36 225,31 250,34 275,28 300,30"></polyline>
-                        <polyline class="chart-line purple" points="0,34 25,31 50,34 75,27 100,30 125,24 150,26 175,21 200,23 225,18 250,21 275,15 300,17"></polyline>
-                      </svg>
-                      <div class="chart-legend"><span class="blue">avg</span><span class="green">P50</span><span class="amber">P90</span><span class="purple">P99</span></div>
-                    </div>
+                    <button type="button" class="monitor-refresh" aria-label="刷新" title="刷新">↻</button>
                   </div>
+                  <img class="monitor-dashboard-image" src="assets/observability-dashboard.jpg" alt="运行监控观测大盘">
                 </div>
               </div>
 
@@ -8045,7 +8218,10 @@ llm-d-modelservice:
               <button class="btn" type="button" data-close-modal="">关闭</button>
             </div>
 
-            
+            <div class="yaml-modal-tabs" id="valuesYamlTabs" role="tablist" aria-label="YAML 查看方式" hidden="">
+              <button type="button" class="active" data-yaml-modal-tab="preview">YAML 配置</button>
+              <button type="button" data-yaml-modal-tab="diff">查看变化</button>
+            </div>
 
             <div class="yaml-modal-pane" data-yaml-modal-pane="preview">
               <div class="code yaml-preview-code" id="currentYamlPreview">kind: HelmValues
@@ -8096,7 +8272,7 @@ llm-d-modelservice:
                   <pre class="code yaml-diff-code" id="templateYamlDiff"></pre>
                 </div>
                 <div>
-                  <p class="yaml-diff-title">变化</p>
+                  <p class="yaml-diff-title">编辑后 YAML</p>
                   <pre class="code yaml-diff-code" id="currentYamlDiff"></pre>
                 </div>
               </div>
@@ -8143,6 +8319,7 @@ llm-d-modelservice:
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
     const currentYamlDiff = document.querySelector("#currentYamlDiff");
+    const valuesYamlTabs = document.querySelector("#valuesYamlTabs");
     const yamlModalTabs = Array.from(document.querySelectorAll("[data-yaml-modal-tab]"));
     const yamlModalPanes = Array.from(document.querySelectorAll("[data-yaml-modal-pane]"));
     const editYamlMeta = document.querySelector("#editYamlMeta");
@@ -8181,7 +8358,6 @@ llm-d-modelservice:
     const importTemplateDescription = document.querySelector("#importTemplateDescription");
     const templateDetailTitle = document.querySelector("#templateDetailTitle");
     const templateDetailName = document.querySelector("#templateDetailName");
-    const templateDetailAlias = document.querySelector("#templateDetailAlias");
     const templateDetailDescription = document.querySelector("#templateDetailDescription");
     const templateDetailStatus = document.querySelector("#templateDetailStatus");
     const templateDetailYaml = document.querySelector("#templateDetailYaml");
@@ -8481,7 +8657,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">qwen3-235b-prod.inferx-prod.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-235b</td></tr>
                   </table>
         `,
@@ -8550,7 +8726,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">dynamo-llama4-scout-lab.delivery-h800-lab.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">llama4-scout</td></tr>
                   </table>
         `,
@@ -8676,7 +8852,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">dynamo-qwen3-colocated-prod.inferx-prod.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-32b</td></tr>
                   </table>
         `,
@@ -8737,7 +8913,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
                     <tr><td>服务地址</td><td class="mono">external-qwen3-router-prod.inferx-prod.svc</td></tr>
-                    <tr><td>访问路径</td><td class="mono">/v1/chat/completions</td></tr>
+                    <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-external</td></tr>
                   </table>
         `,
@@ -8816,7 +8992,7 @@ llm-d-modelservice:
     const serviceRowsData = [
       { id: "deepseek-v4-flash-h800-prod", alias: "DeepSeek V4 Flash 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
       { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "部署中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "Prefill：8 GPU H800 / Decode：8 GPU H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "部署中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
       { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
       { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
@@ -8890,7 +9066,6 @@ llm-d-modelservice:
           id: key,
           preset: true,
           title: card.dataset.templateName || card.querySelector(".template-name-line b")?.textContent.trim() || "",
-          alias: extra.alias || "",
           description: extra.description || "",
           model: card.dataset.modelName || modelFallback[key] || "",
           gpu: card.dataset.gpu || "",
@@ -9548,6 +9723,7 @@ llm-d-modelservice:
         </section>`;
       if (templateYamlDiff) templateYamlDiff.innerHTML = "";
       if (currentYamlDiff) currentYamlDiff.innerHTML = "";
+      if (valuesYamlTabs) valuesYamlTabs.hidden = true;
       yamlModalTabs.forEach(button => {
         button.hidden = true;
       });
@@ -9985,7 +10161,7 @@ llm-d-modelservice:
       const templateCardResource = item => item.resourceSummary || `${item.resource}，${item.replicas}`;
       const templates = templateLibraryItems();
       templateLibraryGrid.innerHTML = templates.map(item => `
-                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.alias || "")} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-model-name="${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
+                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-model-name="${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
                     <div class="lc-main">
                       <div class="lc-head">
                         <span class="lc-ic" aria-hidden="true">◎</span>
@@ -10094,7 +10270,6 @@ llm-d-modelservice:
 
     function submitTemplateImportForm() {
       const title = templateImportValue("importTemplateName");
-      const alias = templateImportValue("importTemplateAlias");
       const description = templateImportValue("importTemplateDescription");
       const status = templateImportValue("importTemplateStatus");
       const yaml = templateImportValue("importTemplateYaml");
@@ -10103,7 +10278,7 @@ llm-d-modelservice:
         return;
       }
       const meta = deriveTemplateMeta(status, yaml);
-      importedTemplates.unshift({ id: `imported-${++importedTemplateSeq}`, title, alias, description, ...meta, model: meta.model || title });
+      importedTemplates.unshift({ id: `imported-${++importedTemplateSeq}`, title, description, ...meta, model: meta.model || title });
       renderTemplateLibrary();
       bindGeneratedViewButtons();
       if (templateImportStatus) templateImportStatus.textContent = "";
@@ -10130,7 +10305,6 @@ llm-d-modelservice:
       const editing = activeTemplateMode === "edit";
       if (templateDetailTitle) templateDetailTitle.textContent = editing ? "编辑模板" : "查看模板";
       if (templateDetailName) templateDetailName.disabled = true;
-      if (templateDetailAlias) templateDetailAlias.disabled = !editing;
       if (templateDetailDescription) templateDetailDescription.disabled = !editing;
       if (templateDetailStatus) templateDetailStatus.disabled = !editing;
       if (templateDetailYaml) {
@@ -10148,7 +10322,6 @@ llm-d-modelservice:
       activeTemplateId = id;
       activeTemplateMode = mode === "edit" ? "edit" : "view";
       if (templateDetailName) templateDetailName.value = item.title || "";
-      if (templateDetailAlias) templateDetailAlias.value = item.alias || "";
       if (templateDetailDescription) templateDetailDescription.value = item.description || "";
       if (templateDetailStatus) templateDetailStatus.value = item.status || "生产可用";
       if (templateDetailYaml) templateDetailYaml.value = item.yaml || "";
@@ -10167,7 +10340,6 @@ llm-d-modelservice:
         return;
       }
       const title = (templateDetailName?.value || "").trim();
-      const alias = (templateDetailAlias?.value || "").trim();
       const description = (templateDetailDescription?.value || "").trim();
       const status = templateDetailStatus?.value || "";
       const yaml = (templateDetailYaml?.value || "").trim();
@@ -10176,7 +10348,7 @@ llm-d-modelservice:
         return;
       }
       const meta = deriveTemplateMeta(status, yaml);
-      const patch = { ...meta, title, alias, description, model: meta.model || title, updated: currentMinuteText() };
+      const patch = { ...meta, title, description, model: meta.model || title, updated: currentMinuteText() };
       const imported = importedTemplates.find(item => item.id === activeTemplateId);
       if (imported) {
         Object.assign(imported, patch);
@@ -10658,7 +10830,7 @@ llm-d-modelservice:
     function prepareYamlPreview(options = {}) {
       const resourceOnly = Boolean(options.resourceOnly);
       const hideDiff = Boolean(options.hideDiff);
-      const showDiffTabs = isEditingServiceConfig && !resourceOnly && !hideDiff;
+      const showDiffTabs = Boolean(options.showDiff) && !resourceOnly && !hideDiff;
       const currentYaml = yamlFromValues(currentFormValues());
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
@@ -10667,6 +10839,7 @@ llm-d-modelservice:
       currentYamlPreview.textContent = currentYaml;
       if (templateYamlDiff) templateYamlDiff.innerHTML = templateDiff;
       if (currentYamlDiff) currentYamlDiff.innerHTML = currentDiff;
+      if (valuesYamlTabs) valuesYamlTabs.hidden = !showDiffTabs;
       yamlModalTabs.forEach(button => {
         button.hidden = !showDiffTabs;
       });
@@ -10923,7 +11096,7 @@ llm-d-modelservice:
       if (activeServiceType === "dynamo") {
         if (mode === "split") {
           deployChecklist.innerHTML = `
-            <li>组件：dynamo、dynamo-operator、nats、etcd、device-plugin、prometheus-agent</li>
+            <li>组件：dynamo、dynamo-operator、prometheus-agent</li>
             <li>角色：prefill、decode、frontend 独立配置</li>
           `;
           roleTabs.innerHTML = `
@@ -10936,8 +11109,8 @@ llm-d-modelservice:
           return;
         }
         deployChecklist.innerHTML = `
-          <li>组件：dynamo、dynamo-operator、nats、etcd、device-plugin、prometheus-agent</li>
-          <li>角色：worker pool 与 frontend 独立配置，worker 支持按队列和吞吐动态扩缩容</li>
+          <li>组件：dynamo、dynamo-operator、prometheus-agent</li>
+          <li>角色：worker pool 与 frontend 独立配置</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="worker">worker pool</button>
@@ -10949,8 +11122,8 @@ llm-d-modelservice:
       }
       if (mode === "split") {
         deployChecklist.innerHTML = `
-          <li>组件：llm-d、inferencepool、gateway、device-plugin、rdma-device-plugin、prometheus-agent</li>
-          <li>角色：prefill、decode、gateway 与 llm-d router 独立配置，gateway 和 llm-d router 配置项一致</li>
+          <li>组件：llm-d、gateway、prometheus-agent</li>
+          <li>角色：prefill、decode、gateway 与 llm-d router 独立配置</li>
         `;
         roleTabs.innerHTML = `
           <button type="button" class="active" data-role="prefill">prefill</button>
@@ -10960,7 +11133,7 @@ llm-d-modelservice:
         `;
       } else {
         deployChecklist.innerHTML = `
-          <li>组件：llm-d、llm-d-router、device-plugin、prometheus-agent</li>
+          <li>组件：llm-d、llm-d-router、prometheus-agent</li>
           <li>角色：model-server 同时承担 prefill 与 decode，llm-d router 负责请求路由</li>
         `;
         roleTabs.innerHTML = `
@@ -11086,6 +11259,7 @@ llm-d-modelservice:
         const isDeployPreview = button.id === "deployPreviewButton";
         prepareYamlPreview({
           resourceOnly: Boolean(button.closest("#detailResources")),
+          showDiff: isDeployPreview && isEditingServiceConfig,
           hideDiff: isDeployPreview && !isEditingServiceConfig && activeDeployTemplateMode === "blank"
         });
         openModal(valuesModal);
@@ -11818,18 +11992,25 @@ llm-d-modelservice:
       const addButton = event.target.closest("#envVarAddButton");
       if (addButton) {
         document.querySelector("#envVarRows")?.insertAdjacentHTML("beforeend", `
-                            <input>
-                            <input>
-                            <button type="button" class="btn text" data-env-delete aria-label="删除环境变量">×</button>`);
+                            <span class="env-var-row">
+                              <select aria-label="环境变量类型">
+                                <option>键值对 (Key/Value Pair)</option>
+                                <option>资源引用 (Resource)</option>
+                                <option>配置项键值导入 (ConfigMap Key)</option>
+                                <option>密钥键值导入 (Secret Key)</option>
+                                <option>变量引用 (Pod Field)</option>
+                                <option>配置项导入 (ConfigMap)</option>
+                                <option>密钥导入 (Secret)</option>
+                              </select>
+                              <input aria-label="环境变量变量名">
+                              <input aria-label="环境变量值">
+                              <button type="button" class="btn text" data-env-delete aria-label="删除环境变量">×</button>
+                            </span>`);
         return;
       }
       const deleteButton = event.target.closest("[data-env-delete]");
       if (!deleteButton) return;
-      const valueInput = deleteButton.previousElementSibling;
-      const keyInput = valueInput?.previousElementSibling;
-      keyInput?.remove();
-      valueInput?.remove();
-      deleteButton.remove();
+      deleteButton.closest(".env-var-row")?.remove();
     });
     document.addEventListener("change", event => {
       const input = event.target.closest("[data-probe-type]");
@@ -11838,6 +12019,47 @@ llm-d-modelservice:
       if (!config) return;
       config.querySelectorAll("[data-probe-method]").forEach(pane => {
         pane.hidden = pane.dataset.probeMethod !== input.value;
+      });
+    });
+
+    document.addEventListener("click", event => {
+      const picker = event.target.closest(".monitor-time-picker");
+      document.querySelectorAll(".monitor-time-picker").forEach(item => {
+        if (item !== picker) {
+          item.querySelector("[data-monitor-time-popover]")?.setAttribute("hidden", "");
+          item.querySelector("[data-monitor-time-trigger]")?.setAttribute("aria-expanded", "false");
+        }
+      });
+      const trigger = event.target.closest("[data-monitor-time-trigger]");
+      if (trigger) {
+        const popover = trigger.closest(".monitor-time-picker")?.querySelector("[data-monitor-time-popover]");
+        const isOpen = popover && !popover.hasAttribute("hidden");
+        if (isOpen) popover.setAttribute("hidden", "");
+        else popover?.removeAttribute("hidden");
+        trigger.setAttribute("aria-expanded", String(!isOpen));
+        return;
+      }
+      const option = event.target.closest("[data-monitor-time-option]");
+      if (option) {
+        const root = option.closest(".monitor-time-picker");
+        const triggerButton = root?.querySelector("[data-monitor-time-trigger]");
+        root?.querySelectorAll("[data-monitor-time-option]").forEach(item => item.classList.toggle("active", item === option));
+        if (triggerButton) triggerButton.textContent = option.dataset.monitorTimeOption || option.textContent.trim();
+        return;
+      }
+      const confirm = event.target.closest("[data-monitor-time-confirm]");
+      if (confirm) {
+        const root = confirm.closest(".monitor-time-picker");
+        root?.querySelector("[data-monitor-time-popover]")?.setAttribute("hidden", "");
+        root?.querySelector("[data-monitor-time-trigger]")?.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.querySelectorAll(".monitor-time-picker[data-monitor-time-default]").forEach(root => {
+      const defaultValue = root.dataset.monitorTimeDefault;
+      const triggerButton = root.querySelector("[data-monitor-time-trigger]");
+      if (triggerButton) triggerButton.textContent = defaultValue;
+      root.querySelectorAll("[data-monitor-time-option]").forEach(item => {
+        item.classList.toggle("active", item.dataset.monitorTimeOption === defaultValue);
       });
     });
   </script>
