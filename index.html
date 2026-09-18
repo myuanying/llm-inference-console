@@ -8494,7 +8494,7 @@ llm-d-modelservice:
             <div class="yaml-modal-pane" data-yaml-modal-pane="diff" hidden="">
               <div class="yaml-diff-grid">
                 <div>
-                  <p class="yaml-diff-title">当前版本 YAML</p>
+                  <p class="yaml-diff-title" id="templateYamlDiffTitle">当前版本 YAML</p>
                   <pre class="code yaml-diff-code" id="templateYamlDiff"></pre>
                 </div>
                 <div>
@@ -8544,6 +8544,7 @@ llm-d-modelservice:
     const detailExternalTag = document.querySelector("#detailExternalTag");
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
+    const templateYamlDiffTitle = document.querySelector("#templateYamlDiffTitle");
     const currentYamlDiff = document.querySelector("#currentYamlDiff");
     const valuesYamlTabs = document.querySelector("#valuesYamlTabs");
     const yamlModalTabs = Array.from(document.querySelectorAll("[data-yaml-modal-tab]"));
