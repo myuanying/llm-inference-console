@@ -11202,12 +11202,15 @@ llm-d-modelservice:
       const showDiffTabs = Boolean(options.showDiff) && !resourceOnly && !hideDiff;
       // 只有显式要求且确实显示了「变化」tab 时才默认切过去，其余入口一律保持「YAML 配置」
       const defaultTab = options.defaultTab === "diff" && showDiffTabs ? "diff" : "preview";
+      // 左侧对比基准的标题：模板编辑模式下是「模板 YAML」，其他弹窗仍是「当前版本 YAML」
+      const templateEditDiff = Boolean(options.templateEdit) && showDiffTabs;
       const currentYaml = yamlFromValues(currentFormValues());
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
       if (valuesTitle) valuesTitle.textContent = "查看 YAML";
       currentYamlPreview.className = "code yaml-preview-code";
       currentYamlPreview.textContent = currentYaml;
+      if (templateYamlDiffTitle) templateYamlDiffTitle.textContent = templateEditDiff ? "模板 YAML" : "当前版本 YAML";
       if (templateYamlDiff) templateYamlDiff.innerHTML = templateDiff;
       if (currentYamlDiff) currentYamlDiff.innerHTML = currentDiff;
       if (valuesYamlTabs) valuesYamlTabs.hidden = !showDiffTabs;
@@ -11652,7 +11655,8 @@ llm-d-modelservice:
           resourceOnly: Boolean(button.closest("#detailResources")),
           showDiff: isDeployPreview && (isEditingServiceConfig || isTemplateEditMode),
           hideDiff: isDeployPreview && !isEditingServiceConfig && !isTemplateEditMode && activeDeployTemplateMode === "blank",
-          defaultTab: templateEditPreview ? "diff" : "preview"
+          defaultTab: templateEditPreview ? "diff" : "preview",
+          templateEdit: templateEditPreview
         });
         openModal(valuesModal);
       }
