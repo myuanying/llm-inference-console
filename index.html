@@ -6296,7 +6296,7 @@ resources:
                       <span class="label"><span class="required">*</span> 部署方式</span>
                       <span class="template-mode-grid">
                         <button type="button" class="template-mode-card active" data-deploy-template-mode="preset">
-                          <strong>优化模板</strong>
+                          <strong>优选模板</strong>
                           <span>从模板库选择并预填部署参数</span>
                         </button>
                         <button type="button" class="template-mode-card" data-deploy-template-mode="blank">
@@ -6409,7 +6409,7 @@ resources:
                           </label>
                         </div>
                       </div>
-                      <div class="hint" id="deployHint">当前使用优化模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
+                      <div class="hint" id="deployHint">当前使用优选模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
                       <select id="templateSelect" class="hidden-control" aria-hidden="true" tabindex="-1">
                         <option value="deepseek">llm-d / DeepSeek-V4-Flash / H800 / vLLM / PD 分离</option>
                         <option value="glm">dynamo / Qwen3-32B / H800 / vLLM / PD 一体</option>
@@ -11883,7 +11883,7 @@ llm-d-modelservice:
       applyDefaults(key);
       deployHint.textContent = key === "blank"
         ? "当前选择通用模板，所有字段可按现场模型、硬件和推理引擎完整配置。"
-        : "当前使用优化模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。";
+        : "当前使用优选模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。";
       applyPresetTemplateState();
     }
 
@@ -11935,7 +11935,7 @@ llm-d-modelservice:
       if (templateDeployLayout) templateDeployLayout.classList.toggle("is-yaml-config", mode === "yaml");
       if (mode === "preset") {
         if (activeTemplate === "blank") selectTemplate("deepseek");
-        deployHint.textContent = "先选择模板库中的模板，推理模式和资源配置将按模板锁定；如需修改，可点击「编辑部署」。";
+        deployHint.textContent = "先选择模板库中的优选模板，推理模式和资源配置将按模板锁定；如需修改，可点击「编辑部署」。";
       }
       if (mode === "blank") {
         selectTemplate("blank");
@@ -11980,7 +11980,7 @@ llm-d-modelservice:
       if (templateLibraryPicker) templateLibraryPicker.hidden = true;
       if (yamlImportPanel) yamlImportPanel.hidden = true;
       if (templateDeployLayout) templateDeployLayout.classList.remove("is-yaml-config");
-      deployHint.textContent = "已基于当前优化模板进入通用模板配置，预填数据已保留，字段可继续修改。";
+      deployHint.textContent = "已基于当前优选模板进入通用模板配置，预填数据已保留，字段可继续修改。";
       applyPresetTemplateState();
     }
 
