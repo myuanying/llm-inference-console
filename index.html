@@ -8780,6 +8780,9 @@ llm-d-modelservice:
     const maasEndpointPanes = Array.from(document.querySelectorAll("[data-maas-endpoint-pane]"));
     let activeTemplate = "deepseek";
     let activeDeployTemplateMode = "preset";
+    // 「模板编辑」模式：从优化模板点「编辑部署」进入通用模板时置为 true，
+    // 用于给通用模板卡片打标，并让底栏「预览 YAML」显示「变化」tab。
+    let isTemplateEditMode = false;
     let activeServiceType = "llm-d";
     let activeYamlService = "deepseek-v4-flash-h800-prod";
     let activeEditYamlBase = "";
