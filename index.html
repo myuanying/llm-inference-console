@@ -790,6 +790,9 @@
     #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy,
     #deploy .field > .distributed-gpu-row,
+    #deploy .field > .select-refresh-row,
+    #deploy .field > .resource-quota-row,
+    #deploy .field > .field-hint,
     #deploy .field > .num-field,
     #deploy .field > .role-command-grid {
       grid-column: 2 / 4;
@@ -799,7 +802,8 @@
     #deploy .field > select,
     #deploy .field > .segmented,
     #deploy .field > .num-field,
-    #deploy .field > .switch-row {
+    #deploy .field > .switch-row,
+    #deploy .field > .select-refresh-row {
       max-width: 320px;
     }
 
@@ -808,6 +812,7 @@
     #deploy .field > .template-yaml-panel,
     #deploy .field > .parallel-strategy,
     #deploy .field > .distributed-gpu-row,
+    #deploy .field > .resource-quota-row,
     #deploy .field > .role-command-grid {
       max-width: 620px;
     }
@@ -4537,8 +4542,11 @@
     #deploy .deploy-config-mode.is-guided-config .role-command .field:has(> textarea[data-command-textarea]) {
       display: none !important;
     }
-    #deploy .deploy-config-mode.is-command-config .role-command .field:has(> .parallel-strategy),
-    #deploy .deploy-config-mode.is-command-config .resource-advanced {
+    #deploy .deploy-config-mode.is-command-config .role-command .field:has(> .parallel-strategy) {
+      display: none !important;
+    }
+    #deploy .deploy-config-mode.is-command-config .resource-advanced > h3,
+    #deploy .deploy-config-mode.is-command-config .advanced-stack > .adv-acc:not(.command-shared-advanced) {
       display: none !important;
     }
     #deploy .deploy-config-mode.is-command-config .role-command .field > textarea[data-command-textarea] {
@@ -4713,6 +4721,21 @@
     .field input:hover, .field select:hover, .field textarea:hover, .mini-input:hover, .mini-select:hover, .search:hover { border-color: var(--icon-hover); }
     .field input:focus, .field select:focus, .field textarea:focus, .mini-input:focus, .mini-select:focus, .search:focus { outline: none; border-color: var(--info); box-shadow: var(--focus-ring); }
     .field input:disabled, .field select:disabled, .field textarea:disabled, .mini-input:disabled, .mini-select:disabled { background: var(--bg); border-color: var(--border); color: var(--fg-input-disabled); cursor: not-allowed; }
+    .select-refresh-row { display: grid; grid-template-columns: minmax(0, 1fr) 30px; gap: 8px; align-items: center; width: 100%; }
+    .select-refresh-row select { width: 100%; min-width: 0; }
+    .field-icon-button {
+      width: 30px; height: 30px; border: 1px solid var(--border-soft); border-radius: 3px; background: var(--surface); color: var(--fg-2);
+      display: inline-grid; place-items: center; padding: 0; font-size: 18px; line-height: 1; cursor: pointer;
+    }
+    .field-refresh-icon { display: inline-block; line-height: 1; }
+    .field-icon-button.is-refreshing { color: var(--info); pointer-events: none; }
+    .field-icon-button.is-refreshing .field-refresh-icon { animation: pvc-refresh-spin .8s linear infinite; }
+    @keyframes pvc-refresh-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .field-icon-button.is-refreshing .field-refresh-icon { animation: none; }
+    }
+    .field-icon-button:hover { border-color: var(--info); color: var(--info); background: var(--fill-hover); }
+    .field-icon-button:disabled { background: var(--bg); border-color: var(--border); color: var(--fg-input-disabled); cursor: not-allowed; }
     ::placeholder { color: var(--meta); opacity: 1; }
     .field input[type="radio"], .field input[type="checkbox"], .radio-item input { width: 18px; height: 18px; min-height: 0; margin: 0; accent-color: var(--info); }
     .radio-item { gap: 8px; line-height: 18px; }
@@ -4862,6 +4885,42 @@
     .ops-menu button { min-height: 30px; padding: 0 15px; border-radius: 0; font-size: 13px; }
     .ops-menu button:hover { background: var(--bg); }
     .ops-menu button:disabled { color: var(--fg-on-disabled); background: transparent; cursor: not-allowed; }
+    .ops-submenu {
+      position: relative;
+      display: block;
+    }
+    .ops-submenu-trigger {
+      width: 100%;
+      padding-left: 26px !important;
+      padding-right: 15px !important;
+    }
+    .ops-submenu-trigger::after {
+      content: "‹";
+      position: absolute;
+      left: 12px;
+      color: var(--meta);
+      font-size: 16px;
+      line-height: 1;
+    }
+    .ops-submenu-menu {
+      position: absolute;
+      right: calc(100% + 4px);
+      top: -5px;
+      display: none;
+      width: 140px;
+      padding: 5px 0;
+      border-radius: 4px;
+      background: var(--surface);
+      box-shadow: var(--elev-popper);
+      z-index: 35;
+    }
+    .ops-submenu:hover > .ops-submenu-menu,
+    .ops-submenu:focus-within > .ops-submenu-menu {
+      display: grid;
+    }
+    .ops-submenu-menu button {
+      width: 100%;
+    }
     .ops-menu button.danger { position: relative; margin-top: 7px; }
     .ops-menu button.danger::before { content: ""; position: absolute; left: 6px; right: 6px; top: -4px; height: 1px; background: var(--bar-track); }
     .btn.text.ops-trigger { width: 26px; min-width: 26px; height: 26px; border-radius: 5px; color: var(--fg-2); font-size: 16px; }
@@ -4901,6 +4960,14 @@
     .confirm-message strong { font-weight: 600; color: var(--fg-2); word-break: break-all; }
     .confirm-field .label { color: var(--fg); font-size: 13px; line-height: 20px; }
     .confirm-field .label strong { font-weight: 600; color: var(--fg-2); word-break: break-all; }
+    .modal-shell.pause-update-modal { width: min(600px, calc(100vw - 56px)); padding: 0; }
+    .pause-update-modal .modal-head { min-height: 50px; margin: 0; padding: 0 20px; border-bottom: 1px solid var(--border); }
+    .pause-update-modal h1 { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; }
+    .pause-update-icon { color: var(--amber); font-size: 15px; line-height: 1; }
+    .pause-update-close { flex: none; width: 26px; height: 26px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-size: 22px; line-height: 24px; padding: 0; }
+    .pause-update-close:hover { color: var(--fg-2); background: var(--fill); }
+    .pause-update-modal .confirm-message { min-height: 78px; margin: 0; padding: 20px; border-bottom: 1px solid var(--border); color: var(--fg); }
+    .pause-update-modal .footer-actions { min-height: 54px; margin: 0; padding: 12px 20px; border-top: 0; }
     .btn.danger-solid { background: var(--danger); color: var(--surface); }
     .btn.danger-solid:hover { background: var(--danger-strong); color: var(--surface); }
     .btn.danger-solid:disabled { background: var(--fill-disabled); color: var(--fg-on-disabled); cursor: not-allowed; }
@@ -5417,6 +5484,35 @@
     .field .num-field > input:focus,
     .num-field > input:hover,
     .field .num-field > input:hover { outline: none; border: 0; box-shadow: none; }
+    .resource-quota-field { align-items: start; }
+    .resource-quota-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+    .resource-quota-item { min-width: 0; }
+    .resource-quota-field .field-hint {
+      grid-column: 2 / 4;
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+      margin-top: -2px;
+    }
+    .num-prefix {
+      flex: none;
+      display: grid;
+      place-items: center;
+      min-width: 58px;
+      padding: 0 8px;
+      border-right: 1px solid var(--border-soft);
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+      white-space: nowrap;
+      user-select: none;
+    }
     .num-steps {
       flex: none;
       display: grid;
@@ -5454,11 +5550,49 @@
       white-space: nowrap;
       user-select: none;
     }
+    .num-unit-select {
+      flex: none;
+      width: 58px;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      border-left: 1px solid var(--border-soft);
+      border-radius: 0;
+      background-color: var(--bg);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+      padding: 0 22px 0 10px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--icon) 50%), linear-gradient(135deg, var(--icon) 50%, transparent 50%);
+      background-position: calc(100% - 13px) 12px, calc(100% - 8px) 12px;
+      background-size: 5px 5px;
+      background-repeat: no-repeat;
+    }
+    .num-unit-select:focus { outline: none; color: var(--fg); background-color: var(--surface); }
+    .field .num-field > .num-unit-select,
+    #deploy .field .num-field > .num-unit-select {
+      flex: 0 0 58px;
+      width: 58px;
+      min-width: 58px;
+      max-width: 58px;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      border-left: 1px solid var(--border-soft);
+      border-radius: 0;
+      box-shadow: none;
+      background-color: var(--bg);
+      padding: 0 22px 0 10px;
+    }
     .num-field:has(> input:disabled) { background: var(--bg); border-color: var(--border); }
     .num-field:has(> input:disabled):hover { border-color: var(--border); }
     .num-field:has(> input:disabled) > input { color: var(--fg-input-disabled); -webkit-text-fill-color: var(--fg-input-disabled); cursor: not-allowed; background: transparent; opacity: 1; }
     .num-field:has(> input:disabled) .num-steps button { background: var(--bg); color: var(--fg-input-disabled); cursor: not-allowed; pointer-events: none; }
-    .num-field:has(> input:disabled) .num-unit { color: var(--fg-input-disabled); }
+    .num-field:has(> input:disabled) .num-unit,
+    .num-field:has(> input:disabled) .num-prefix,
+    .num-field:has(> input:disabled) .num-unit-select { color: var(--fg-input-disabled); background-color: var(--bg); cursor: not-allowed; }
     .num-field[hidden] { display: none; }
     @media (prefers-reduced-motion: reduce) {
       .num-field, .num-steps button { transition: none; }
@@ -6142,7 +6276,7 @@ resources:
                       <span class="label"><span class="required">*</span> 部署方式</span>
                       <span class="template-mode-grid">
                         <button type="button" class="template-mode-card active" data-deploy-template-mode="preset">
-                          <strong>预置模板</strong>
+                          <strong>优化模板</strong>
                           <span>从模板库选择并预填部署参数</span>
                         </button>
                         <button type="button" class="template-mode-card" data-deploy-template-mode="blank">
@@ -6159,20 +6293,20 @@ resources:
                         <span class="template-filter-row">
                           <input class="mini-input" id="templateModelFilter" placeholder="搜索模型名称">
                           <select class="mini-select" id="templateGpuFilter">
-                            <option value="">全部 GPU 品牌</option>
+                            <option value="">全部GPU类型</option>
                             <option value="nvidia">英伟达</option>
                             <option value="huawei">华为</option>
                             <option value="muxi">沐曦</option>
                           </select>
                           <select class="mini-select" id="templateFrameworkFilter">
-                            <option value="">全部分布式框架</option>
+                            <option value="">全部编排框架</option>
                             <option value="llm-d">llm-d</option>
                             <option value="dynamo">dynamo</option>
                           </select>
                           <select class="mini-select" id="templateModeFilter">
-                            <option value="">全部部署方式</option>
+                            <option value="">全部推理模式</option>
                             <option value="PD 分离">PD 分离</option>
-                            <option value="PD 共置">PD 共置</option>
+                            <option value="PD 一体">PD 一体</option>
                           </select>
                         </span>
                         <span class="template-grid">
@@ -6185,23 +6319,23 @@ resources:
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 DeepSeek-V4-Flash 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-08-31 16:28<br>描述：面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。</span>
                           </span>
-                          <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-template-name="Qwen3-32B" data-model-name="Qwen3-32B" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 共置" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-template-name="Qwen3-32B" data-model-name="Qwen3-32B" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 一体" data-engine="vLLM" data-resource="H800 8卡节点">
                           <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Qwen3-32B</strong></span>
                           <span class="template-name-line">模板名称：<b>Qwen3-32B</b></span>
-                          <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 共置</span><span class="tag">vLLM</span></span>
+                          <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 一体</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>worker-pool 2副本 * H800 * 4卡</b></span>
                           <small>生产可用</small>
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-32B 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-09-04 09:18<br>描述：适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。</span>
                           </span>
-                          <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-template-name="Qwen3-235B" data-model-name="Qwen3-235B-A22B-FP8" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 共置" data-engine="vLLM" data-resource="H800 8卡节点">
+                          <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-template-name="Qwen3-235B" data-model-name="Qwen3-235B-A22B-FP8" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 一体" data-engine="vLLM" data-resource="H800 8卡节点">
                           <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Qwen3-235B-A22B-FP8</strong></span>
                           <span class="template-name-line">模板名称：<b>Qwen3-235B</b></span>
-                          <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 共置</span><span class="tag">vLLM</span></span>
+                          <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 一体</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>model-server 1副本 * H800 * 8卡</b></span>
                           <small>生产可用</small>
                           <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-235B 部署">编辑部署</button>
-                          <span class="template-detail">创建时间：2026-08-28 10:42<br>描述：面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。</span>
+                          <span class="template-detail">创建时间：2026-08-28 10:42<br>描述：面向大参数模型的 llm-d PD 一体模板，适合资源集中、部署链路较简单的生产服务。</span>
                           </span>
                           <span role="button" tabindex="0" class="template-card" data-template-card="dynamoScout" data-template-name="Llama-4-Scout" data-model-name="Llama-4-Scout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离" data-engine="vLLM" data-resource="H800 8卡节点">
                           <span class="template-card-head"><span class="template-ic" aria-hidden="true">◎</span><strong>Llama-4-Scout</strong></span>
@@ -6254,11 +6388,11 @@ resources:
                           </label>
                         </div>
                       </div>
-                      <div class="hint" id="deployHint">当前使用预置模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
+                      <div class="hint" id="deployHint">当前使用优化模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。</div>
                       <select id="templateSelect" class="hidden-control" aria-hidden="true" tabindex="-1">
                         <option value="deepseek">llm-d / DeepSeek-V4-Flash / H800 / vLLM / PD 分离</option>
-                        <option value="glm">dynamo / Qwen3-32B / H800 / vLLM / PD 共置</option>
-                        <option value="qwen">llm-d / Qwen3-235B / H800 / vLLM / PD 共置</option>
+                        <option value="glm">dynamo / Qwen3-32B / H800 / vLLM / PD 一体</option>
+                        <option value="qwen">llm-d / Qwen3-235B / H800 / vLLM / PD 一体</option>
                         <option value="dynamoScout">dynamo / Llama-4-Scout / H800 / vLLM / PD 分离</option>
                         <option value="blank">通用模板</option>
                       </select>
@@ -6319,16 +6453,19 @@ resources:
                     </label>
                     <label class="field">
                       <span class="label"><span class="required">*</span> PVC 名称</span>
-                      <select id="modelPvcNameSelect" aria-label="PVC 名称" data-template-unlocked="">
-                        <option value="model-pvc-prod-h800">model-pvc-prod-h800</option>
-                        <option value="model-pvc-qwen-prod">model-pvc-qwen-prod</option>
-                        <option value="model-pvc-dynamo-lab">model-pvc-dynamo-lab</option>
-                        <option value="model-pvc-shared">model-pvc-shared</option>
-                      </select>
+                      <span class="select-refresh-row">
+                        <select id="modelPvcNameSelect" aria-label="PVC 名称" data-template-unlocked="">
+                          <option value="model-pvc-prod-h800">model-pvc-prod-h800</option>
+                          <option value="model-pvc-qwen-prod">model-pvc-qwen-prod</option>
+                          <option value="model-pvc-dynamo-lab">model-pvc-dynamo-lab</option>
+                          <option value="model-pvc-shared">model-pvc-shared</option>
+                        </select>
+                        <button type="button" class="field-icon-button" aria-label="刷新 PVC 名称" title="刷新" data-template-unlocked="" data-pvc-refresh=""><span class="field-refresh-icon" aria-hidden="true">↻</span></button>
+                      </span>
                     </label>
                     <label class="field">
-                      <span class="label"><span class="required">*</span> 存储目录</span>
-                      <input id="modelStorageInput" value="/models/deepseek-v4-flash-0731" data-model-storage-input="" data-template-unlocked="">
+                      <span class="label">模型子路径</span>
+                      <input id="modelStorageInput" value="" data-model-storage-input="" data-template-unlocked="">
                     </label>
                     <label class="field">
                       <span class="label">挂载路径</span>
@@ -6355,7 +6492,7 @@ resources:
                     <label class="field wide">
                       <span class="label"><span class="required">*</span> 推理模式</span>
                       <span class="segmented">
-                        <button type="button" data-inference-mode="colocated">PD 共置</button>
+                        <button type="button" data-inference-mode="colocated">PD 一体</button>
                         <button type="button" class="active" data-inference-mode="split">PD 分离</button>
                       </span>
                     </label>
@@ -6411,13 +6548,14 @@ resources:
                     <label class="field" data-resource-field="gpu-type">
                       <span class="label">GPU型号</span>
                       <select id="nodePoolSelect">
+                        <option value="">未指定</option>
                         <option>NVIDIA H800</option>
                         <option>NVIDIA H20</option>
                         <option>Ascend 910B</option>
                       </select>
                     </label>
                     <label class="field" data-resource-field="distributed">
-                      <span class="label">分布式推理</span>
+                      <span class="label">多节点部署</span>
                       <span class="switch-row"><button type="button" class="switch" role="switch" aria-checked="false" data-dao="switch" data-switch="" data-distributed-toggle=""><span class="switch-knob" aria-hidden="true"></span></button><span class="switch-text">关闭</span></span>
                     </label>
                     <label class="field" data-resource-field="gpus">
@@ -6439,12 +6577,20 @@ resources:
                         <span class="multiply" aria-hidden="true">×</span>
                         <span class="distributed-part">
                           <span class="num-field">
-                            <input id="machineGpusInput" type="number" min="0" step="1" inputmode="numeric" value="8" disabled="">
+                            <input id="machineGpusInput" type="number" min="0" step="1" inputmode="numeric" value="8" data-template-unlocked="">
                             <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
                             <span class="num-unit">卡</span>
                           </span>
                           <span class="mini-label">单机卡数</span>
                         </span>
+                      </span>
+                    </label>
+                    <label class="field" data-resource-field="shm" id="shmSizeField" hidden="">
+                      <span class="label">SHM大小</span>
+                      <span class="num-field">
+                        <input id="shmSizeInput" type="number" min="0" step="1" inputmode="numeric" value="16" data-unit="Gi">
+                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                        <span class="num-unit">Gi</span>
                       </span>
                     </label>
                     <label class="field" data-resource-field="rdma">
@@ -6477,21 +6623,57 @@ resources:
                         <button type="button" class="btn text rdma-param-add" id="rdmaParamAddButton" data-template-unlocked="">+ 添加</button>
                       </div>
                     </div>
-                    <label class="field">
+                    <label class="field resource-quota-field">
                       <span class="label">单实例CPU</span>
-                      <span class="num-field">
-                        <input id="cpuInput" type="number" min="1" step="1" inputmode="numeric" value="64" data-unit=" core">
-                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
-                        <span class="num-unit">Core</span>
+                      <span class="resource-quota-row">
+                        <span class="resource-quota-item">
+                          <span class="num-field">
+                            <span class="num-prefix">请求量</span>
+                            <input id="cpuInput" type="number" min="0" step="0.01" inputmode="decimal" value="64" data-unit=" core">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <span class="num-unit">Core</span>
+                          </span>
+                        </span>
+                        <span class="resource-quota-item">
+                          <span class="num-field">
+                            <span class="num-prefix">限制量</span>
+                            <input id="cpuLimitInput" type="number" min="0" step="0.01" inputmode="decimal" value="64" data-unit=" core">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <span class="num-unit">Core</span>
+                          </span>
+                        </span>
                       </span>
+                      <span class="field-hint">当前命名空间请求量可用 CPU 不做限制；限制量可用 CPU 不做限制</span>
                     </label>
-                    <label class="field">
+                    <label class="field resource-quota-field">
                       <span class="label">单实例内存</span>
-                      <span class="num-field">
-                        <input id="memoryInput" type="number" min="1" step="1" inputmode="numeric" value="600" data-unit="Gi">
-                        <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
-                        <span class="num-unit">Gi</span>
+                      <span class="resource-quota-row">
+                        <span class="resource-quota-item">
+                          <span class="num-field">
+                            <span class="num-prefix">请求量</span>
+                            <input id="memoryInput" type="number" min="0" step="0.5" inputmode="decimal" value="600" data-unit="Gi">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <select class="num-unit-select" id="memoryUnitSelect" aria-label="内存请求量单位">
+                              <option>Ki</option>
+                              <option>Mi</option>
+                              <option selected="">Gi</option>
+                            </select>
+                          </span>
+                        </span>
+                        <span class="resource-quota-item">
+                          <span class="num-field">
+                            <span class="num-prefix">限制量</span>
+                            <input id="memoryLimitInput" type="number" min="0" step="0.5" inputmode="decimal" value="600" data-unit="Gi">
+                            <span class="num-steps" aria-hidden="true"><button type="button" tabindex="-1" data-step="up" title="增加"><svg viewBox="0 0 10 10" width="10" height="10"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" tabindex="-1" data-step="down" title="减少"><svg viewBox="0 0 10 10" width="10" height="10"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>
+                            <select class="num-unit-select" id="memoryLimitUnitSelect" aria-label="内存限制量单位">
+                              <option>Ki</option>
+                              <option>Mi</option>
+                              <option selected="">Gi</option>
+                            </select>
+                          </span>
+                        </span>
                       </span>
+                      <span class="field-hint">当前命名空间请求量可用内存不做限制；限制量可用内存不做限制</span>
                     </label>
                   </div>
 
@@ -7194,7 +7376,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="conceptInferenceMode"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">推理模式</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="conceptInferenceMode" hidden="">推理模式用于定义不同推理角色的执行方式。PD 分离将 Prefill 与 Decode 拆分为独立角色，可分别配置 GPU 资源，更适合长上下文和高并发场景；PD 共置则由单一角色承载完整推理流程，更适合中小模型或资源受限的服务。</div>
+            <div class="concept-body" id="conceptInferenceMode" hidden="">推理模式用于定义不同推理角色的执行方式。PD 分离将 Prefill 与 Decode 拆分为独立角色，可分别配置 GPU 资源，更适合长上下文和高并发场景；PD 一体则由单一角色承载完整推理流程，更适合中小模型或资源受限的服务。</div>
           </div>
 
           <!-- layout: 画板 集群列表 ⟨Toolbar / 01_Standard / 02_toolbar@search-w-2buttons⟩ -->
@@ -7204,7 +7386,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>未知</option><option>部署中</option><option>更新中</option><option>删除中</option><option>资源异常</option><option>性能异常</option><option>Outofsync</option></select>
             </label>
             <label class="tb-field"><span class="tb-label">推理模式</span>
-              <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option>PD 分离</option><option>PD 共置</option></select>
+              <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option>PD 分离</option><option>PD 一体</option></select>
             </label>
             <input class="search" id="serviceSearch" type="search" placeholder="输入服务名称搜索" aria-label="搜索模型服务">
             <div class="tb-right">
@@ -7255,7 +7437,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             <label class="tb-field"><span class="tb-label">状态</span>
               <select class="mini-select sel" id="observeStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>未知</option><option>部署中</option><option>更新中</option><option>删除中</option><option>资源异常</option><option>性能异常</option><option>Outofsync</option></select></label>
             <label class="tb-field"><span class="tb-label">推理模式</span>
-              <select class="mini-select sel" id="observeModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option value="PD 分离">PD 分离</option><option value="PD 共置">PD 共置</option></select></label>
+              <select class="mini-select sel" id="observeModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option value="PD 分离">PD 分离</option><option value="PD 一体">PD 一体</option></select></label>
             <input class="search" id="observeSearch" type="search" placeholder="输入服务名称搜索" aria-label="搜索服务">
           </div>
           <!-- map: <dao-table> 单行 · 状态列 DaoStateIcon · src: dao-style/src/components/table -->
@@ -7334,7 +7516,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-template-library-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">部署模板库</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-template-library-body" hidden="">部署模板是一组经过验证的模型服务配置（镜像、编排框架、推理模式、GPU 规格与副本数），用于「新建部署」时预填表单。「生产可用」表示已在生产集群稳定运行，「抢先体验」仍在验证阶段。</div>
+            <div class="concept-body" id="concept-template-library-body" hidden="">部署模板是一组经过优化与验证的模型服务配置，包含推理引擎、编排框架、推理模式、资源配置和并行策略等参数，用于快速部署高性能推理服务。「生产可用」表示模板已通过稳定性验证，可用于生产环境；「抢先体验」表示模板仍在验证阶段，适合试用与评估。</div>
           </div>
           <!-- layout: 参考 大模型服务平台 · 模型广场（筛选按钮 + 搜索 + 左侧筹选面板 + 三列卡片） -->
           <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
@@ -7379,10 +7561,10 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               </div>
               <div class="tl-group" data-tl-group="">
                 <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">推理模式<span class="tl-caret" aria-hidden="true">⌄</span></button>
-                <select class="hidden-control" id="templateLibraryModeFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="PD 分离">PD 分离</option><option value="PD 共置">PD 共置</option></select>
+                <select class="hidden-control" id="templateLibraryModeFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="PD 分离">PD 分离</option><option value="PD 一体">PD 一体</option></select>
                 <div class="filter-chip-list" data-template-library-filter="templateLibraryModeFilter" role="group" aria-label="推理模式">
                   <button type="button" class="filter-chip" data-filter-value="PD 分离">PD 分离</button>
-                  <button type="button" class="filter-chip" data-filter-value="PD 共置">PD 共置</button>
+                  <button type="button" class="filter-chip" data-filter-value="PD 一体">PD 一体</button>
                 </div>
               </div>
               <div class="tl-group" data-tl-group="">
@@ -7549,8 +7731,14 @@ llm-d-modelservice:
                 <button class="btn" type="button">操作</button>
                 <span class="ops-menu">
                   <button type="button" data-open-values="">查看 YAML</button>
+                  <span class="ops-submenu">
+                    <button type="button" class="ops-submenu-trigger" aria-haspopup="menu">修改状态</button>
+                    <span class="ops-submenu-menu" role="menu">
+                      <button type="button" data-detail-sync-service="">Sync 恢复</button>
+                      <button type="button" data-open-pause-update="">暂停更新</button>
+                    </span>
+                  </span>
                   <button type="button" data-edit-yaml-action="">编辑YAML</button>
-                  <button type="button" data-detail-sync-service="">Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">服务测试</button>
                   <button type="button" data-export-template-action="" data-external-page-action="">导出模板</button>
                   <button type="button" data-update-service-action="">更新服务</button>
@@ -7894,7 +8082,7 @@ llm-d-modelservice:
                 <span class="si-status red" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">qwen3-235b-prod <span class="tag">inferx-prod</span></span>
-                  <span class="si-meta">Qwen3-235B · llm-d · PD 共置 · 8 GPU · H800</span>
+                  <span class="si-meta">Qwen3-235B · llm-d · PD 一体 · 8 GPU · H800</span>
                 </span>
                 <span class="si-tags"><span class="tag red">Degraded</span><span class="tag amber">OutOfSync</span></span>
                 <span class="si-badge" data-ss-badge="" hidden="">当前查看</span>
@@ -7912,7 +8100,7 @@ llm-d-modelservice:
                 <span class="si-status green" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">dynamo-qwen3-colocated-prod <span class="tag">inferx-prod</span></span>
-                  <span class="si-meta">Qwen3-32B · dynamo · PD 共置 · 8 GPU · H800</span>
+                  <span class="si-meta">Qwen3-32B · dynamo · PD 一体 · 8 GPU · H800</span>
                 </span>
                 <span class="si-tags"><span class="tag green">Running</span><span class="tag green">Synced</span></span>
                 <span class="si-badge" data-ss-badge="" hidden="">当前查看</span>
@@ -8166,6 +8354,23 @@ llm-d-modelservice:
           </div>
         </section>
 
+        <section id="pauseUpdateModal" class="modal" aria-hidden="true">
+          <div class="modal-backdrop" data-close-modal=""></div>
+          <div class="modal-shell compact confirm-modal pause-update-modal" role="dialog" aria-modal="true" aria-labelledby="pauseUpdateTitle" aria-describedby="pauseUpdateMessage">
+            <div class="modal-head">
+              <div>
+                <h1 id="pauseUpdateTitle"><span class="pause-update-icon" aria-hidden="true">⚠</span>暂停更新</h1>
+              </div>
+              <button class="pause-update-close" type="button" data-close-modal="" aria-label="关闭">×</button>
+            </div>
+            <p class="confirm-message" id="pauseUpdateMessage"></p>
+            <div class="footer-actions">
+              <button class="btn" type="button" data-close-modal="">取消</button>
+              <button class="btn primary" type="button" id="confirmPauseUpdate">确定</button>
+            </div>
+          </div>
+        </section>
+
         <section id="deleteServiceModal" class="modal" aria-hidden="true">
           <div class="modal-backdrop" data-close-modal=""></div>
           <div class="modal-shell compact confirm-modal" role="dialog" aria-modal="true" aria-labelledby="deleteServiceTitle" aria-describedby="deleteServiceMessage">
@@ -8394,16 +8599,23 @@ llm-d-modelservice:
     const modelAccessNameInput = document.querySelector("#modelAccessNameInput");
     const modelStorageInput = document.querySelector("#modelStorageInput");
     const modelPvcNameSelect = document.querySelector("#modelPvcNameSelect");
+    const modelPvcRefreshButton = document.querySelector("[data-pvc-refresh]");
     const replicasInput = document.querySelector("#replicasInput");
     const gpusInput = document.querySelector("#gpusInput");
     const distributedToggle = document.querySelector("[data-distributed-toggle]");
     const distributedGpuRow = document.querySelector("#distributedGpuRow");
     const distributedNodesInput = document.querySelector("#distributedNodesInput");
     const machineGpusInput = document.querySelector("#machineGpusInput");
+    const shmSizeField = document.querySelector("#shmSizeField");
+    const shmSizeInput = document.querySelector("#shmSizeInput");
     const gpuTypeSelect = document.querySelector("#gpuTypeSelect");
     const nodePoolSelect = document.querySelector("#nodePoolSelect");
     const cpuInput = document.querySelector("#cpuInput");
+    const cpuLimitInput = document.querySelector("#cpuLimitInput");
     const memoryInput = document.querySelector("#memoryInput");
+    const memoryLimitInput = document.querySelector("#memoryLimitInput");
+    const memoryUnitSelect = document.querySelector("#memoryUnitSelect");
+    const memoryLimitUnitSelect = document.querySelector("#memoryLimitUnitSelect");
     const gpusField = document.querySelector("#gpusField");
 
     // 带单位后缀的数值输入（.num-field）：输入框内只保存数字，单位由 data-unit 声明（" core" / "Gi"）。
@@ -8411,13 +8623,13 @@ llm-d-modelservice:
     // 这样表单回填、模板预设、YAML 生成等既有读写点无需逐一改动。
     function bindUnitNumberInput(input) {
       if (!input || !input.dataset.unit) return;
-      const unit = input.dataset.unit;
       const proto = Object.getPrototypeOf(input);
       const native = Object.getOwnPropertyDescriptor(proto, "value");
       Object.defineProperty(input, "value", {
         configurable: true,
         get() {
           const raw = native.get.call(input);
+          const unit = input.dataset.unit || "";
           return raw === "" ? "" : `${raw}${unit}`;
         },
         set(next) {
@@ -8427,7 +8639,42 @@ llm-d-modelservice:
       });
     }
     bindUnitNumberInput(cpuInput);
+    bindUnitNumberInput(cpuLimitInput);
     bindUnitNumberInput(memoryInput);
+    bindUnitNumberInput(memoryLimitInput);
+    bindUnitNumberInput(shmSizeInput);
+
+    function splitQuantity(value, fallbackUnit = "") {
+      const text = String(value ?? "");
+      const amountMatch = text.match(/\d+(?:\.\d+)?/);
+      const amount = amountMatch?.[0] || "";
+      const suffix = amountMatch ? text.slice(amountMatch.index + amount.length) : "";
+      const unit = suffix || fallbackUnit;
+      return { amount, unit };
+    }
+
+    function defaultMemoryUnitForRole(role = activeResourceRole) {
+      return ["server", "worker", "prefill", "decode"].includes(role) ? "Gi" : "Mi";
+    }
+
+    function roleUsesGpu(role = activeResourceRole) {
+      return defaultMemoryUnitForRole(role) === "Gi";
+    }
+
+    function setMemoryUnits(unit) {
+      const next = unit || defaultMemoryUnitForRole();
+      if (memoryUnitSelect) memoryUnitSelect.value = next;
+      if (memoryLimitUnitSelect) memoryLimitUnitSelect.value = next;
+      if (memoryInput) memoryInput.dataset.unit = next;
+      if (memoryLimitInput) memoryLimitInput.dataset.unit = next;
+    }
+
+    function setQuantityInput(input, value, fallbackUnit = "") {
+      if (!input) return;
+      const parsed = splitQuantity(value, fallbackUnit);
+      if (parsed.unit) input.dataset.unit = parsed.unit;
+      input.value = parsed.amount || "";
+    }
 
     // 步进按钮：点击 ▲/▼ 调整数值并派发 input/change，保持与手动输入一致的联动。
     document.addEventListener("click", (event) => {
@@ -8440,6 +8687,13 @@ llm-d-modelservice:
       input.dispatchEvent(new Event("input", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
       input.focus();
+    });
+
+    memoryUnitSelect?.addEventListener("change", () => {
+      if (memoryInput) memoryInput.dataset.unit = memoryUnitSelect.value || defaultMemoryUnitForRole();
+    });
+    memoryLimitUnitSelect?.addEventListener("change", () => {
+      if (memoryLimitInput) memoryLimitInput.dataset.unit = memoryLimitUnitSelect.value || defaultMemoryUnitForRole();
     });
     const commandInput = document.querySelector("#commandInput");
     const detailTitle = document.querySelector("#detailTitle");
@@ -8492,6 +8746,10 @@ llm-d-modelservice:
     const syncTargetYaml = document.querySelector("#syncTargetYaml");
     const syncRestoreResult = document.querySelector("#syncRestoreResult");
     const confirmSyncRestore = document.querySelector("#confirmSyncRestore");
+    const pauseUpdateModal = document.querySelector("#pauseUpdateModal");
+    const pauseUpdateTitle = document.querySelector("#pauseUpdateTitle");
+    const pauseUpdateMessage = document.querySelector("#pauseUpdateMessage");
+    const confirmPauseUpdate = document.querySelector("#confirmPauseUpdate");
     const deleteServiceModal = document.querySelector("#deleteServiceModal");
     const deleteServiceTitle = document.querySelector("#deleteServiceTitle");
     const deleteServiceMessage = document.querySelector("#deleteServiceMessage");
@@ -8528,10 +8786,22 @@ llm-d-modelservice:
     let activeUpdateService = "deepseek-v4-flash-h800-prod";
     let activeResourceRole = "prefill";
     let activeDeleteService = "";
+    let activePauseUpdateService = "";
     let activeExportTemplateService = "";
     let activeSyncRestoreService = "";
     let isEditingServiceConfig = false;
     const roleAdvancedStates = {};
+    function normalizeSharedAdvancedOrder() {
+      const stack = resourceAdvanced?.querySelector(".advanced-stack");
+      if (!stack) return;
+      ["adv-env-vars", "adv-health-checks"].forEach(id => {
+        const section = resourceAdvanced.querySelector(`#${id}`);
+        if (!section) return;
+        section.classList.add("command-shared-advanced");
+        stack.appendChild(section);
+      });
+    }
+    normalizeSharedAdvancedOrder();
     const defaultRoleAdvancedMarkup = resourceAdvanced ? resourceAdvanced.innerHTML : "";
 
     function setPlatformMenu(open) {
@@ -8650,7 +8920,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>llm-d</td></tr>
-                    <tr><td>推理模式</td><td>PD 共置</td></tr>
+                    <tr><td>推理模式</td><td>PD 一体</td></tr>
                     <tr><td>model-server</td><td>0/1 Ready，每副本 8 GPU H800</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
@@ -8692,8 +8962,8 @@ llm-d-modelservice:
                       <tr><td>16:18:42</td><td>controller</td><td><span class="tag red">Error</span></td><td>手工修改 Service type，需要通过 GitOps 恢复或回滚配置</td><td><button class="btn text">日志</button></td></tr>
         `,
         versionRows: `
-                      <tr><td>通用模板</td><td class="mono">8f6b0ee</td><td>Qwen3-235B / H800</td><td>PD 共置，model-server 1 副本，单实例 8 GPU</td><td><span class="tag amber">当前版本</span></td><td>2026-08-31 15:58</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                      <tr><td>通用模板</td><td class="mono">47c9a11</td><td>Qwen3-235B / H800</td><td>PD 共置，model-server 1 副本，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-08-30 20:24</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
+                      <tr><td>通用模板</td><td class="mono">8f6b0ee</td><td>Qwen3-235B / H800</td><td>PD 一体，model-server 1 副本，单实例 8 GPU</td><td><span class="tag amber">当前版本</span></td><td>2026-08-31 15:58</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                      <tr><td>通用模板</td><td class="mono">47c9a11</td><td>Qwen3-235B / H800</td><td>PD 一体，model-server 1 副本，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-08-30 20:24</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
         `
       },
       "dynamo-llama4-scout-lab": {
@@ -8830,7 +9100,7 @@ llm-d-modelservice:
       },
       "dynamo-qwen3-colocated-prod": {
         title: "dynamo-qwen3-colocated-prod",
-        lead: "Endpoint: dynamo-qwen3-colocated-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 编排框架 dynamo / PD 共置",
+        lead: "Endpoint: dynamo-qwen3-colocated-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 编排框架 dynamo / PD 一体",
         health: ["Running", "green"],
         sync: ["Synced", "green"],
         commit: "commit d4a72bc",
@@ -8845,7 +9115,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">推理与资源</th></tr>
                     <tr><td>编排框架</td><td>dynamo</td></tr>
-                    <tr><td>推理模式</td><td>PD 共置</td></tr>
+                    <tr><td>推理模式</td><td>PD 一体</td></tr>
                     <tr><td>worker-pool</td><td>1/2 Ready，每副本 4 GPU H20</td></tr>
                     <tr><td>KV Cache</td><td>本地 GPU Cache</td></tr>
                   </table>
@@ -8884,8 +9154,8 @@ llm-d-modelservice:
                       <tr><td>09:20:11</td><td>worker-pool</td><td><span class="tag green">Info</span></td><td>OpenAI compatible endpoint is ready</td><td><button class="btn text">日志</button></td></tr>
         `,
         versionRows: `
-                      <tr><td>v0.4.1</td><td class="mono">d4a72bc</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，worker-pool 1/2 Ready，单实例 4 GPU</td><td><span class="tag green">当前版本</span></td><td>2026-09-04 09:18</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
-                      <tr><td>v0.4.0</td><td class="mono">a91f08c</td><td>Dynamo / Qwen3-32B</td><td>PD 共置，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-09-03 19:42</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
+                      <tr><td>v0.4.1</td><td class="mono">d4a72bc</td><td>Dynamo / Qwen3-32B</td><td>PD 一体，worker-pool 1/2 Ready，单实例 4 GPU</td><td><span class="tag green">当前版本</span></td><td>2026-09-04 09:18</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                      <tr><td>v0.4.0</td><td class="mono">a91f08c</td><td>Dynamo / Qwen3-32B</td><td>PD 一体，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-09-03 19:42</td><td><button class="btn text" data-open-values>查看 YAML</button> <button class="btn text">回滚到此版本</button></td></tr>
         `
       },
       "external-qwen3-router-prod": {
@@ -8991,9 +9261,9 @@ llm-d-modelservice:
 
     const serviceRowsData = [
       { id: "deepseek-v4-flash-h800-prod", alias: "DeepSeek V4 Flash 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 共置", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "部署中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 共置", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
+      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 一体", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 一体", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
       { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
 
@@ -9011,21 +9281,21 @@ llm-d-modelservice:
 
     const observeMetricLabels = ["RPS 趋势", "Token 吞吐趋势", "TTFT 趋势", "TPOT 趋势", "KV 命中率趋势", "排队请求趋势"];
 
-    // 部署模板库的模板 = 新建部署 → 部署配置页的 4 个预置模板（#deploy .template-grid [data-template-card]）。
+    // 部署模板库的模板 = 新建部署 → 部署配置页的 4 个优化模板（#deploy .template-grid [data-template-card]）。
     // 名称 / 模型 / 编排框架 / 部署方式 / GPU / 状态 / 推理引擎 / 硬件全部直接读那份定义，不在这里再抄一份，
     // 避免「模板库」与「部署配置」两处数据漂移。只有副本数与更新时间是模板库特有的展示信息。
     const templateLibraryExtras = {
       deepseek: { alias: "DeepSeek V4 Flash 生产模板", description: "面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。", replicas: "prefill 2 / decode 1", resourceSummary: "prefill 2副本 * H800 * 4卡，decode 1副本 * H800 * 4卡", updated: "2026-08-31 16:28" },
       glm: { alias: "Qwen3 32B Dynamo 模板", description: "适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。", replicas: "worker-pool 1/2 Ready", resourceSummary: "worker-pool 2副本 * H800 * 4卡", updated: "2026-09-04 09:18" },
-      qwen: { alias: "Qwen3 235B 生产模板", description: "面向大参数模型的 llm-d PD 共置模板，适合资源集中、部署链路较简单的生产服务。", replicas: "model-server 1 副本", resourceSummary: "model-server 1副本 * H800 * 8卡", updated: "2026-08-28 10:42" },
+      qwen: { alias: "Qwen3 235B 生产模板", description: "面向大参数模型的 llm-d PD 一体模板，适合资源集中、部署链路较简单的生产服务。", replicas: "model-server 1 副本", resourceSummary: "model-server 1副本 * H800 * 8卡", updated: "2026-08-28 10:42" },
       dynamoScout: { alias: "Llama 4 Scout 实验模板", description: "用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。", replicas: "prefill / decode worker pool", resourceSummary: "prefill 2副本 * H800 * 4卡，decode 2副本 * H800 * 4卡", updated: "2026-09-03 15:22" }
     };
 
     const templateStatusColor = { "生产可用": "green", "抢先体验": "violet" };
     const importedTemplates = [];
-    // 模板库里的预置模板来自 #deploy，本身不可写；「编辑模板」保存后写进这里，渲染时覆盖上去。
+    // 模板库里的优化模板来自 #deploy，本身不可写；「编辑模板」保存后写进这里，渲染时覆盖上去。
     const templateLibraryOverrides = {};
-    // 预置模板删不掉 #deploy 里的卡片，只能在模板库里隐藏；导入模板则直接从 importedTemplates 移除。
+    // 优化模板删不掉 #deploy 里的卡片，只能在模板库里隐藏；导入模板则直接从 importedTemplates 移除。
     const templateLibraryDeleted = new Set();
     let importedTemplateSeq = 0;
     let activeTemplateId = "";
@@ -9084,7 +9354,7 @@ llm-d-modelservice:
       });
     }
 
-    // 模板库最终数据 = 预置模板 ⊕ 本地编辑覆盖 ⊕ 导入模板 − 已删除
+    // 模板库最终数据 = 优化模板 ⊕ 本地编辑覆盖 ⊕ 导入模板 − 已删除
     function templateLibraryItems() {
       return [...deployPresetTemplates(), ...importedTemplates]
         .filter(item => !templateLibraryDeleted.has(item.id))
@@ -9113,12 +9383,12 @@ llm-d-modelservice:
         image: "docker.m.daocloud.io/vllm/vllm-openai:nightly",
         modelAccessName: "deepseek-v4-flash-0731",
         pvcName: "model-pvc-prod-h800",
-        storage: "/models/deepseek-v4-flash-0731",
+        storage: "",
         mode: "split",
         replicas: "2",
         gpus: "4",
         gpuType: "Nvidia GPU",
-        nodePool: "NVIDIA H800",
+        nodePool: "",
         cpu: "64 core",
         memory: "600Gi",
         parallel: "TP=1, DP=4, PP=1, EP=on",
@@ -9135,12 +9405,12 @@ llm-d-modelservice:
         image: "docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1",
         modelAccessName: "qwen3-32b",
         pvcName: "model-pvc-qwen-prod",
-        storage: "/models/qwen3-32b",
+        storage: "",
         mode: "colocated",
         replicas: "2",
         gpus: "4",
         gpuType: "Nvidia GPU",
-        nodePool: "NVIDIA H800",
+        nodePool: "",
         cpu: "64 core",
         memory: "600Gi",
         parallel: "TP=1, DP=2, Dynamo graph=on",
@@ -9157,12 +9427,12 @@ llm-d-modelservice:
         image: "docker.m.daocloud.io/vllm/vllm-openai:v0.8.5",
         modelAccessName: "qwen3-235b",
         pvcName: "model-pvc-qwen-prod",
-        storage: "/models/qwen3-235b",
+        storage: "",
         mode: "colocated",
         replicas: "1",
         gpus: "8",
         gpuType: "Nvidia GPU",
-        nodePool: "NVIDIA H800",
+        nodePool: "",
         cpu: "96 core",
         memory: "800Gi",
         parallel: "TP=8, DP=1, PP=1, EP=off",
@@ -9179,12 +9449,12 @@ llm-d-modelservice:
         image: "docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8",
         modelAccessName: "llama4-scout",
         pvcName: "model-pvc-dynamo-lab",
-        storage: "/models/llama4-scout",
+        storage: "",
         mode: "split",
         replicas: "4",
         gpus: "4",
         gpuType: "Nvidia GPU",
-        nodePool: "NVIDIA H800",
+        nodePool: "",
         cpu: "128 core",
         memory: "1200Gi",
         parallel: "prefill=4, decode=2, KV router=on",
@@ -9206,7 +9476,7 @@ llm-d-modelservice:
         replicas: "",
         gpus: "",
         gpuType: "Nvidia GPU",
-        nodePool: "NVIDIA H800",
+        nodePool: "",
         cpu: "",
         memory: "",
         parallel: "TP=1, DP=1, PP=1, EP=off",
@@ -9413,6 +9683,11 @@ llm-d-modelservice:
         const disabled = isExternalService || serviceRow?.sync?.[0] !== "OutOfSync";
         button.disabled = disabled;
         button.title = disabled ? "当前服务无需 Sync 恢复" : "";
+      });
+      document.querySelectorAll("#detail [data-open-pause-update]").forEach(button => {
+        const disabled = !canPauseUpdate(serviceRow);
+        button.disabled = disabled;
+        button.title = disabled ? (isExternalService ? "外部接入服务，不支持页面操作" : "仅更新中的服务可暂停更新") : "";
       });
       document.querySelectorAll("#detail [data-open-scale-service], #detail [data-open-delete-service], #detail [data-external-page-action]").forEach(button => {
         button.disabled = isExternalService;
@@ -9792,7 +10067,7 @@ llm-d-modelservice:
       if (roles.length) return roles;
       return existingRoles.length
         ? existingRoles
-        : [{ name: service.mode === "PD 共置" ? "model-server" : "prefill", current: 1, target: 1 }];
+        : [{ name: service.mode === "PD 一体" ? "model-server" : "prefill", current: 1, target: 1 }];
     }
 
     function openScaleService(serviceId) {
@@ -9877,6 +10152,25 @@ llm-d-modelservice:
     function updateDeleteServiceSubmitState() {
       if (!submitDeleteService || !deleteServiceInput) return;
       submitDeleteService.disabled = deleteServiceInput.value.trim() !== activeDeleteService;
+    }
+
+    function openPauseUpdate(serviceId) {
+      const service = serviceById(serviceId) || serviceById(activeDetailService);
+      if (!service || !pauseUpdateModal) return;
+      if (!canPauseUpdate(service)) return;
+      activePauseUpdateService = service.id;
+      if (pauseUpdateTitle) {
+        pauseUpdateTitle.innerHTML = `<span class="pause-update-icon" aria-hidden="true">⚠</span>暂停更新（模型服务：${escapeHtml(service.id)}）`;
+      }
+      if (pauseUpdateMessage) {
+        pauseUpdateMessage.textContent = "暂停更新后，后续对该模型服务的配置变更不会应用到当前运行实例。";
+      }
+      openModal(pauseUpdateModal);
+    }
+
+    function confirmPauseUpdateAction() {
+      activePauseUpdateService = "";
+      closeModals();
     }
 
     function openDeleteService(serviceId) {
@@ -10024,6 +10318,7 @@ llm-d-modelservice:
         const state = item.serviceState || item.status || ["可用", "green"];
         const editDisabled = disabledServiceActionAttr(item);
         const externalDisabled = externalServiceDisabledAttr(item);
+        const pauseDisabled = pauseUpdateDisabledAttr(item);
         const externalTag = item.external ? `<span class="tag external-access-tag">外部接入</span>` : "";
         const metric = `<div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>${gpuTypeSummary}`;
         const issueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])].map(tag => {
@@ -10041,8 +10336,14 @@ llm-d-modelservice:
                 <button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button>
                 <span class="ops-menu" role="menu">
                   <button type="button" data-open-values>查看 YAML</button>
+                  <span class="ops-submenu">
+                    <button type="button" class="ops-submenu-trigger" aria-haspopup="menu">修改状态</button>
+                    <span class="ops-submenu-menu" role="menu">
+                      <button type="button" data-sync-service="${escapeHtml(item.id)}"${item.external ? externalDisabled : canSync ? "" : " disabled"}>Sync 恢复</button>
+                      <button type="button" data-open-pause-update="${escapeHtml(item.id)}"${pauseDisabled}>暂停更新</button>
+                    </span>
+                  </span>
                   <button type="button" data-edit-yaml-action${editDisabled}>编辑YAML</button>
-                  <button type="button" data-sync-service="${escapeHtml(item.id)}"${item.external ? externalDisabled : canSync ? "" : " disabled"}>Sync 恢复</button>
                   <button type="button" data-detail-jump="tests">服务测试</button>
                   <button type="button" data-export-template-action${externalDisabled}>导出模板</button>
                   <button type="button" data-update-service-action${editDisabled}>更新服务</button>
@@ -10167,7 +10468,7 @@ llm-d-modelservice:
                         <span class="lc-ic" aria-hidden="true">◎</span>
                         <strong class="lc-title">${escapeHtml(item.title)}</strong>
                         <span class="${tagClass(item.statusColor)}">${escapeHtml(item.status)}</span>
-                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-template-action="view" data-template-id="${escapeHtml(item.id)}">查看模板</button><button type="button" data-template-action="edit" data-template-id="${escapeHtml(item.id)}">编辑模板</button><button type="button" data-view="deploy">使用模板部署</button><button type="button" class="danger" data-delete-template="${escapeHtml(item.id)}">删除模板</button></span></span>
+                        <span class="ops lc-ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view="deploy">使用模板部署</button><button type="button" class="danger" data-delete-template="${escapeHtml(item.id)}">删除模板</button></span></span>
                       </div>
                       <div class="lc-tags"><span class="tag blue">${escapeHtml(item.framework)}</span><span class="tag">${escapeHtml(item.mode)}</span><span class="tag">${escapeHtml(item.engine)}</span></div>
                       <p class="lc-field"><span>模型名称：</span><strong>${escapeHtml(item.model || "-")}</strong></p>
@@ -10256,7 +10557,7 @@ llm-d-modelservice:
         model: cleanYamlValue(artifactName?.[1]) || readYamlValue(yaml, ["modelName", "servedModelName"]) || "",
         gpu: `${gpuBrandFilterValue(gpuBrand)} ${gpuBrand} ${resourceModel}`,
         framework: normalizeServiceType(readYamlValue(yaml, ["serviceType", "framework", "type"]) || yaml) || "llm-d",
-        mode: normalizedMode === "colocated" ? "PD 共置" : "PD 分离",
+        mode: normalizedMode === "colocated" ? "PD 一体" : "PD 分离",
         engine: /sglang/i.test(image) ? "SGLang" : "vLLM",
         status,
         statusColor: templateStatusColor[status] || "",
@@ -10531,7 +10832,8 @@ llm-d-modelservice:
       distributedInference:
         enabled: true
         nodes: ${item.distributedNodes || "2"}
-        gpusPerNode: ${item.machineGpus || item.gpus || "4"}` : "";
+        gpusPerNode: ${item.machineGpus || item.gpus || "4"}
+        shmSize: ${item.shmSize || "16Gi"}` : "";
       if (serviceType === "dynamo") {
         return `kind: DynamoGraphDeployment
 metadata:
@@ -10553,8 +10855,12 @@ spec:
       gpuType: ${item.gpuType || "Nvidia GPU"}
       gpuModel: ${item.nodePool || "NVIDIA H800"}
       gpuPerReplica: ${item.gpus || "4"}${distributedBlock}
-      cpu: "${item.cpu || "128 core"}"
-      memory: ${item.memory || "1200Gi"}
+      requests:
+        cpu: "${item.cpu || "128 core"}"
+        memory: ${item.memory || "1200Gi"}
+      limits:
+        cpu: "${item.cpuLimit || item.cpu || "128 core"}"
+        memory: ${item.memoryLimit || item.memory || "1200Gi"}
     decode:
       replicas: 2
       gpuPerReplica: ${item.gpus || "4"}
@@ -10584,7 +10890,8 @@ llm-d-modelservice:
     distributedInference:
       enabled: ${item.distributedInference ? "true" : "false"}${item.distributedInference ? `
       nodes: ${item.distributedNodes || "2"}
-      gpusPerNode: ${item.machineGpus || item.gpus || "1"}` : ""}
+      gpusPerNode: ${item.machineGpus || item.gpus || "1"}
+      shmSize: ${item.shmSize || "16Gi"}` : ""}
     parallelism:
       tensor: 1
       data: ${item.gpus || "1"}
@@ -10597,9 +10904,12 @@ llm-d-modelservice:
         resources:
           gpuType: ${item.gpuType || "Nvidia GPU"}
           gpuModel: ${item.nodePool || "NVIDIA H800"}
-          limits:
+          requests:
             cpu: "${item.cpu || "16 core"}"
             memory: ${item.memory || "64Gi"}
+          limits:
+            cpu: "${item.cpuLimit || item.cpu || "16 core"}"
+            memory: ${item.memoryLimit || item.memory || "64Gi"}
             nvidia.com/gpu: "${item.gpus || "1"}"${splitMode ? `
   decode:
     replicas: 1
@@ -10623,10 +10933,15 @@ llm-d-modelservice:
         distributedInference: distributedToggle?.classList.contains("is-checked") || false,
         distributedNodes: distributedNodesInput?.value || "2",
         machineGpus: machineGpusInput?.value || gpusInput.value,
+        shmSize: shmSizeInput?.value || "16Gi",
         gpuType: gpuTypeSelect?.value || "",
         nodePool: nodePoolSelect.value,
         cpu: cpuInput.value,
+        cpuLimit: cpuLimitInput?.value || cpuInput.value,
         memory: memoryInput.value,
+        memoryLimit: memoryLimitInput?.value || memoryInput.value,
+        memoryUnit: memoryUnitSelect?.value || splitQuantity(memoryInput.value, "Gi").unit,
+        memoryLimitUnit: memoryLimitUnitSelect?.value || splitQuantity(memoryLimitInput?.value || memoryInput.value, "Gi").unit,
         runtimeArgs: document.querySelector("#adv-runtime-params [data-switch]")?.classList.contains("is-checked")
           ? Array.from(document.querySelectorAll("#runtimeParamRows .runtime-param-input"))
             .map(input => input.value.trim())
@@ -10640,10 +10955,12 @@ llm-d-modelservice:
       if (gpusField) gpusField.hidden = enabled;
       else if (gpusInput) gpusInput.hidden = enabled;
       if (distributedGpuRow) distributedGpuRow.hidden = !enabled;
+      if (shmSizeField) shmSizeField.hidden = !enabled;
       if (machineGpusInput && gpusInput) {
-        machineGpusInput.value = "8";
-        machineGpusInput.disabled = true;
+        if (!machineGpusInput.value) machineGpusInput.value = "8";
+        machineGpusInput.disabled = false;
       }
+      if (shmSizeInput && !shmSizeInput.value) shmSizeInput.value = "16Gi";
       const text = distributedToggle?.parentElement?.querySelector(".switch-text");
       if (text) text.textContent = enabled ? "开启" : "关闭";
     }
@@ -10670,7 +10987,7 @@ llm-d-modelservice:
         values.serviceType = service.framework;
         values.mode = service.mode === "PD 分离" ? "split" : "colocated";
         values.gpuType = "Nvidia GPU";
-        values.nodePool = "NVIDIA H800";
+        values.nodePool = "";
       }
       return values;
     }
@@ -10682,9 +10999,24 @@ llm-d-modelservice:
       return state !== "部署中" && state !== "更新中" && !auxiliaryStates.includes("部署中") && !auxiliaryStates.includes("更新中");
     }
 
+    function isServiceUpdating(service) {
+      const state = service?.serviceState?.[0] || "";
+      const auxiliaryStates = (service?.auxiliaryTags || []).map(tag => tag.label);
+      return state === "更新中" || auxiliaryStates.includes("更新中");
+    }
+
+    function canPauseUpdate(service) {
+      return Boolean(service) && !service.external && isServiceUpdating(service);
+    }
+
     function disabledServiceActionAttr(service) {
       if (service?.external) return " disabled title=\"外部接入服务，不支持页面操作\"";
       return canEditService(service) ? "" : " disabled title=\"部署中或更新中的服务暂不可编辑\"";
+    }
+
+    function pauseUpdateDisabledAttr(service) {
+      if (service?.external) return " disabled title=\"外部接入服务，不支持页面操作\"";
+      return canPauseUpdate(service) ? "" : " disabled title=\"仅更新中的服务可暂停更新\"";
     }
 
     function externalServiceDisabledAttr(service) {
@@ -10739,10 +11071,19 @@ llm-d-modelservice:
         distributedToggle.setAttribute("aria-checked", String(distributedEnabled));
       }
       if (distributedNodesInput) distributedNodesInput.value = values.distributedNodes || "2";
+      setQuantityInput(shmSizeInput, values.shmSize || "16Gi", "Gi");
       if (gpuTypeSelect) gpuTypeSelect.value = values.gpuType || "Nvidia GPU";
-      nodePoolSelect.value = values.nodePool || "NVIDIA H800";
-      cpuInput.value = values.cpu || "";
-      memoryInput.value = values.memory || "";
+      nodePoolSelect.value = values.nodePool || "";
+      setQuantityInput(cpuInput, values.cpu || "", " core");
+      setQuantityInput(cpuLimitInput, values.cpuLimit || values.cpu || "", " core");
+      const memoryUnit = values.memoryUnit || splitQuantity(values.memory || values.memoryLimit || "", defaultMemoryUnitForRole()).unit;
+      const memoryLimitUnit = values.memoryLimitUnit || splitQuantity(values.memoryLimit || values.memory || "", memoryUnit).unit;
+      if (memoryUnitSelect) memoryUnitSelect.value = memoryUnit;
+      if (memoryInput) memoryInput.dataset.unit = memoryUnit;
+      if (memoryLimitUnitSelect) memoryLimitUnitSelect.value = memoryLimitUnit;
+      if (memoryLimitInput) memoryLimitInput.dataset.unit = memoryLimitUnit;
+      setQuantityInput(memoryInput, values.memory || "", memoryUnit);
+      setQuantityInput(memoryLimitInput, values.memoryLimit || values.memory || "", memoryLimitUnit);
       syncDistributedInference();
       if (values.command) {
         commandInput.value = values.command;
@@ -10763,8 +11104,11 @@ llm-d-modelservice:
       fillDeployForm(values);
       if (partial) {
         imageInput.value = "";
-        cpuInput.value = "";
-        memoryInput.value = "";
+        setQuantityInput(cpuInput, "", " core");
+        setQuantityInput(cpuLimitInput, "", " core");
+        setMemoryUnits(defaultMemoryUnitForRole());
+        setQuantityInput(memoryInput, "", memoryInput?.dataset.unit || "Gi");
+        setQuantityInput(memoryLimitInput, "", memoryLimitInput?.dataset.unit || "Gi");
         setCommandSample(commandInput, activeServiceType, activeResourceRole || "server", true);
         syncImagePreset();
       }
@@ -10953,6 +11297,7 @@ llm-d-modelservice:
         roleAdvancedStates[role] = defaultRoleAdvancedMarkup;
       }
       resourceAdvanced.innerHTML = roleAdvancedStates[role];
+      normalizeSharedAdvancedOrder();
     }
 
     function setAdvancedConfigOff() {
@@ -11007,8 +11352,11 @@ llm-d-modelservice:
       if (imageInput) imageInput.value = "";
       if (replicasInput) replicasInput.value = "";
       if (gpusInput) gpusInput.value = "";
-      if (cpuInput) cpuInput.value = "";
-      if (memoryInput) memoryInput.value = "";
+      setQuantityInput(cpuInput, "", " core");
+      setQuantityInput(cpuLimitInput, "", " core");
+      setMemoryUnits(defaultMemoryUnitForRole());
+      setQuantityInput(memoryInput, "", memoryInput?.dataset.unit || "Gi");
+      setQuantityInput(memoryLimitInput, "", memoryLimitInput?.dataset.unit || "Gi");
       if (distributedToggle) {
         distributedToggle.classList.remove("is-checked");
         distributedToggle.setAttribute("aria-checked", "false");
@@ -11018,6 +11366,15 @@ llm-d-modelservice:
       syncImagePreset();
       syncDistributedInference();
       setAdvancedConfigOff();
+    }
+
+    function setComputeQuota(cpu, memory, role = activeResourceRole) {
+      const memoryUnit = roleUsesGpu(role) ? "Gi" : "Mi";
+      setQuantityInput(cpuInput, cpu, " core");
+      setQuantityInput(cpuLimitInput, cpu, " core");
+      setMemoryUnits(memoryUnit);
+      setQuantityInput(memoryInput, memory, memoryUnit);
+      setQuantityInput(memoryLimitInput, memory, memoryUnit);
     }
 
     function setRole(role) {
@@ -11033,7 +11390,7 @@ llm-d-modelservice:
       });
       if (deployConfigModeShell) deployConfigModeShell.hidden = noExtraConfigRole;
       const noGpuRole = noExtraConfigRole;
-      document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='distributed'], [data-resource-field='gpus'], [data-resource-field='gpu-brand'], [data-resource-field='gpu-type']").forEach(field => {
+      document.querySelectorAll("[data-resource-field='rdma'], [data-resource-field='distributed'], [data-resource-field='gpus'], [data-resource-field='shm'], [data-resource-field='gpu-brand'], [data-resource-field='gpu-type']").forEach(field => {
         field.hidden = noGpuRole;
       });
       const rdmaConfig = document.querySelector("[data-rdma-config]");
@@ -11046,32 +11403,27 @@ llm-d-modelservice:
       if (role === "prefill") {
         replicasInput.value = "2";
         gpusInput.value = "4";
-        cpuInput.value = "64 core";
-        memoryInput.value = "600Gi";
+        setComputeQuota("64 core", "600Gi", role);
       }
       if (role === "decode") {
         replicasInput.value = "1";
         gpusInput.value = "4";
-        cpuInput.value = "64 core";
-        memoryInput.value = "600Gi";
+        setComputeQuota("64 core", "600Gi", role);
       }
       if (role === "server") {
         replicasInput.value = "1";
         gpusInput.value = "8";
-        cpuInput.value = "96 core";
-        memoryInput.value = "800Gi";
+        setComputeQuota("96 core", "800Gi", role);
       }
       if (role === "frontend" || noExtraConfigRole) {
         replicasInput.value = "1";
         gpusInput.value = "0";
-        cpuInput.value = "4 core";
-        memoryInput.value = "8Gi";
+        setComputeQuota("4 core", "512Mi", role);
       }
       if (role === "worker") {
         replicasInput.value = "4";
         gpusInput.value = "4";
-        cpuInput.value = "32 core";
-        memoryInput.value = "300Gi";
+        setComputeQuota("32 core", "300Gi", role);
       }
       const activeCommand = document.querySelector(`[data-command-role="${role}"] [data-command-textarea]`);
       setCommandSample(activeCommand, activeServiceType, role);
@@ -11080,6 +11432,7 @@ llm-d-modelservice:
         clearBlankTemplateInputs();
       }
       activeResourceRole = role;
+      setMemoryUnits(defaultMemoryUnitForRole(role));
       syncDistributedInference();
     }
 
@@ -11184,9 +11537,18 @@ llm-d-modelservice:
       updateInferenceMode(item.mode);
       replicasInput.value = item.replicas;
       gpusInput.value = item.gpus;
-      nodePoolSelect.value = item.nodePool;
-      cpuInput.value = item.cpu;
-      memoryInput.value = item.memory;
+      setQuantityInput(shmSizeInput, item.shmSize || "16Gi", "Gi");
+      nodePoolSelect.value = item.nodePool || "";
+      setQuantityInput(cpuInput, item.cpu || "", " core");
+      setQuantityInput(cpuLimitInput, item.cpuLimit || item.cpu || "", " core");
+      const memoryUnit = item.memoryUnit || splitQuantity(item.memory || "", defaultMemoryUnitForRole()).unit;
+      const memoryLimitUnit = item.memoryLimitUnit || splitQuantity(item.memoryLimit || item.memory || "", memoryUnit).unit;
+      if (memoryUnitSelect) memoryUnitSelect.value = memoryUnit;
+      if (memoryInput) memoryInput.dataset.unit = memoryUnit;
+      if (memoryLimitUnitSelect) memoryLimitUnitSelect.value = memoryLimitUnit;
+      if (memoryLimitInput) memoryLimitInput.dataset.unit = memoryLimitUnit;
+      setQuantityInput(memoryInput, item.memory || "", memoryUnit);
+      setQuantityInput(memoryLimitInput, item.memoryLimit || item.memory || "", memoryLimitUnit);
       commandInput.value = item.command;
       commandInput.classList.remove("is-command-sample");
       refreshCommandSamples(true);
@@ -11391,6 +11753,17 @@ llm-d-modelservice:
     }
 
     document.addEventListener("click", event => {
+      const button = event.target.closest("[data-open-pause-update]");
+      if (!button) return;
+      const row = button.closest("[data-service-row]");
+      openPauseUpdate(button.dataset.openPauseUpdate || row?.dataset.serviceRow || activeDetailService);
+    });
+
+    if (confirmPauseUpdate) {
+      confirmPauseUpdate.addEventListener("click", confirmPauseUpdateAction);
+    }
+
+    document.addEventListener("click", event => {
       const button = event.target.closest("[data-cancel-sync-restore]");
       if (!button) return;
       showView(returnTargetFor("sync-restore") || "services");
@@ -11456,6 +11829,17 @@ llm-d-modelservice:
       button.addEventListener("click", () => showView(returnTargetFor("deploy") || "services"));
     });
 
+    let pvcRefreshTimer = 0;
+    modelPvcRefreshButton?.addEventListener("click", () => {
+      modelPvcRefreshButton.classList.add("is-refreshing");
+      modelPvcRefreshButton.setAttribute("aria-label", "正在刷新 PVC 名称");
+      window.clearTimeout(pvcRefreshTimer);
+      pvcRefreshTimer = window.setTimeout(() => {
+        modelPvcRefreshButton.classList.remove("is-refreshing");
+        modelPvcRefreshButton.setAttribute("aria-label", "刷新 PVC 名称");
+      }, 2000);
+    });
+
     function selectTemplate(key) {
       document.querySelectorAll("[data-template-card]").forEach(card => {
         card.classList.toggle("active", card.dataset.templateCard === key);
@@ -11465,7 +11849,7 @@ llm-d-modelservice:
       applyDefaults(key);
       deployHint.textContent = key === "blank"
         ? "当前选择通用模板，所有字段可按现场模型、硬件和推理引擎完整配置。"
-        : "当前使用预置模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。";
+        : "当前使用优化模板，推理模式和资源配置已锁定；如需修改，可点击「编辑部署」。";
       applyPresetTemplateState();
     }
 
@@ -11525,10 +11909,6 @@ llm-d-modelservice:
         section.classList.toggle("is-template-locked", locked);
         section.querySelectorAll("input, select, textarea, button").forEach(control => {
           if (control.matches("[data-edit-from-template]")) return;
-          if (control.matches("#machineGpusInput")) {
-            control.disabled = true;
-            return;
-          }
           if (control.closest("#roleTabs")) {
             control.disabled = false;
             return;
@@ -11557,7 +11937,7 @@ llm-d-modelservice:
       if (templateLibraryPicker) templateLibraryPicker.hidden = true;
       if (yamlImportPanel) yamlImportPanel.hidden = true;
       if (templateDeployLayout) templateDeployLayout.classList.remove("is-yaml-config");
-      deployHint.textContent = "已基于当前预置模板进入通用模板配置，预填数据已保留，字段可继续修改。";
+      deployHint.textContent = "已基于当前优化模板进入通用模板配置，预填数据已保留，字段可继续修改。";
       applyPresetTemplateState();
     }
 
