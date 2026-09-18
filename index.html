@@ -7360,7 +7360,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                       </label>
                       <label class="field">
                         <span class="label"><span class="required">*</span> 访问地址</span>
-                        <input id="maasEndpointAddress" value="deepseek-v4-flash-h800-prod.inferx-prod.svc">
+                        <input id="maasEndpointAddress" value="deepseek-v4-flash-h800-prod-istio.inferx-prod.svc">
                       </label>
                       <label class="field">
                         <span class="label"><span class="required">*</span> 访问路径</span>
@@ -7743,7 +7743,7 @@ llm-d-modelservice:
                 <span class="dh-slash" aria-hidden="true">/</span>
                 <span class="dh-section" id="detailSectionTitle">拓扑与配置</span>
               </h1>
-              <p class="lead" id="detailLead">Endpoint: deepseek-v4-flash-h800-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2</p>
+              <p class="lead" id="detailLead">Endpoint: deepseek-v4-flash-h800-prod-istio.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2</p>
             </div>
             <div class="dt-right">
               <span class="tag green" id="detailHealthTag">可用</span>
@@ -7830,7 +7830,7 @@ llm-d-modelservice:
                   </tbody></table>
                   <table>
                     <tbody><tr><th colspan="2">访问方式</th></tr>
-                    <tr><td>服务地址</td><td class="mono">deepseek-v4-flash-h800-prod.inferx-prod.svc</td></tr>
+                    <tr><td>服务地址</td><td class="mono">deepseek-v4-flash-h800-prod-istio.inferx-prod.svc</td></tr>
                     <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
                   </tbody></table>
@@ -8922,7 +8922,7 @@ llm-d-modelservice:
     const detailProfiles = {
       "deepseek-v4-flash-h800-prod": {
         title: "deepseek-v4-flash-h800-prod",
-        lead: "Endpoint: deepseek-v4-flash-h800-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2",
+        lead: "Endpoint: deepseek-v4-flash-h800-prod-istio.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2",
         health: ["Running", "green"],
         sync: ["Synced", "green"],
         commit: "commit a81c42f",
@@ -8930,7 +8930,7 @@ llm-d-modelservice:
       },
       "qwen3-235b-prod": {
         title: "qwen3-235b-prod",
-        lead: "Endpoint: qwen3-235b-prod.inferx-prod.svc / Argo CD Health: Degraded / Sync: OutOfSync / 通用模板",
+        lead: "Endpoint: qwen3-235b-prod-istio.inferx-prod.svc / Argo CD Health: Degraded / Sync: OutOfSync / 通用模板",
         health: ["Degraded", "red"],
         sync: ["OutOfSync", "amber"],
         commit: "commit 8f6b0ee",
@@ -8951,7 +8951,7 @@ llm-d-modelservice:
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
-                    <tr><td>服务地址</td><td class="mono">qwen3-235b-prod.inferx-prod.svc</td></tr>
+                    <tr><td>服务地址</td><td class="mono">qwen3-235b-prod-istio.inferx-prod.svc</td></tr>
                     <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-235b</td></tr>
                   </table>
@@ -8993,7 +8993,7 @@ llm-d-modelservice:
       },
       "dynamo-llama4-scout-lab": {
         title: "dynamo-llama4-scout-lab",
-        lead: "Endpoint: dynamo-llama4-scout-lab.delivery-h800-lab.svc / Argo CD Health: Progressing / Sync: Synced / 编排框架 dynamo / 模板版本 v0.3.8",
+        lead: "Endpoint: dynamo-llama4-scout-lab-istio.delivery-h800-lab.svc / Argo CD Health: Progressing / Sync: Synced / 编排框架 dynamo / 模板版本 v0.3.8",
         health: ["Progressing", "amber"],
         sync: ["Synced", "green"],
         commit: "commit c19f2aa",
@@ -9020,7 +9020,7 @@ llm-d-modelservice:
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
-                    <tr><td>服务地址</td><td class="mono">dynamo-llama4-scout-lab.delivery-h800-lab.svc</td></tr>
+                    <tr><td>服务地址</td><td class="mono">dynamo-llama4-scout-lab-istio.delivery-h800-lab.svc</td></tr>
                     <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">llama4-scout</td></tr>
                   </table>
@@ -9125,7 +9125,7 @@ llm-d-modelservice:
       },
       "dynamo-qwen3-colocated-prod": {
         title: "dynamo-qwen3-colocated-prod",
-        lead: "Endpoint: dynamo-qwen3-colocated-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 编排框架 dynamo / PD 一体",
+        lead: "Endpoint: dynamo-qwen3-colocated-prod-istio.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 编排框架 dynamo / PD 一体",
         health: ["Running", "green"],
         sync: ["Synced", "green"],
         commit: "commit d4a72bc",
@@ -9146,7 +9146,7 @@ llm-d-modelservice:
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
-                    <tr><td>服务地址</td><td class="mono">dynamo-qwen3-colocated-prod.inferx-prod.svc</td></tr>
+                    <tr><td>服务地址</td><td class="mono">dynamo-qwen3-colocated-prod-istio.inferx-prod.svc</td></tr>
                     <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-32b</td></tr>
                   </table>
@@ -9185,7 +9185,7 @@ llm-d-modelservice:
       },
       "external-qwen3-router-prod": {
         title: "external-qwen3-router-prod",
-        lead: "Endpoint: external-qwen3-router-prod.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 外部接入",
+        lead: "Endpoint: external-qwen3-router-prod-istio.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 外部接入",
         health: ["Running", "green"],
         sync: ["Synced", "green"],
         commit: "外部接入",
@@ -9207,7 +9207,7 @@ llm-d-modelservice:
                   </table>
                   <table>
                     <tr><th colspan="2">访问方式</th></tr>
-                    <tr><td>服务地址</td><td class="mono">external-qwen3-router-prod.inferx-prod.svc</td></tr>
+                    <tr><td>服务地址</td><td class="mono">external-qwen3-router-prod-istio.inferx-prod.svc</td></tr>
                     <tr><td>访问路径</td><td class="mono">/V1</td></tr>
                     <tr><td>模型 ID</td><td class="mono">qwen3-external</td></tr>
                   </table>
@@ -9285,11 +9285,11 @@ llm-d-modelservice:
     };
 
     const serviceRowsData = [
-      { id: "deepseek-v4-flash-h800-prod", alias: "DeepSeek V4 Flash 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 一体", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 一体", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
-      { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
+      { id: "deepseek-v4-flash-h800-prod", alias: "DeepSeek V4 Flash 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod-istio.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
+      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 一体", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod-istio.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab-istio.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 一体", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod-istio.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
+      { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod-istio.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
 
     const detailOnlyIssueTags = {
@@ -9529,15 +9529,15 @@ llm-d-modelservice:
     const maasUpstreamServices = {
       deepseek: {
         modelId: "deepseek-v4-flash-h800-prod",
-        address: "deepseek-v4-flash-h800-prod.inferx-prod.svc"
+        address: "deepseek-v4-flash-h800-prod-istio.inferx-prod.svc"
       },
       qwen: {
         modelId: "qwen3-235b-prod",
-        address: "qwen3-235b-prod.inferx-prod.svc"
+        address: "qwen3-235b-prod-istio.inferx-prod.svc"
       },
       dynamoQwen: {
         modelId: "dynamo-qwen3-colocated-prod",
-        address: "dynamo-qwen3-colocated-prod.inferx-prod.svc"
+        address: "dynamo-qwen3-colocated-prod-istio.inferx-prod.svc"
       }
     };
 
@@ -9951,7 +9951,7 @@ llm-d-modelservice:
           <div><dt>测试名称</dt><dd>${escapeHtml(config.name)}</dd></div>
           <div><dt>目标服务</dt><dd class="mono">${escapeHtml(config.service)}</dd></div>
           <div><dt>请求模型名</dt><dd class="mono">${escapeHtml(requestModelName(service))}</dd></div>
-          <div><dt>服务端点</dt><dd class="mono">${escapeHtml(service?.endpoint || `${config.service}.inferx-prod.svc`)}</dd></div>
+          <div><dt>服务端点</dt><dd class="mono">${escapeHtml(service?.endpoint || `${config.service}-istio.inferx-prod.svc`)}</dd></div>
           <div><dt>测试范围</dt><dd>${escapeHtml(config.type)}</dd></div>
           <div><dt>状态</dt><dd>${escapeHtml(config.status)}</dd></div>
           <div><dt>创建时间</dt><dd>${escapeHtml(config.created)}</dd></div>
