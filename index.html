@@ -5122,6 +5122,18 @@
     .svc-issue-tags .tag.red { padding: 0 8px; background: var(--lt-red-bg); color: var(--lt-red-fg); font-weight: 600; }
     .svc-issue-tags .tag.blue { padding: 0 8px; background: var(--lt-skyblue-bg); color: var(--lt-skyblue-fg); font-weight: 600; }
     .svc-issue-tags .tag.amber::before, .svc-issue-tags .tag.red::before, .svc-issue-tags .tag.blue::before { display: none; }
+    .svc-tag-help {
+      display: inline-grid; place-items: center; position: relative; width: 14px; height: 14px; margin-left: 4px;
+      border-radius: 50%; background: rgba(160, 105, 0, .14); color: var(--lt-yellow-fg); font-size: 10px; line-height: 1; cursor: help;
+    }
+    .svc-tag-help::after {
+      content: attr(data-tooltip);
+      position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 40; width: max-content; max-width: 280px;
+      transform: translateX(-50%); padding: 6px 8px; border-radius: 4px; background: var(--fg); color: var(--surface);
+      font-size: 12px; font-weight: 400; line-height: 18px; white-space: normal; box-shadow: var(--shadow);
+      opacity: 0; pointer-events: none; transition: opacity var(--motion-fast);
+    }
+    .svc-tag-help:hover::after, .svc-tag-help:focus-visible::after { opacity: 1; }
     .svc-note { color: var(--muted); font-size: 12px; line-height: 16px; }
     .svc-metric { display: grid; justify-items: center; align-content: center; gap: 4px; text-align: center; }
     .svc-metric-v { display: inline-flex; align-items: baseline; gap: 6px; color: var(--fg); }
@@ -7816,7 +7828,7 @@ llm-d-modelservice:
                   <table>
                     <tbody><tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型访问名称</td><td>deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
-                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/deepseek-v4-flash-0731 / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/deepseek-v4-flash-0731 / 挂载路径：/mnt/data</td></tr>
                     <tr><td>Prefill 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
                     <tr><td>Decode 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
                   </tbody></table>
@@ -8810,6 +8822,7 @@ llm-d-modelservice:
     let activeEditYamlBase = "";
     let activeUpdateService = "deepseek-v4-flash-h800-prod";
     let activeResourceRole = "prefill";
+    let decodeReplicasValue = "1";
     let activeDeleteService = "";
     let activePauseUpdateService = "";
     let activeExportTemplateService = "";
@@ -8939,7 +8952,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>Qwen3-235B</td></tr>
-                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-235b / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/qwen3-235b / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:v0.8.5</td></tr>
                   </table>
                   <table>
@@ -9008,7 +9021,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>Llama-4-Scout</td></tr>
-                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/llama4-scout / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/llama4-scout / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8</td></tr>
                   </table>
                   <table>
@@ -9134,7 +9147,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>Qwen3-32B</td></tr>
-                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-32b / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/qwen3-32b / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1</td></tr>
                   </table>
                   <table>
@@ -9194,7 +9207,7 @@ llm-d-modelservice:
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
                     <tr><td>模型</td><td>Qwen3-External</td></tr>
-                    <tr><td>模型来源</td><td>文件存储 / 存储目录：/models/qwen3-external / 挂载路径：/mnt/data</td></tr>
+                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/qwen3-external / 挂载路径：/mnt/data</td></tr>
                     <tr><td>镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:v0.8.5</td></tr>
                   </table>
                   <table>
@@ -10349,7 +10362,10 @@ llm-d-modelservice:
         const issueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])].map(tag => {
           const label = typeof tag === "string" ? tag : tag.label;
           const color = typeof tag === "string" ? "amber" : tag.color;
-          return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
+          const outOfSyncHelp = label === "Outofsync"
+            ? `<span class="svc-tag-help" tabindex="0" data-tooltip="当前实际部署配置与期望配置不一致。可执行「Sync恢复」重新应用期望配置。" aria-label="Outofsync 说明">?</span>`
+            : "";
+          return `<span class="${tagClass(color)}">${escapeHtml(label)}${outOfSyncHelp}</span>`;
         }).join("");
         return `
           <article class="svc-card${item.selected ? " is-selected" : ""}" data-service-row="${escapeHtml(item.id)}" data-od-id="service-card-${escapeHtml(item.id)}">
@@ -10990,6 +11006,14 @@ llm-d-modelservice:
       if (text) text.textContent = enabled ? "开启" : "关闭";
     }
 
+    function syncRoleInstanceLock() {
+      if (!replicasInput) return;
+      const isRoutingProxy = activeResourceRole === "gateway";
+      if (isRoutingProxy) replicasInput.value = decodeReplicasValue;
+      replicasInput.disabled = isRoutingProxy;
+      replicasInput.title = isRoutingProxy ? "routing-proxy 的实例数与 decode 保持一致" : "";
+    }
+
     function syncServiceConfigScopeLock() {
       [deployClusterSelect, deployNamespaceSelect].forEach(control => {
         if (control) control.disabled = isEditingServiceConfig;
@@ -11409,6 +11433,7 @@ llm-d-modelservice:
 
     function setRole(role) {
       if (activeResourceRole && activeResourceRole !== role) {
+        if (activeResourceRole === "decode" && replicasInput) decodeReplicasValue = replicasInput.value;
         saveRoleAdvancedState(activeResourceRole);
       }
       document.querySelectorAll("#roleTabs button").forEach(item => {
@@ -11436,9 +11461,10 @@ llm-d-modelservice:
         setComputeQuota("64 core", "600Gi", role);
       }
       if (role === "decode") {
-        replicasInput.value = "1";
+        replicasInput.value = decodeReplicasValue;
         gpusInput.value = "4";
         setComputeQuota("64 core", "600Gi", role);
+        decodeReplicasValue = replicasInput.value;
       }
       if (role === "server") {
         replicasInput.value = "1";
@@ -11446,7 +11472,7 @@ llm-d-modelservice:
         setComputeQuota("96 core", "800Gi", role);
       }
       if (role === "frontend" || noExtraConfigRole) {
-        replicasInput.value = "1";
+        replicasInput.value = role === "gateway" ? decodeReplicasValue : "1";
         gpusInput.value = "0";
         setComputeQuota("4 core", "512Mi", role);
       }
@@ -11460,10 +11486,12 @@ llm-d-modelservice:
       restoreRoleAdvancedState(role);
       if (activeTemplate === "blank") {
         clearBlankTemplateInputs();
+        if (role === "decode") decodeReplicasValue = replicasInput.value;
       }
       activeResourceRole = role;
       setMemoryUnits(defaultMemoryUnitForRole(role));
       syncDistributedInference();
+      syncRoleInstanceLock();
     }
 
     function bindRoleTabs() {
@@ -11970,6 +11998,7 @@ llm-d-modelservice:
         option.hidden = !locked;
       });
       syncServiceConfigScopeLock();
+      syncRoleInstanceLock();
     }
 
     function editFromCurrentTemplate() {
@@ -12049,6 +12078,11 @@ llm-d-modelservice:
 
     imageInput.addEventListener("input", () => {
       syncImagePreset();
+    });
+
+    replicasInput?.addEventListener("input", () => {
+      if (activeResourceRole === "decode") decodeReplicasValue = replicasInput.value;
+      syncRoleInstanceLock();
     });
 
     if (maasUpstreamService) {
