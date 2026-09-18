@@ -1662,6 +1662,26 @@
     .template-mode-card strong { font-size: 14px; }
     .template-mode-card span { color: var(--muted); font-size: 12px; }
     .template-mode-card.active { border-color: var(--blue); background: var(--blue-2); box-shadow: 0 0 0 1px var(--info); }
+    /* 通用模板卡片右上角的「模板编辑」标记：仅从优化模板「编辑部署」进入时显示 */
+    .template-mode-card { position: relative; }
+    .template-mode-card .template-mode-flag {
+      display: none;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      height: 18px;
+      padding: 0 6px;
+      align-items: center;
+      border-radius: 3px;
+      background: var(--blue-2);
+      color: var(--blue);
+      font-size: 11px;
+      line-height: 18px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .template-mode-card.is-template-edit .template-mode-flag { display: inline-flex; }
     .template-library-picker { margin-top: 14px; }
     #deploy .template-library-picker {
       display: grid;
@@ -6280,6 +6300,7 @@ resources:
                           <span>从模板库选择并预填部署参数</span>
                         </button>
                         <button type="button" class="template-mode-card" data-deploy-template-mode="blank">
+                          <span class="template-mode-flag" aria-hidden="true">模板编辑</span>
                           <strong>通用模板</strong>
                           <span>按现场模型、硬件和引擎配置</span>
                         </button>
@@ -11178,6 +11199,8 @@ llm-d-modelservice:
       const resourceOnly = Boolean(options.resourceOnly);
       const hideDiff = Boolean(options.hideDiff);
       const showDiffTabs = Boolean(options.showDiff) && !resourceOnly && !hideDiff;
+      // 只有显式要求且确实显示了「变化」tab 时才默认切过去，其余入口一律保持「YAML 配置」
+      const defaultTab = options.defaultTab === "diff" && showDiffTabs ? "diff" : "preview";
       const currentYaml = yamlFromValues(currentFormValues());
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
@@ -11190,7 +11213,7 @@ llm-d-modelservice:
       yamlModalTabs.forEach(button => {
         button.hidden = !showDiffTabs;
       });
-      setYamlModalTab("preview");
+      setYamlModalTab(defaultTab);
     }
 
     function closeModals() {
@@ -11622,10 +11645,13 @@ llm-d-modelservice:
       const button = event.target.closest("[data-open-values]");
       if (button) {
         const isDeployPreview = button.id === "deployPreviewButton";
+        // 模板编辑模式下，底栏「预览 YAML」直接落在「变化」tab；其他入口保持原样
+        const templateEditPreview = isDeployPreview && isTemplateEditMode;
         prepareYamlPreview({
           resourceOnly: Boolean(button.closest("#detailResources")),
-          showDiff: isDeployPreview && isEditingServiceConfig,
-          hideDiff: isDeployPreview && !isEditingServiceConfig && activeDeployTemplateMode === "blank"
+          showDiff: isDeployPreview && (isEditingServiceConfig || isTemplateEditMode),
+          hideDiff: isDeployPreview && !isEditingServiceConfig && !isTemplateEditMode && activeDeployTemplateMode === "blank",
+          defaultTab: templateEditPreview ? "diff" : "preview"
         });
         openModal(valuesModal);
       }
@@ -11884,8 +11910,17 @@ llm-d-modelservice:
       }
     }
 
+    // 通用模板卡片右上角的「模板编辑」小标签，只在从「编辑部署」进入时显示
+    function syncTemplateEditFlag() {
+      const blankCard = document.querySelector('[data-deploy-template-mode="blank"]');
+      if (blankCard) blankCard.classList.toggle("is-template-edit", isTemplateEditMode);
+    }
+
     function setDeployTemplateMode(mode) {
       activeDeployTemplateMode = mode;
+      // 手动切换部署方式即退出「模板编辑」模式（只有「编辑部署」那条路径会重新点亮）
+      isTemplateEditMode = false;
+      syncTemplateEditFlag();
       templateModeButtons.forEach(button => {
         button.classList.toggle("active", button.dataset.deployTemplateMode === mode);
       });
@@ -11983,6 +12018,9 @@ llm-d-modelservice:
       const card = button.closest("[data-template-card]");
       if (card) selectTemplate(card.dataset.templateCard);
       editFromCurrentTemplate();
+      // 从优化模板的「编辑部署」进入通用模板 = 模板编辑模式
+      isTemplateEditMode = true;
+      syncTemplateEditFlag();
     });
 
     [templateModelFilter, templateGpuFilter, templateFrameworkFilter, templateModeFilter]
