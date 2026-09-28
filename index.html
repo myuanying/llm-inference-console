@@ -1892,6 +1892,13 @@
       font-weight: 700;
     }
 
+    .report-generated-time {
+      margin: 4px 0 0;
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
     .report-meta-grid,
     .report-summary {
       display: grid;
@@ -4100,6 +4107,7 @@
     .si-main { flex: 1 1 auto; min-width: 0; display: grid; gap: 5px; }
     .si-name { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--nav-dark); flex-wrap: wrap; }
     .si-name .tag { font-weight: 600; }
+    .si-model { color: var(--subtle); font-size: 12px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .si-meta { display: flex; align-items: center; gap: 6px; color: var(--subtle); font-size: 12px; flex-wrap: wrap; }
     .si-meta .tag { width: fit-content; }
     .si-tags { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; flex-wrap: wrap; }
@@ -4970,13 +4978,14 @@
     .modal-shell h1, .modal-shell.switch-modal h1 { font-size: 16px; line-height: 24px; font-weight: 600; color: var(--fg); margin: 0; }
     .modal-head, .modal-shell .head { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 28px; margin: -4px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
     .modal-head > div { min-width: 0; }
+    .modal-head-actions { display: flex; align-items: center; gap: 10px; flex: none; }
     .modal-head .btn { flex: none; }
     .modal-sub { margin: 2px 0 0; color: var(--meta); font-size: 12px; line-height: 20px; }
     .modal-actions, .footer-actions, .modal-shell .footer-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); }
     .modal-shell .form-grid { gap: 14px 12px; }
     .modal-shell.deploy-choice-modal { width: min(640px, calc(100vw - 56px)); }
     .modal-shell.parse-error-modal { width: min(480px, calc(100vw - 56px)); }
-    .modal-shell.test-config-modal { width: min(640px, calc(100vw - 56px)); max-width: none; }
+    .modal-shell.test-config-modal { width: min(900px, calc(100vw - 56px)); max-width: none; }
     .modal-shell.switch-modal { width: min(720px, calc(100vw - 56px)); }
     /* ---- 确认弹窗（删除服务 / 删除模板 / 解析错误）：480px，正文 13/20，输入 30px ---- */
     .modal-shell.confirm-modal { width: min(480px, calc(100vw - 56px)); }
@@ -4991,6 +5000,17 @@
     .pause-update-close { flex: none; width: 26px; height: 26px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-size: 22px; line-height: 24px; padding: 0; }
     .pause-update-close:hover { color: var(--fg-2); background: var(--fill); }
     .pause-update-modal .confirm-message { min-height: 78px; margin: 0; padding: 20px; border-bottom: 1px solid var(--border); color: var(--fg); }
+    .retry-mode-group { display: grid; gap: 10px; padding: 0 20px 18px; border-bottom: 1px solid var(--border); }
+    .retry-mode-group[hidden] { display: none; }
+    .retry-mode-option { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-subtle); cursor: pointer; }
+    .retry-mode-option input { margin-top: 3px; }
+    .retry-mode-option strong { display: block; color: var(--fg-2); font-size: 13px; line-height: 20px; }
+    .retry-mode-option small { display: block; color: var(--meta); font-size: 12px; line-height: 18px; }
+    .retry-case-config { max-height: 320px; overflow: auto; padding: 10px 0 0; }
+    .retry-case-config[hidden] { display: none; }
+    .retry-case-config .case-group-stack { gap: 8px; }
+    .retry-case-config .case-group { background: var(--surface); }
+    .retry-case-config .dataset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .pause-update-modal .footer-actions { min-height: 54px; margin: 0; padding: 12px 20px; border-top: 0; }
     .btn.danger-solid { background: var(--danger); color: var(--surface); }
     .btn.danger-solid:hover { background: var(--danger-strong); color: var(--surface); }
@@ -5194,7 +5214,7 @@
     #model-tests td.col-act,
     #detail-tab-tests th.col-act,
     #detail-tab-tests td.col-act {
-      width: 112px;
+      width: 132px;
       padding: 0 10px;
       text-align: center;
     }
@@ -5202,6 +5222,7 @@
       justify-content: center;
       gap: 4px;
     }
+    .test-detail-action,
     .test-report-action {
       height: 26px;
       min-width: 56px;
@@ -5242,7 +5263,7 @@
     .tb--wrap .search { flex-basis: 220px; }
     .concept--pane { margin-bottom: 16px; }
     .concept--pane + .concept--pane { margin-top: -8px; }
-    .test-config-modal { max-width: 620px; }
+    .test-config-modal { max-width: 900px; }
     .config-view {
       padding: 16px 20px 4px;
     }
@@ -5278,6 +5299,16 @@
     .config-view dd:has(.config-case-groups) {
       font-weight: 400;
     }
+
+    .test-detail-section { margin-top: 18px; }
+    .test-detail-section h3 { margin: 0 0 8px; color: var(--fg-2); font-size: 14px; line-height: 22px; font-weight: 700; }
+    .test-case-group-stack { display: grid; gap: 14px; }
+    .test-case-group h4 { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px; color: var(--fg-2); font-size: 13px; line-height: 20px; font-weight: 700; }
+    .test-case-group h4 span { color: var(--meta); font-size: 12px; font-weight: 600; }
+    .test-detail-table th:nth-child(1) { width: 210px; }
+    .test-detail-table th:nth-child(2),
+    .test-detail-table th:nth-child(3) { width: 92px; }
+    .test-detail-table td strong { color: var(--fg-2); font-size: 12px; line-height: 18px; font-weight: 600; }
 
     .config-case-groups {
       display: grid;
@@ -5348,6 +5379,8 @@
     .shell.immersive-detail #detail .list-block .table-scroll, .shell.immersive-detail #detail .resource-group .table-scroll { border-radius: 0 0 10px 10px; box-shadow: none; }
     .shell.immersive-detail #detail .list-block { border-radius: 0 0 8px 8px; }
     .shell.immersive-detail #detail table th.col-act, .shell.immersive-detail #detail table td.col-act { width: 60px; padding: 0; text-align: center; }
+    .shell.immersive-detail #detail #detail-tab-tests table th.col-act,
+    .shell.immersive-detail #detail #detail-tab-tests table td.col-act { width: 132px; padding: 0 10px; }
     .shell.immersive-detail #detailResources table th.col-act,
     .shell.immersive-detail #detailResources table td.col-act {
       width: auto;
@@ -7715,7 +7748,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             <label class="tb-field"><span class="tb-label">测试范围</span>
               <select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label>
             <label class="tb-field"><span class="tb-label">状态</span>
-              <select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>进行中</option><option>暂停</option><option>已完成</option><option>失败</option></select></label>
+              <select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>进行中</option><option>暂停</option><option>已完成</option><option>错误</option></select></label>
             <input class="search" type="search" placeholder="输入任务名称搜索" aria-label="搜索任务">
             <div class="tb-right">
               <button class="btn primary" data-dao="button" data-props="type=primary" data-od-id="cta-new-test" data-open-new-test="">新建测试</button>
@@ -7726,15 +7759,16 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               <table>
                 <thead><tr><th>任务名称</th><th>目标服务</th><th>测试范围</th><th>状态</th><th>测试结果</th><th>创建时间</th><th class="col-act">操作</th></tr></thead>
                 <tbody id="modelTestRows">
-                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag green">通过</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>-</td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag red">失败</span></td><td>-</td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag">暂停</span></td><td>-</td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag green">通过</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>-</td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag red">未通过</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="health_check,messages_structure,message_elements,sse_stream"><td><span class="test-name-link">external-router-error-0902</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag red">错误</span></td><td>-</td><td>2026-09-02 11:20:18</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag">暂停</span></td><td>-</td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                 </tbody>
               </table>
             </div>
             <div class="pager" data-dao="pagination" data-od-id="model-tests-pager">
-              <span class="pg-total">总共 4 条</span>
+              <span class="pg-total">总共 5 条</span>
               <div class="pg-right">
                 <nav class="pg-nav" aria-label="分页">
                   <button type="button" class="pg-arrow" aria-label="上一页" disabled="">‹</button>
@@ -8242,7 +8276,7 @@ llm-d-modelservice:
           </div>
                 <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
                 <div class="tb tb--detail" data-dao="toolbar">
-                  <label class="tb-field"><span class="tb-label">测试范围</span><select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label><label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>已完成</option><option>进行中</option><option>暂停</option><option>失败</option></select></label>
+                  <label class="tb-field"><span class="tb-label">测试范围</span><select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label><label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>已完成</option><option>进行中</option><option>暂停</option><option>错误</option></select></label>
                   <input class="search" type="search" placeholder="输入任务名称搜索" aria-label="输入任务名称搜索">
                   <div class="tb-right"><button class="btn primary" data-dao="button" data-props="type=primary" data-open-new-test="">新建测试</button></div>
                 </div>
@@ -8250,9 +8284,10 @@ llm-d-modelservice:
                   <table>
                     <thead><tr><th>任务名称</th><th>测试范围</th><th>状态</th><th>创建时间</th><th>完成时间</th><th class="col-act"></th></tr></thead>
                     <tbody id="detailTestRows">
-                      <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td class="mono"><span class="test-name-link">api-cli-deepseek-0824</span></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-24 09:53</td><td>2026-08-24 10:08</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                      <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td class="mono"><span class="test-name-link">deepseek-stream-longctx-0901</span></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                      <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td class="mono"><span class="test-name-link">deepseek-knoway-validators-0830</span></td><td>功能测试</td><td><span class="tag red">失败</span></td><td>2026-08-30 15:44</td><td>2026-08-30 15:51</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">查看配置</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                      <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td class="mono"><span class="test-name-link">api-cli-deepseek-0824</span></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-24 09:53</td><td>2026-08-24 10:08</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                      <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td class="mono"><span class="test-name-link">deepseek-stream-longctx-0901</span></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                      <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td class="mono"><span class="test-name-link">deepseek-knoway-validators-0830</span></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-30 15:44</td><td>2026-08-30 15:51</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                      <tr data-cases="health_check,messages_structure,message_elements,sse_stream"><td class="mono"><span class="test-name-link">deepseek-runtime-error-0902</span></td><td>功能测试</td><td><span class="tag red">错误</span></td><td>2026-09-02 11:20</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -8316,6 +8351,7 @@ llm-d-modelservice:
                 <span class="si-status green" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">deepseek-v4-flash-h800-prod</span>
+                  <span class="si-model">DeepSeek-V4-Flash</span>
                   <span class="si-meta"><span class="tag blue">llm-d</span><span class="tag">PD 分离</span></span>
                 </span>
                 <span class="si-tags"><span class="tag green">可用</span><span class="tag green">运行中</span><span class="tag green">Synced</span></span>
@@ -8325,6 +8361,7 @@ llm-d-modelservice:
                 <span class="si-status red" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">qwen3-235b-prod</span>
+                  <span class="si-model">Qwen3-235B</span>
                   <span class="si-meta"><span class="tag blue">llm-d</span><span class="tag">PD 一体</span></span>
                 </span>
                 <span class="si-tags"><span class="tag red">不可用</span><span class="tag red">资源异常</span><span class="tag amber">Outofsync</span></span>
@@ -8334,6 +8371,7 @@ llm-d-modelservice:
                 <span class="si-status amber" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">dynamo-llama4-scout-lab</span>
+                  <span class="si-model">Llama-4-Scout</span>
                   <span class="si-meta"><span class="tag blue">dynamo</span><span class="tag">PD 分离</span></span>
                 </span>
                 <span class="si-tags"><span class="tag">未知</span><span class="tag blue">更新中</span><span class="tag green">Synced</span></span>
@@ -8343,6 +8381,7 @@ llm-d-modelservice:
                 <span class="si-status green" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">dynamo-qwen3-colocated-prod</span>
+                  <span class="si-model">Qwen3-32B</span>
                   <span class="si-meta"><span class="tag blue">dynamo</span><span class="tag">PD 一体</span></span>
                 </span>
                 <span class="si-tags"><span class="tag green">可用</span><span class="tag blue">更新中</span><span class="tag green">Synced</span></span>
@@ -8352,6 +8391,7 @@ llm-d-modelservice:
                 <span class="si-status green" aria-hidden="true"></span>
                 <span class="si-main">
                   <span class="si-name">external-qwen3-router-prod</span>
+                  <span class="si-model">Qwen3-External</span>
                   <span class="si-meta"><span class="tag blue">llm-d</span><span class="tag">PD 分离</span><span class="tag external-access-tag">外部接入</span></span>
                 </span>
                 <span class="si-tags"><span class="tag green">可用</span><span class="tag green">运行中</span><span class="tag green">Synced</span></span>
@@ -8524,7 +8564,7 @@ llm-d-modelservice:
           <div class="modal-shell compact test-config-modal" role="dialog" aria-modal="true" aria-labelledby="testConfigTitle">
             <div class="modal-head">
               <div>
-                <h1 id="testConfigTitle">查看测试</h1>
+                <h1 id="testConfigTitle">测试详情</h1>
               </div>
               <button class="btn" type="button" data-close-modal="">关闭</button>
             </div>
@@ -8632,6 +8672,32 @@ llm-d-modelservice:
               <button class="pause-update-close" type="button" data-close-modal="" aria-label="关闭">×</button>
             </div>
             <p class="confirm-message" id="testStatusMessage"></p>
+            <div class="retry-mode-group" id="testRetryModeGroup" hidden="">
+              <label class="retry-mode-option">
+                <input type="radio" name="testRetryMode" value="failed" checked="">
+                <span>
+                  <strong>非通过任务重试</strong>
+                  <small>仅重新执行上次结果非通过的测试项，保留已通过结果。</small>
+                </span>
+              </label>
+              <label class="retry-mode-option">
+                <input type="radio" name="testRetryMode" value="all">
+                <span>
+                  <strong>全部重试</strong>
+                  <small>重新执行全部测试项，并覆盖上次执行的全部结果。</small>
+                </span>
+              </label>
+              <label class="retry-mode-option">
+                <input type="radio" name="testRetryMode" value="reconfigure">
+                <span>
+                  <strong>重新配置测试项</strong>
+                  <small>基于当前任务配置重新选择测试项，确认后覆盖当前测试项并重新执行。</small>
+                </span>
+              </label>
+              <div class="retry-case-config" id="testRetryCaseConfig" hidden="">
+                <div class="case-group-stack" aria-label="重新配置测试项"></div>
+              </div>
+            </div>
             <div class="footer-actions">
               <button class="btn" type="button" data-close-modal="">取消</button>
               <button class="btn primary" type="button" id="confirmTestStatus">确定</button>
@@ -8709,7 +8775,10 @@ llm-d-modelservice:
               <div>
                 <h1 id="valuesTitle">查看 YAML</h1>
               </div>
-              <button class="btn" type="button" data-close-modal="">关闭</button>
+              <div class="modal-head-actions">
+                <button class="btn" type="button" id="downloadTestReportButton" hidden="">下载</button>
+                <button class="btn" type="button" data-close-modal="">关闭</button>
+              </div>
             </div>
 
             <div class="yaml-modal-tabs" id="valuesYamlTabs" role="tablist" aria-label="YAML 查看方式" hidden="">
@@ -8809,6 +8878,7 @@ llm-d-modelservice:
     const crumbLabel = document.querySelector("#crumbLabel");
     const valuesModal = document.querySelector("#valuesModal");
     const valuesTitle = document.querySelector("#valuesTitle");
+    const downloadTestReportButton = document.querySelector("#downloadTestReportButton");
     const detailExternalTag = document.querySelector("#detailExternalTag");
     const currentYamlPreview = document.querySelector("#currentYamlPreview");
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
@@ -9042,6 +9112,8 @@ llm-d-modelservice:
     const testStatusModal = document.querySelector("#testStatusModal");
     const testStatusTitle = document.querySelector("#testStatusTitle");
     const testStatusMessage = document.querySelector("#testStatusMessage");
+    const testRetryModeGroup = document.querySelector("#testRetryModeGroup");
+    const testRetryCaseConfig = document.querySelector("#testRetryCaseConfig");
     const confirmTestStatus = document.querySelector("#confirmTestStatus");
     const deleteServiceModal = document.querySelector("#deleteServiceModal");
     const deleteServiceTitle = document.querySelector("#deleteServiceTitle");
@@ -9092,6 +9164,7 @@ llm-d-modelservice:
     let activeDeleteTestName = "";
     let activeDeleteTestRow = null;
     let activeDeleteTestScope = null;
+    let activeTestReportFileName = "model-test-report.html";
     let activePauseUpdateService = "";
     let activeExportTemplateService = "";
     let activeSyncRestoreService = "";
@@ -10081,25 +10154,28 @@ llm-d-modelservice:
       { id: "messages_structure", label: "Messages 结构", name: "messages 基础结构、角色与空内容校验", intro: "role、content、空内容与消息结构校验。", category: "basic", required: "必选", note: "校验 messages 参数结构是否符合接口规范，包括 role、content、空数组、缺失字段、null 值等请求格式处理。" },
       { id: "message_elements", label: "Messages 内容块", name: "messages 内容块与空内容校验", intro: "字符串内容、文本块和基础结构错误校验。", category: "basic", required: "必选", note: "校验 content 对字符串和文本内容块的支持情况，并验证非法内容块、空对象、空文本等异常输入的处理结果。" },
       { id: "sse_stream", label: "SSE 流式输出", name: "SSE 流式输出协议与中断处理", intro: "chunk、delta.content、usage 与 [DONE] 校验。", category: "basic", required: "必选", note: "校验 stream=true 时 SSE 返回格式是否符合预期，包括 chunk 结构、delta.content 增量输出、结束信息和 [DONE] 标记。" },
-      { id: "non_stream", label: "非流式输出", name: "非流式响应结构与用量统计校验", intro: "完整响应结构、内容与用量统计校验。", category: "basic", required: "必选", note: "校验 stream=false 时 API 是否返回标准响应结构，包括 message 内容、finish_reason、usage 和 token 统计字段。" },
+      { id: "non_stream", label: "非流式输出", name: "message、finish_reason 与响应结构校验", intro: "message、finish_reason 与响应结构校验。", category: "basic", required: "必选", note: "校验 stream=false 时 API 是否返回标准非流式响应结构，包括 choices.message.content、finish_reason、id、model 等基础字段。" },
       { id: "stream_usage", label: "流式 Token 用量", name: "流式累计 Token 用量回传", intro: "最终 chunk 回传 usage，且 token 合计正确。", category: "basic", required: "必选", note: "校验流式请求开启 usage 回传后，usage 是否出现在最终 chunk，且 total_tokens 与 prompt_tokens、completion_tokens 合计一致。" },
+      { id: "non_stream_usage", label: "非流式 Token 用量", name: "非流式响应 usage 与 token 合计校验", intro: "响应回传 usage，且 token 合计正确。", category: "basic", required: "必选", note: "校验非流式响应是否回传 usage，并确认 total_tokens 与 prompt_tokens、completion_tokens 合计一致。" },
       { id: "function_calling", label: "Tools 调用", name: "tools 并行调用、多轮回传与二次回答", intro: "并行 tool_calls、多轮回传与二次回答。", category: "basic", required: "必选", note: "校验 tools/tool_calls 协议是否符合预期，包括工具调用参数、并行调用、工具结果回传和后续回答流程。" },
       { id: "multi_turn", label: "多轮上下文", name: "十轮上下文读取与 Token 统计", intro: "十轮上下文读取与 prompt_tokens 单调增长。", category: "basic", required: "必选", note: "校验多轮 messages 历史是否被 API 正确接收和计入上下文，并验证 prompt_tokens 是否随上下文增长而递增。" },
       { id: "max_tokens_user", label: "max_tokens 限制", name: "max_tokens 用户设置与生成长度限制", intro: "生成长度受控，截断时返回 length。", category: "basic", required: "必选", note: "校验 max_tokens 参数是否生效，并确认达到生成上限时 completion_tokens 和 finish_reason=length 是否符合预期。" },
       { id: "system_prompt", label: "System Prompt 优先级", name: "System Prompt 优先级与提示词隔离", intro: "system 高于 user，且提示词有效隔离。", category: "basic", required: "必选", note: "校验 system 消息在 API 调用中的优先级和隔离效果，确认 user 指令无法覆盖关键 system 约束。" },
       { id: "no_default_system_prompt", label: "默认 System Prompt", name: "默认请求不添加 System Prompt", intro: "默认请求不额外注入 system 消息。", category: "basic", required: "必选", note: "校验未传入 system 消息时，API 或服务层不会自动注入额外 system prompt，避免影响模型输出可控性。" },
       { id: "thinking_control_vllm", label: "Thinking 控制", name: "vLLM chat_template_kwargs 思考开关", intro: "vLLM 思考开关字段是否实际生效。", category: "basic", required: "必选", note: "校验 Thinking 相关 API 参数或 chat_template_kwargs 是否被正确透传，并验证开启、关闭时的响应行为是否符合预期。" },
-      { id: "invalid_request", label: "错误输入规范性", name: "非法参数返回明确错误", intro: "非法参数返回明确错误，不静默忽略。", category: "basic", required: "必选", note: "校验非法 messages、role、tools、tool_choice、tool_call_id 等异常请求是否返回明确错误，而不是被静默修正或忽略。" },
-      { id: "stop_special_token", label: "停止条件 / 特殊 token", name: "stop 命中中断与特殊 token 防泄漏", intro: "stop 命中中断，EOS 等特殊 token 不泄漏。", category: "basic", required: "必选", note: "校验 stop 文本、特殊 token 或 EOS 相关停止条件是否生效，并确认最终输出不会泄漏不应暴露的特殊 token。" },
+      { id: "stop_sequence", label: "Stop 截断", name: "文本 stop 与 EOS token 截断校验", intro: "文本 stop 与 EOS token 截断校验。", category: "basic", required: "必选", note: "校验 stop 或 EOS 截断相关参数是否生效，并确认截断位置和返回内容符合接口预期。" },
+      { id: "context_cache", label: "上下文缓存命中", name: "验证长前缀请求可命中缓存", intro: "验证长前缀请求可命中缓存。", category: "basic", required: "必选", note: "校验相同或可复用的长上下文前缀在重复请求时是否产生缓存命中，并检查 cached_tokens 等可观测字段是否符合预期。" },
       { id: "json_object_case", label: "结构化输出", name: "JSON Object/Schema 结构化输出", intro: "json_object、json_schema 与枚举约束校验。", category: "optional", required: "可选", note: "校验 API 是否支持结构化输出参数，包括 json_object、json_schema、required、enum、items 等约束是否按预期生效。" },
       { id: "encoding_special", label: "Unicode 编解码", name: "Unicode 编解码与特殊控制字符", intro: "中文、emoji、非 BMP 与组合字符回显。", category: "optional", required: "可选", note: "校验 API 对 Unicode 输入输出的编码兼容性，包括中文、emoji、非 BMP 字符和组合字符是否能正确传输与返回。" },
-      { id: "stop_sequence", label: "Stop 截断", name: "stop 文本序列与 EOS token 截断", intro: "文本 stop 与 EOS token 截断校验。", category: "optional", required: "可选", note: "校验 stop、stop_token_ids 或 EOS 截断相关参数是否生效，并确认截断位置和返回内容符合接口预期。" },
-      { id: "context_cache", label: "长上下文缓存", name: "长上下文缓存命中与 nonce 反向验证", intro: "缓存命中与 nonce 反向验证。", category: "optional", required: "可选", note: "校验上下文缓存相关能力是否可观测，包括长前缀缓存命中情况，以及随机 nonce 请求是否能反向验证缓存策略。" },
+      { id: "special_token_stop", label: "特殊 Token 停止", name: "特殊 token 的停止与过滤行为", intro: "验证特殊 token 的停止与过滤行为。", category: "optional", required: "可选", note: "在服务支持 token 级停止配置时，校验指定特殊 token 是否能触发输出停止，并确认最终响应中不会暴露内部控制标记。" },
+      { id: "cache_verification", label: "缓存反向验证", name: "使用随机 nonce 验证缓存策略", intro: "使用随机 nonce 验证缓存策略。", category: "optional", required: "可选", note: "在长前缀缓存已命中的基础上，加入随机 nonce 或扰动内容，检查请求是否按预期不命中或仅部分复用缓存，用于验证服务侧缓存匹配策略。" },
       { id: "input_length_cloud", label: "上下文窗口边界", name: "云 API 最大上下文窗口边界", intro: "指数增长和二分搜索定位最大成功长度。", category: "optional", required: "可选", note: "校验 API 可接受的最大上下文长度，通过逐步扩展和二分搜索定位最大成功输入长度与最小失败输入长度。" },
       { id: "long_input_nonstream", label: "超长输入", name: "超长输入非流式响应完整性", intro: "约 256K token 输入完整性校验。", category: "optional", required: "可选", note: "校验超长输入是否能被 API 完整接收并传入模型，通过首、中、尾检查码验证上下文完整性。" },
       { id: "long_output", label: "超长输出", name: "超长输出截断与连续性", intro: "截断前内容完整、行号连续。", category: "optional", required: "可选", note: "校验长输出场景下的 API 截断行为，确认截断前内容连续、finish_reason 和输出上限处理符合预期。" },
       { id: "thinking_control", label: "Anthropic Thinking", name: "Anthropic 风格思考启停控制", intro: "thinking.type enabled / disabled 可选探测。", category: "optional", required: "可选", note: "探测 Anthropic 风格 thinking.type 参数是否被 API 接收和生效，用于识别该兼容协议是否支持。" },
-      { id: "vision_input", label: "图片 / 视觉输入", name: "图片与视觉输入能力校验", intro: "单图、多图与不同图片比例接收能力。", category: "optional", required: "可选", note: "校验视觉输入 API 是否支持单图、多图和不同尺寸比例图片，并确认图片内容能被正确接收和用于响应。" }
+      { id: "vision_single", label: "单图视觉输入", name: "单张图片输入与图文问答", intro: "验证单张图片可被接收并用于响应。", category: "optional", required: "可选", note: "校验视觉输入 API 是否支持单张图片输入，并确认模型能基于图片内容返回符合请求的问题回答。" },
+      { id: "vision_multi", label: "多图视觉输入", name: "多张图片输入与跨图对比", intro: "验证多张图片可被接收并用于响应。", category: "optional", required: "可选", note: "校验视觉输入 API 是否支持多张图片同时输入，并确认模型能识别图片顺序、区分不同图片内容或完成跨图对比。" },
+      { id: "vision_size_compat", label: "图片尺寸兼容", name: "不同尺寸比例图片兼容处理", intro: "验证不同尺寸比例图片可正常处理。", category: "optional", required: "可选", note: "校验视觉输入 API 对横图、竖图、方图和不同尺寸比例图片的接收与处理情况，确认图片不会因尺寸或比例差异导致解析异常。" }
     ];
 
     function caseNoteHtml(note) {
@@ -10119,6 +10195,67 @@ llm-d-modelservice:
             <span class="dataset-intro">${escapeHtml(item.intro)}</span>
           </span>
         </label>`;
+    }
+
+    function retryCaseHtml(item, checked = false) {
+      return `
+        <label class="dataset-option">
+          <input type="checkbox" name="retryDataset" value="${escapeHtml(item.id)}" data-retry-case-category="${escapeHtml(item.category)}"${checked ? " checked" : ""}>
+          <span class="dataset-copy">
+            <span class="dataset-title-row"><span class="dataset-name">${escapeHtml(item.label)}</span>${caseNoteHtml(item.note)}</span>
+            <span class="dataset-intro">${escapeHtml(item.intro)}</span>
+          </span>
+        </label>`;
+    }
+
+    function renderRetryCaseOptions(caseIds = []) {
+      const stack = testRetryCaseConfig?.querySelector(".case-group-stack");
+      if (!stack) return;
+      const selected = new Set(casesFromLabels(caseIds).map(item => item.id));
+      const groups = [
+        ["basic", "基本功能"],
+        ["optional", "可选功能"]
+      ];
+      stack.innerHTML = `
+        <div class="case-required-item">
+          <span class="case-required-icon" aria-hidden="true">✓</span>
+          <span class="dataset-copy">
+            <span class="dataset-title-row"><span class="dataset-name">${escapeHtml(requiredFunctionalCase.title)}</span>${caseNoteHtml(requiredFunctionalCase.note)}</span>
+            <span class="dataset-intro">${escapeHtml(requiredFunctionalCase.intro)}</span>
+          </span>
+          <span class="tag blue">必选</span>
+        </div>
+        ${groups.map(([category, title]) => {
+          const items = functionalCaseCatalog.filter(item => item.category === category);
+          return `
+            <details class="case-group" open>
+              <summary><span>${title}</span><small data-retry-case-count="${category}">已选 0/${items.length}</small></summary>
+              <div class="dataset-grid">
+                ${items.map(item => retryCaseHtml(item, selected.has(item.id))).join("")}
+              </div>
+            </details>`;
+        }).join("")}`;
+      syncRetryCaseCounts();
+    }
+
+    function syncRetryCaseCounts() {
+      if (!testRetryCaseConfig) return;
+      ["basic", "optional"].forEach(category => {
+        const inputs = Array.from(testRetryCaseConfig.querySelectorAll(`input[data-retry-case-category="${category}"]`));
+        const checked = inputs.filter(input => input.checked).length;
+        const count = testRetryCaseConfig.querySelector(`[data-retry-case-count="${category}"]`);
+        if (count) count.textContent = `已选 ${checked}/${inputs.length}`;
+      });
+    }
+
+    function selectedRetryDatasets() {
+      return Array.from(document.querySelectorAll("input[name='retryDataset']:checked")).map(input => input.value);
+    }
+
+    function syncRetryCaseConfigVisibility() {
+      if (!testRetryCaseConfig || !testRetryModeGroup) return;
+      const mode = testRetryModeGroup.querySelector("input[name='testRetryMode']:checked")?.value || "failed";
+      testRetryCaseConfig.hidden = mode !== "reconfigure";
     }
 
     function renderAcceptanceDatasetOptions() {
@@ -10175,10 +10312,10 @@ llm-d-modelservice:
 
     function reportCaseRows(cases, failed) {
       return cases.map(item => {
+        if (failed) return [item.id, item.name, item.required, "未执行", item.note];
         let status = "✅ 通过";
-        if (item.id === "context_cache") status = "⚠️ 告警";
+        if (item.id === "cache_verification") status = "⚠️ 告警";
         if (item.id === "thinking_control") status = "⚠️ 跳过";
-        if (item.id === "auth_security" && failed) status = "❌ 失败";
         return [item.id, item.name, item.required, status, item.note];
       });
     }
@@ -10204,21 +10341,27 @@ llm-d-modelservice:
       if (performanceConfigField) performanceConfigField.hidden = isAcceptance;
     }
 
-    function openNewTest(serviceId = activeDetailService) {
+    function openNewTest(serviceId = activeDetailService, options = {}) {
       if (!newTestModal) return;
       const service = serviceById(serviceId);
       const shortId = service?.id?.split("-")[0] || "model";
       if (newTestService && service) newTestService.value = service.id;
-      if (newTestType) newTestType.value = "acceptance";
+      const copiedType = options.type && !String(options.type).includes("功能") ? "performance" : "acceptance";
+      if (newTestType) newTestType.value = copiedType;
       if (newTestName) {
-        newTestName.value = "";
+        newTestName.value = options.name || "";
         newTestName.placeholder = `api-function-${shortId}-0909`;
       }
+      const copiedCases = Array.isArray(options.caseIds) && options.caseIds.length
+        ? new Set(casesFromLabels(options.caseIds).map(item => item.id))
+        : null;
       document.querySelectorAll("input[name='acceptanceDataset']").forEach(input => {
-        input.checked = input.dataset.caseCategory === "basic";
+        input.checked = copiedCases ? copiedCases.has(input.value) : input.dataset.caseCategory === "basic";
       });
       document.querySelectorAll("#acceptanceDatasetField details").forEach(group => {
-        group.removeAttribute("open");
+        const hasChecked = Boolean(group.querySelector("input[name='acceptanceDataset']:checked"));
+        if (hasChecked && copiedCases) group.setAttribute("open", "");
+        else group.removeAttribute("open");
       });
       syncNewTestType();
       syncFunctionalCaseCounts();
@@ -10247,30 +10390,36 @@ llm-d-modelservice:
       });
     }
 
+    function isErrorStatus(status) {
+      return status === "错误" || status === "失败";
+    }
+
     function testReportButton(status) {
-      const available = status === "已完成" || status === "失败";
+      const available = status === "已完成";
       const disabledAttrs = available ? " title=\"查看报告\" aria-label=\"查看报告\"" : " disabled title=\"任务完成后可查看测试报告\" aria-label=\"测试报告不可用\"";
-      return `<button type="button" class="btn text test-report-action" data-open-test-report${disabledAttrs}>查看报告</button>`;
+      return `<button type="button" class="btn text test-report-action" data-open-test-report${disabledAttrs}>报告</button>`;
     }
 
     const testStatusActionRules = {
-      "进行中": { pause: true, start: false, restart: false },
-      "暂停": { pause: false, start: true, restart: false },
-      "已完成": { pause: false, start: false, restart: false },
-      "失败": { pause: false, start: false, restart: true }
+      "进行中": { pause: true, start: false, rerun: false },
+      "暂停": { pause: false, start: true, rerun: true },
+      "已完成": { pause: false, start: false, rerun: true },
+      "错误": { pause: false, start: false, rerun: true },
+      "失败": { pause: false, start: false, rerun: true }
     };
 
     const testStatusMeta = {
       "进行中": "amber",
       "暂停": "",
       "已完成": "green",
+      "错误": "red",
       "失败": "red"
     };
 
     const testStatusActionMeta = {
       pause: { label: "暂停", nextStatus: "暂停", title: "暂停测试", message: "暂停后，该测试任务将停止继续执行，后续可通过「启动」恢复执行。" },
       start: { label: "启动", nextStatus: "进行中", title: "启动测试", message: "启动后，该测试任务将从暂停状态恢复为进行中。" },
-      restart: { label: "重启", nextStatus: "进行中", title: "重启测试", message: "重启后，该测试任务将重新进入执行流程，并恢复为进行中状态。" }
+      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。非通过任务重试仅重新执行上次结果非通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果；重新配置测试项会覆盖当前测试项后重新执行。" }
     };
 
     let pendingTestStatusRow = null;
@@ -10294,14 +10443,12 @@ llm-d-modelservice:
           <span class="ops-submenu-menu" role="menu">
             ${testStatusActionButton(status, "pause", "暂停")}
             ${testStatusActionButton(status, "start", "启动")}
-            ${testStatusActionButton(status, "restart", "重启")}
           </span>
         </span>`;
     }
 
     function testActions(status) {
-      // 行操作统一为「⋮」更多菜单（与模型服务 / 模板库列表一致）
-      return `<span class="row-actions test-row-actions">${testReportButton(status)}<span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config>查看配置</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
+      return `<span class="row-actions test-row-actions"><button type="button" class="btn text test-detail-action" data-view-test-config title="测试详情" aria-label="测试详情">详情</button>${testReportButton(status)}<span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu">${testStatusActionButton(status, "rerun", "重新执行")}<button type="button" data-copy-test>复制任务</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
     }
 
     function testServiceLink(serviceId) {
@@ -10317,6 +10464,7 @@ llm-d-modelservice:
         service: isDetailRow ? activeDetailService : (cells[1]?.textContent.trim() || activeDetailService),
         type: isDetailRow ? (cells[1]?.textContent.trim() || "") : (cells[2]?.textContent.trim() || ""),
         status: isDetailRow ? (cells[2]?.textContent.trim() || "") : (cells[3]?.textContent.trim() || ""),
+        result: isDetailRow ? "" : (cells[4]?.textContent.trim() || ""),
         created: cells[createdIndex]?.textContent.trim() || "",
         cases: row?.dataset.cases || functionalCaseCatalog.filter(item => item.category === "basic").map(item => item.id).join(",")
       };
@@ -10333,12 +10481,42 @@ llm-d-modelservice:
       return row?.children?.[0]?.textContent.trim() || "当前测试任务";
     }
 
-    function setTestRowStatus(row, status) {
+    function setTestRowStatus(row, status, options = {}) {
       const statusCell = testStatusCell(row);
       if (!statusCell) return;
+      const resetResult = options.resetResult !== false;
       statusCell.innerHTML = `<span class="${testStatusClass(status)}">${escapeHtml(status)}</span>`;
+      if (resetResult) setTestRowResult(row, "-");
       const actionCell = row.querySelector(".col-act");
       if (actionCell) actionCell.innerHTML = testActions(status);
+    }
+
+    function testResultCell(row) {
+      const cells = Array.from(row?.children || []);
+      return cells.length >= 7 ? cells[4] : null;
+    }
+
+    function setTestRowResult(row, result) {
+      const cell = testResultCell(row);
+      if (!cell) return;
+      const color = result === "通过" ? "green" : result === "未通过" ? "red" : result === "部分通过" ? "amber" : "";
+      cell.innerHTML = color ? `<span class="tag ${color}">${escapeHtml(result)}</span>` : escapeHtml(result);
+    }
+
+    function setTestRowCreatedTime(row) {
+      const cells = Array.from(row?.children || []);
+      if (cells.length >= 7) {
+        cells[5].textContent = currentMinuteText(true);
+      } else if (cells.length === 6) {
+        cells[3].textContent = currentMinuteText(false);
+        cells[4].textContent = "-";
+      }
+    }
+
+    function updateTestTableTotal(row) {
+      const scope = row?.closest("tbody");
+      const total = scope?.closest(".view")?.querySelector(".pg-total");
+      if (total && scope) total.textContent = `总共 ${scope.children.length} 条`;
     }
 
     function openTestStatusConfirm(row, action) {
@@ -10350,21 +10528,51 @@ llm-d-modelservice:
         testStatusTitle.innerHTML = `<span class="pause-update-icon" aria-hidden="true">⚠</span>${escapeHtml(meta.title)}（测试任务：${escapeHtml(testTaskName(row))}）`;
       }
       if (testStatusMessage) testStatusMessage.textContent = meta.message;
+      if (testRetryModeGroup) {
+        const isRetry = action === "rerun";
+        testRetryModeGroup.hidden = !isRetry;
+        const defaultMode = testRetryModeGroup.querySelector("input[value='failed']");
+        if (defaultMode) defaultMode.checked = true;
+        if (isRetry) renderRetryCaseOptions((row.dataset.cases || "").split(","));
+        syncRetryCaseConfigVisibility();
+      }
       openModal(testStatusModal);
     }
 
     function confirmTestStatusAction() {
       const meta = testStatusActionMeta[pendingTestStatusAction];
-      if (pendingTestStatusRow && meta) setTestRowStatus(pendingTestStatusRow, meta.nextStatus);
+      if (pendingTestStatusRow && meta) {
+        if (pendingTestStatusAction === "rerun") {
+          const mode = testRetryModeGroup?.querySelector("input[name='testRetryMode']:checked")?.value || "failed";
+          if (mode === "reconfigure") {
+            const selected = selectedRetryDatasets();
+            if (selected.length === 0) return;
+            pendingTestStatusRow.dataset.cases = selected.join(",");
+          }
+          setTestRowStatus(pendingTestStatusRow, meta.nextStatus);
+          setTestRowCreatedTime(pendingTestStatusRow);
+        } else {
+          setTestRowStatus(pendingTestStatusRow, meta.nextStatus);
+        }
+      }
       pendingTestStatusRow = null;
       pendingTestStatusAction = "";
       closeModals();
     }
 
+    function openCopyTest(row) {
+      const config = getTestConfigFromRow(row);
+      openNewTest(config.service, {
+        name: `${config.name || "test"}-copy`,
+        type: config.type,
+        caseIds: config.cases.split(",")
+      });
+    }
+
     function hydrateTestActionMenus() {
       document.querySelectorAll("#modelTestRows tr, #detailTestRows tr").forEach(row => {
         const status = testStatusCell(row)?.textContent.trim() || "";
-        if (status) setTestRowStatus(row, status);
+        if (status) setTestRowStatus(row, status, { resetResult: false });
       });
     }
 
@@ -10374,8 +10582,50 @@ llm-d-modelservice:
       if (!testConfigModal || !testConfigBody) return;
       const config = getTestConfigFromRow(row);
       const service = serviceById(config.service);
-      if (testConfigTitle) testConfigTitle.textContent = config.name || "查看配置";
-      const selectedLabels = config.cases.split(",");
+      if (testConfigTitle) testConfigTitle.textContent = config.name || "测试详情";
+      const selectedCases = casesFromLabels(config.cases.split(","));
+      const healthCases = [{ id: requiredFunctionalCase.id, name: requiredFunctionalCase.title, note: requiredFunctionalCase.note, category: "health" }];
+      const basicCases = selectedCases.filter(item => item.category === "basic");
+      const optionalCases = selectedCases.filter(item => item.category === "optional");
+      const healthFailed = isErrorStatus(config.status);
+      const taskNotPassed = config.result === "未通过" || /validators/.test(config.name);
+      const resultClass = result => result === "通过" ? "tag green" : result === "未通过" ? "tag red" : result === "告警" ? "tag amber" : result === "跳过" || result === "未执行" ? "tag" : "tag";
+      const rowExecutionStatus = item => {
+        if (healthFailed && item.id === "health_check") return "错误";
+        if (healthFailed) return "未执行";
+        if (config.status === "进行中") return "执行中";
+        if (config.status === "暂停") return "暂停";
+        if (config.status === "已完成") return "已完成";
+        return config.status || "-";
+      };
+      const caseResult = item => {
+        if (config.status === "进行中" || config.status === "暂停") return "-";
+        if (healthFailed && item.id === "health_check") return "未通过";
+        if (healthFailed) return "未执行";
+        if (taskNotPassed && item.id === "auth_security") return "未通过";
+        if (item.id === "cache_verification") return "告警";
+        if (item.id === "thinking_control") return "跳过";
+        return "通过";
+      };
+      const renderCaseRows = cases => cases.map(item => {
+        const result = caseResult(item);
+        return `<tr>
+          <td><span class="mono">${escapeHtml(item.id)}</span><br><strong>${escapeHtml(item.name || item.label)}</strong></td>
+          <td><span class="tag">${escapeHtml(rowExecutionStatus(item))}</span></td>
+          <td>${result === "-" ? "-" : `<span class="${resultClass(result)}">${escapeHtml(result)}</span>`}</td>
+          <td>${escapeHtml(item.note || "")}</td>
+        </tr>`;
+      }).join("");
+      const renderCaseGroup = (title, cases) => `
+        <section class="test-case-group">
+          <h4>${escapeHtml(title)} <span>${cases.length} 项</span></h4>
+          <div class="report-table-wrap">
+            <table class="report-table test-detail-table">
+              <thead><tr><th>测试项</th><th>执行状态</th><th>测试结果</th><th>说明</th></tr></thead>
+              <tbody>${renderCaseRows(cases)}</tbody>
+            </table>
+          </div>
+        </section>`;
       testConfigBody.innerHTML = `
         <dl>
           <div><dt>测试名称</dt><dd>${escapeHtml(config.name)}</dd></div>
@@ -10384,9 +10634,17 @@ llm-d-modelservice:
           <div><dt>服务端点</dt><dd class="mono">${escapeHtml(service?.endpoint || `${config.service}-istio.inferx-prod.svc`)}</dd></div>
           <div><dt>测试范围</dt><dd>${escapeHtml(config.type)}</dd></div>
           <div><dt>状态</dt><dd>${escapeHtml(config.status)}</dd></div>
+          <div><dt>测试结果</dt><dd>${escapeHtml(config.result || (config.status === "已完成" ? (taskNotPassed ? "未通过" : "通过") : isErrorStatus(config.status) ? "-" : "-"))}</dd></div>
           <div><dt>创建时间</dt><dd>${escapeHtml(config.created)}</dd></div>
-          <div class="config-view-wide"><dt>功能用例</dt><dd>${groupedCasesHtml(selectedLabels, { compact: true })}</dd></div>
-        </dl>`;
+        </dl>
+        <section class="test-detail-section">
+          <h3>测试项</h3>
+          <div class="test-case-group-stack">
+            ${renderCaseGroup("健康检查", healthCases)}
+            ${renderCaseGroup("基本功能", basicCases)}
+            ${renderCaseGroup("可选功能", optionalCases)}
+          </div>
+        </section>`;
       openModal(testConfigModal);
     }
 
@@ -10394,38 +10652,47 @@ llm-d-modelservice:
       if (!valuesModal || !currentYamlPreview) return;
       const config = getTestConfigFromRow(row);
       if (valuesTitle) valuesTitle.textContent = "测试报告";
-      const failed = config.status === "失败";
+      activeTestReportFileName = `${safeFileName(config.name || "model-test-report")}-测试报告.html`;
+      if (downloadTestReportButton) downloadTestReportButton.hidden = false;
+      const failed = isErrorStatus(config.status) || config.result === "未通过" || /validators/.test(config.name);
       const selectedCases = casesFromLabels(config.cases.split(","));
       const basicCases = selectedCases.filter(item => item.category === "basic");
       const optionalCases = selectedCases.filter(item => item.category === "optional");
       const basicRows = reportCaseRows(basicCases, failed);
       const optionalRows = reportCaseRows(optionalCases, failed);
       const allRows = [...basicRows, ...optionalRows];
-      const passCount = allRows.filter(row => row[3].includes("通过")).length;
+      const passCount = allRows.filter(row => row[3] === "✅ 通过").length;
       const failCount = allRows.filter(row => row[3].includes("失败")).length;
       const warnCount = allRows.filter(row => row[3].includes("告警")).length;
       const skipCount = allRows.filter(row => row[3].includes("跳过")).length;
+      const notRunCount = allRows.filter(row => row[3].includes("未执行")).length;
       const statusSummary = rows => {
         const items = [
-          ["✅ 通过", rows.filter(row => row[3].includes("通过")).length],
+          ["✅ 通过", rows.filter(row => row[3] === "✅ 通过").length],
           ["❌ 失败", rows.filter(row => row[3].includes("失败")).length],
           ["⚠️ 告警", rows.filter(row => row[3].includes("告警")).length],
-          ["⚠️ 跳过", rows.filter(row => row[3].includes("跳过")).length]
+          ["⚠️ 跳过", rows.filter(row => row[3].includes("跳过")).length],
+          ["未执行", rows.filter(row => row[3].includes("未执行")).length]
         ].filter(([, count]) => count > 0);
         return items.length ? items.map(([label, count]) => `${label}：${count}`).join("　") : "未选择";
       };
       const reportStatus = failed
         ? { label: "未通过", tag: "tag red", health: "未通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
-        : (failCount + warnCount + skipCount > 0 || passCount < allRows.length)
+        : (failCount + warnCount + skipCount + notRunCount > 0 || passCount < allRows.length)
           ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
           : { label: "通过", tag: "tag green", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" };
+      const reportResultText = status => status === "未执行" ? "-" : status;
       const renderReportRows = rows => rows.length
-        ? rows.map(([id, name, , status, note]) => `<tr><td class="mono">${escapeHtml(id)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(status)}</td><td>${escapeHtml(note)}</td></tr>`).join("")
+        ? rows.map(([id, name, , status, note]) => `<tr><td class="mono">${escapeHtml(id)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(reportResultText(status))}</td><td>${escapeHtml(note)}</td></tr>`).join("")
         : `<tr><td colspan="4" class="muted">未选择该类用例</td></tr>`;
+      const reportGeneratedAt = formatReportTime();
       currentYamlPreview.className = "report-preview";
       currentYamlPreview.innerHTML = `
         <div class="report-head">
-          <h2>DeepSeek V4 Flash CLI 功能测试</h2>
+          <div>
+            <h2>DeepSeek V4 Flash CLI 功能测试</h2>
+            <p class="report-generated-time">报告生成时间：${escapeHtml(reportGeneratedAt)}</p>
+          </div>
           <span class="${reportStatus.tag}">${reportStatus.label}</span>
         </div>
         <div class="report-meta-grid">
@@ -10445,11 +10712,11 @@ llm-d-modelservice:
         </section>
         <section class="report-section">
           <h3>基本功能</h3>
-          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>执行状态</th><th>说明</th></tr></thead><tbody>${renderReportRows(basicRows)}</tbody></table></div>
+          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>测试结果</th><th>说明</th></tr></thead><tbody>${renderReportRows(basicRows)}</tbody></table></div>
         </section>
         <section class="report-section">
           <h3>可选功能</h3>
-          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>执行状态</th><th>说明</th></tr></thead><tbody>${renderReportRows(optionalRows)}</tbody></table></div>
+          <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Case ID</th><th>功能内容</th><th>测试结果</th><th>说明</th></tr></thead><tbody>${renderReportRows(optionalRows)}</tbody></table></div>
         </section>`;
       if (templateYamlDiff) templateYamlDiff.innerHTML = "";
       if (currentYamlDiff) currentYamlDiff.innerHTML = "";
@@ -10491,6 +10758,11 @@ llm-d-modelservice:
     function reportTaskId(config) {
       if (config.name === "api-cli-deepseek-0824") return "api-cli-20260824-095356-e81b4fab";
       return config.name || "api-cli-generated";
+    }
+
+    function formatReportTime(date = new Date()) {
+      const pad = value => String(value).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     }
 
     function requestModelName(service) {
@@ -10697,6 +10969,56 @@ llm-d-modelservice:
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;");
+    }
+
+    function safeFileName(value, fallback = "download") {
+      const text = String(value || fallback)
+        .trim()
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+      return text || fallback;
+    }
+
+    function downloadCurrentTestReport() {
+      if (!currentYamlPreview || currentYamlPreview.className !== "report-preview") return;
+      const documentHtml = `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>${escapeHtml(valuesTitle?.textContent || "测试报告")}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1f2d3d; margin: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #dfe5ec; padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #f5f7fa; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .tag { display: inline-flex; padding: 2px 6px; border-radius: 3px; background: #eef1f5; font-size: 12px; font-weight: 600; }
+    .tag.green { color: #0f8f47; background: #e8f6ee; }
+    .tag.amber { color: #a06900; background: #fff4d8; }
+    .tag.red { color: #c73636; background: #fde8e8; }
+    .report-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #dfe5ec; }
+    .report-head h2 { margin: 0; }
+    .report-generated-time { margin: 4px 0 0; color: #6f7785; font-size: 12px; line-height: 18px; }
+    .report-meta-grid, .report-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+    .report-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .report-meta-grid div, .report-summary div { border: 1px solid #dfe5ec; border-radius: 4px; padding: 12px; }
+    .report-section { margin-top: 20px; }
+  </style>
+</head>
+<body>
+${currentYamlPreview.innerHTML}
+</body>
+</html>`;
+      const blob = new Blob([documentHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = activeTestReportFileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     }
 
     const stateClassByColor = { green: "state--ok", amber: "state--warn", red: "state--err", "": "state--off" };
@@ -11653,6 +11975,7 @@ llm-d-modelservice:
       const templateYaml = yamlFromValues(defaults[activeTemplate] || defaults.deepseek);
       const [templateDiff, currentDiff] = diffLines(templateYaml, currentYaml);
       if (valuesTitle) valuesTitle.textContent = "查看 YAML";
+      if (downloadTestReportButton) downloadTestReportButton.hidden = true;
       currentYamlPreview.className = "code yaml-preview-code";
       currentYamlPreview.textContent = currentYaml;
       if (templateYamlDiffTitle) templateYamlDiffTitle.textContent = templateEditDiff ? "模板 YAML" : "当前版本 YAML";
@@ -12095,6 +12418,10 @@ llm-d-modelservice:
     });
 
     document.addEventListener("click", event => {
+      if (event.target.closest("#downloadTestReportButton")) {
+        downloadCurrentTestReport();
+        return;
+      }
       const button = event.target.closest("[data-open-values]");
       if (button) {
         const isDeployPreview = button.id === "deployPreviewButton";
@@ -12210,6 +12537,10 @@ llm-d-modelservice:
         openTestConfig(row);
         return;
       }
+      if (event.target.closest("[data-copy-test]")) {
+        openCopyTest(row);
+        return;
+      }
       if (event.target.closest("[data-open-test-report]")) {
         openTestReport(row);
         return;
@@ -12251,6 +12582,12 @@ llm-d-modelservice:
     }
     if (confirmTestStatus) {
       confirmTestStatus.addEventListener("click", confirmTestStatusAction);
+    }
+    if (testRetryModeGroup) {
+      testRetryModeGroup.addEventListener("change", event => {
+        if (event.target.matches("input[name='testRetryMode']")) syncRetryCaseConfigVisibility();
+        if (event.target.matches("input[name='retryDataset']")) syncRetryCaseCounts();
+      });
     }
 
     document.addEventListener("click", event => {
