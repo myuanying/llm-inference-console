@@ -651,6 +651,33 @@
       width: min(1080px, calc(100vw - 56px));
     }
 
+    .log-drawer { position: fixed; inset: 0; z-index: 1300; pointer-events: none; }
+    .log-drawer-mask { position: absolute; inset: 0; border: 0; background: rgba(18, 28, 42, .48); opacity: 0; transition: opacity .2s ease; }
+    .log-drawer-panel { position: absolute; top: 0; right: 0; width: min(720px, 58vw); height: 100%; background: var(--surface); box-shadow: -8px 0 24px rgba(14, 31, 53, .2); transform: translateX(100%); transition: transform .24s ease; display: flex; flex-direction: column; }
+    .log-drawer.active { pointer-events: auto; }
+    .log-drawer.active .log-drawer-mask { opacity: 1; }
+    .log-drawer.active .log-drawer-panel { transform: translateX(0); }
+    .log-drawer-head { min-height: 72px; padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .log-drawer-head h1 { margin: 0; font-size: 16px; line-height: 24px; color: var(--fg); }
+    .log-drawer-head p { margin: 3px 0 0; color: var(--muted); font-size: 12px; line-height: 18px; }
+    .log-drawer-close { min-width: 32px; padding: 0; font-size: 22px; line-height: 28px; color: var(--muted); }
+    .log-drawer-body { flex: 1; min-height: 0; overflow: auto; padding: 20px; }
+    .log-source-tabs { display: inline-flex; gap: 3px; padding: 3px; border-radius: 6px; background: var(--bg); margin-bottom: 16px; }
+    .log-source-tabs button { height: 30px; padding: 0 13px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .log-source-tabs button.active { background: var(--surface); color: var(--fg); box-shadow: var(--elev-raised); }
+    .log-notice { min-height: 40px; box-sizing: border-box; padding: 10px 12px; border: 1px solid #91caff; border-radius: 4px; background: #edf7ff; color: var(--fg-2); font-size: 13px; line-height: 18px; }
+    .log-notice span { color: var(--blue); margin-right: 6px; }
+    .log-time-range { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0; margin: 18px 0; }
+    .log-time-range button { height: 30px; padding: 0 12px; margin-left: -1px; border: 1px solid var(--line); background: var(--surface); color: var(--fg-2); font-size: 12px; }
+    .log-time-range button:first-child { margin-left: 0; border-radius: 4px 0 0 4px; }
+    .log-time-range button:last-child { border-radius: 0 4px 4px 0; }
+    .log-time-range button.active { position: relative; z-index: 1; border-color: var(--blue); background: #eaf3ff; color: var(--blue); }
+    .log-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 10px; }
+    .log-filters label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .log-filters select { min-width: 0; flex: 1; height: 32px; border: 1px solid var(--line); border-radius: 4px; padding: 0 8px; background: var(--surface); color: var(--fg); }
+    .log-console { box-sizing: border-box; width: 100%; min-height: 420px; max-height: calc(100vh - 250px); overflow: auto; margin: 0; padding: 14px; background: #272727; color: #e8edf3; font: 12px/1.5 var(--font-mono); white-space: pre-wrap; }
+    @media (max-width: 820px) { .log-drawer-panel { width: min(100%, 620px); } .log-filters { grid-template-columns: 1fr; gap: 8px; } }
+
     .modal-head {
       display: flex;
       align-items: flex-start;
@@ -6395,12 +6422,242 @@
       .yaml-custom-grid { grid-template-columns: 1fr; }
     }
 
-    /* 任务、记录和版本是常用详情入口；扩缩容仍保持次级灰色。 */
+    /* 详情目录与外层导航使用同一套状态色。 */
     #detail .rail-nav button[data-detail-tab="tests"]:not(.active),
     #detail .rail-nav button[data-detail-tab="events"]:not(.active),
     #detail .rail-nav button[data-detail-tab="versions"]:not(.active) {
-      color: var(--fg);
+      color: var(--nav-dark) !important;
     }
+    #detail .rail-nav button.active {
+      color: var(--blue) !important;
+      background: var(--accent-soft) !important;
+    }
+    #detail .rail-nav button[data-detail-tab="scaling"]:not(.active) {
+      color: var(--meta) !important;
+    }
+
+    /* 模型服务列表：紧凑卡头、双列信息与三项运行指标。 */
+    #services .svc-cards { gap: 12px; margin-top: 12px; }
+    #services .svc-card { position: relative; z-index: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 2px 6px rgb(31 35 41 / 0.12); overflow: visible; }
+    #services .svc-card:hover, #services .svc-card:focus-within { z-index: 40; box-shadow: 0 4px 12px rgb(31 35 41 / 0.16); }
+    #services .svc-card-head { height: 34px; padding: 0 10px; gap: 8px; border-radius: 0; background: #f7f9fb; }
+    #services .svc-ic { width: 18px; height: 18px; color: var(--accent); font-size: 16px; }
+    #services .svc-card-head .service-name { font-size: 12px; color: var(--fg-2); }
+    #services .svc-card-head .service-name:hover, #services .svc-card-head .service-name:focus-visible { color: var(--accent); }
+    #services .svc-head-state { gap: 6px; font-size: 12px; }
+    #services .svc-head-state .state-dot { width: 8px; height: 8px; }
+    #services .svc-ops .ops-trigger { min-width: 24px; padding: 0 4px; }
+    #services .svc-ops .ops-menu { z-index: 1000; }
+    #services .svc-card-body { grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.92fr); align-items: stretch; gap: 0; padding: 12px 16px 12px 28px; }
+    #services .svc-kv--paired { grid-column: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; align-content: center; }
+    #services .svc-kv > div { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; min-height: 16px; }
+    #services .svc-kv dt, #services .svc-kv dd { font-size: 11px; line-height: 16px; }
+    #services .svc-kv dt { color: #7b8491; }
+    #services .svc-kv dd { font-weight: 500; }
+    #services .svc-kv dd.mono { font-size: 11px; }
+    #services .svc-kv .tag { font-size: 10px; line-height: 16px; min-height: 16px; padding: 0 6px; }
+    #services .svc-issue-tags { display: inline-flex; min-height: 0; gap: 4px; vertical-align: middle; }
+    #services .svc-sync-status { display: inline-flex; align-items: center; gap: 4px; }
+    #services .svc-sync-info { position: relative; display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: rgb(160 105 0 / 14%); color: var(--lt-yellow-fg); font-size: 10px; font-weight: 700; line-height: 1; cursor: help; }
+    #services .svc-sync-info:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    #services .svc-sync-popover { position: absolute; bottom: calc(100% + 8px); left: 50%; z-index: 1100; display: grid; gap: 6px; width: max-content; min-width: 220px; max-width: 360px; padding: 9px 10px; transform: translateX(-50%); border-radius: 6px; background: var(--fg); color: var(--surface); box-shadow: var(--elev-popper); font-size: 12px; font-weight: 400; line-height: 18px; opacity: 0; pointer-events: none; transition: opacity var(--motion-fast); }
+    #services .svc-sync-info:hover .svc-sync-popover, #services .svc-sync-info:focus-visible .svc-sync-popover { opacity: 1; pointer-events: auto; }
+    #services .svc-sync-popover b { color: var(--surface); font-size: 12px; font-weight: 700; }
+    #services .svc-sync-popover ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+    #services .svc-sync-popover li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; align-items: baseline; }
+    #services .svc-sync-popover li span, #services .svc-sync-popover li em { color: color-mix(in srgb, var(--surface) 72%, transparent); font-size: 11px; font-style: normal; white-space: nowrap; }
+    #services .svc-sync-popover li strong { min-width: 0; overflow: hidden; color: var(--surface); font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+    #services .svc-sync-popover li.svc-sync-empty { display: block; color: color-mix(in srgb, var(--surface) 72%, transparent); }
+    #services .svc-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; min-height: 88px; margin-left: 20px; padding-left: 20px; border-left: 1px solid var(--border); }
+    #services .svc-metric { gap: 2px; padding: 0 8px; }
+    #services .svc-metric-v { gap: 3px; }
+    #services .svc-metric-v strong { color: var(--success); font-size: 24px; line-height: 30px; }
+    #services .svc-metric-v span { color: var(--fg-2); font-size: 11px; }
+    #services .svc-metric--total .svc-metric-v strong { color: var(--fg-2); }
+    #services .svc-metric--total { justify-self: end; text-align: right; }
+    #services .svc-metric--total .svc-metric-v { justify-content: flex-end; }
+    #services .svc-metric-l { font-size: 10px; line-height: 14px; font-family: var(--font-body); white-space: nowrap; }
+    @media (max-width: 1200px) {
+      #services .svc-card-body { grid-template-columns: 1fr; }
+      #services .svc-metrics { margin: 12px 0 0; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--border-row); }
+    }
+
+    /* 模型服务详情 · 拓扑与配置：分段标题 + 独立信息卡，贴合服务详情信息总览的阅读节奏。 */
+    .shell.immersive-detail #detail-tab-overview.active {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .shell.immersive-detail #detail-tab-overview > .panel-head {
+      min-height: 22px !important;
+      margin: 0 !important;
+    }
+    .shell.immersive-detail #detail-tab-overview > .panel-head h2 {
+      color: var(--fg-2) !important;
+      font-size: 14px !important;
+      line-height: 22px !important;
+      font-weight: 700 !important;
+    }
+    .shell.immersive-detail #detailBasicInfo.detail-basic-card {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px 28px;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--elev-raised);
+    }
+    .shell.immersive-detail #detailBasicInfo .detail-basic-item {
+      display: flex;
+      min-width: 0;
+      min-height: 40px;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 3px;
+    }
+    .shell.immersive-detail #detailBasicInfo .detail-basic-value {
+      min-width: 0;
+      color: var(--fg);
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+    .shell.immersive-detail #detailBasicInfo .detail-basic-item.mono .detail-basic-value {
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+    .shell.immersive-detail #detailBasicInfo .detail-basic-value .tag { vertical-align: top; }
+    .shell.immersive-detail #detailBasicInfo .detail-basic-label {
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .shell.immersive-detail #detailTopology {
+      display: grid !important;
+      grid-template-columns: minmax(180px, 0.78fr) minmax(280px, 1.6fr) minmax(280px, 1.6fr) !important;
+      gap: 16px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    .shell.immersive-detail #detailTopology .node {
+      min-height: 124px;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--elev-raised);
+    }
+    .shell.immersive-detail #detailTopology .node:not(:last-child)::after { display: none; }
+    .shell.immersive-detail #detailTopology .node strong {
+      margin-bottom: 10px;
+      color: var(--fg-2);
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+    .shell.immersive-detail #detailTopology .node span {
+      color: var(--fg);
+      font-size: 12px;
+      line-height: 20px;
+    }
+    .shell.immersive-detail #detailTopology .node .node-line {
+      grid-template-columns: 62px minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 5px;
+    }
+    .shell.immersive-detail #detailTopology .node .node-label { color: var(--meta); }
+    .shell.immersive-detail #detailConfigHead { margin-top: 2px !important; }
+    .shell.immersive-detail #detailConfig.config-cards {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 16px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    .shell.immersive-detail #detailConfig .cfg-sub {
+      min-width: 0;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--elev-raised);
+    }
+    .shell.immersive-detail #detailConfig .cfg-sub--access { grid-column: 1 / -1; }
+    .shell.immersive-detail #detailConfig .cfg-sub:nth-of-type(2),
+    .shell.immersive-detail #detailConfig .cfg-sub:nth-of-type(3) { grid-column: 1 / -1; }
+    .shell.immersive-detail #detailConfig .cfg-sub-title {
+      margin: 0 0 14px;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 700;
+    }
+    .shell.immersive-detail #detailConfig .kv-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 28px;
+    }
+    .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list {
+      grid-template-columns: minmax(0, 1.5fr) minmax(110px, 0.4fr) minmax(0, 1fr);
+    }
+    .shell.immersive-detail #detailConfig .kvr {
+      display: flex;
+      min-width: 0;
+      min-height: 42px;
+      padding: 0;
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      gap: 3px;
+    }
+    .shell.immersive-detail #detailConfig .kvr-l {
+      color: var(--meta);
+      font-size: 12px;
+      line-height: 18px;
+      text-align: left;
+    }
+    .shell.immersive-detail #detailConfig .kvr-v,
+    .shell.immersive-detail #detailConfig .kvr-v.mono {
+      width: 100%;
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 1080px) {
+      .shell.immersive-detail #detailTopology { grid-template-columns: 1fr !important; }
+      .shell.immersive-detail #detailConfig.config-cards { grid-template-columns: 1fr !important; }
+      .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .shell.immersive-detail #detailBasicInfo.detail-basic-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      .shell.immersive-detail #detailConfig .kv-list,
+      .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list { grid-template-columns: 1fr; }
+    }
+
+    /* 服务列表卡片：提高正文信息密度的可读性，并按放大后的字体回补垂直留白。 */
+    #services .svc-card-head .service-name { font-size: 13px; line-height: 20px; }
+    #services .svc-head-state { font-size: 13px; }
+    #services .svc-card-body { padding-top: 15px; padding-bottom: 15px; }
+    #services .svc-kv--paired { gap: 10px 28px; }
+    #services .svc-kv > div { grid-template-columns: 82px minmax(0, 1fr); min-height: 18px; }
+    #services .svc-kv dt { font-size: 12px; line-height: 18px; }
+    #services .svc-kv dd { font-size: 12px; line-height: 18px; font-weight: 500; }
+    #services .svc-kv dd.mono { font-size: 12px; }
+    #services .svc-kv .tag { min-height: 18px; padding: 0 7px; font-size: 11px; line-height: 18px; }
+    #services .svc-metrics { min-height: 96px; }
+    #services .svc-metric-v strong { font-size: 26px; line-height: 32px; }
+    #services .svc-metric-v span { font-size: 12px; }
+    #services .svc-metric-l { font-size: 11px; line-height: 16px; }
   </style>
 </head>
 <body>
@@ -8001,8 +8258,6 @@ llm-d-modelservice:
               <p class="lead" id="detailLead">Endpoint: deepseek-v4-flash-h800-prod-istio.inferx-prod.svc / Argo CD Health: Healthy / Sync: Synced / 模板版本 v1.3.2</p>
             </div>
             <div class="dt-right">
-              <span class="tag green" id="detailHealthTag">可用</span>
-              <span class="detail-issue-tags" id="detailSyncTag"></span>
               <span class="ops">
                 <button class="btn" type="button">操作</button>
                 <span class="ops-menu">
@@ -8046,6 +8301,10 @@ llm-d-modelservice:
 
             <section class="detail-content">
               <div class="detail-tab-pane active" id="detail-tab-overview">
+                <div class="panel-head detail-basic-head" id="detailBasicHead">
+                  <h2>基本信息</h2>
+                </div>
+                <section class="detail-basic-card" id="detailBasicInfo" aria-label="基本信息"></section>
                 <div class="panel-head" id="detailTopologyHead" style="padding-left:0;padding-right:0;padding-top:0;">
                   <h2>服务拓扑</h2>
                 </div>
@@ -8254,11 +8513,11 @@ llm-d-modelservice:
                 <div class="tb tb--detail" data-dao="toolbar">
                   <label class="tb-field"><span class="tb-label">操作类型</span><select class="mini-select sel" aria-label="操作类型"><option>全部操作</option><option>创建服务</option><option>更新配置</option><option>扩缩容</option><option>回滚版本</option></select></label><label class="tb-field"><span class="tb-label">执行状态</span><select class="mini-select sel" aria-label="执行状态"><option>全部状态</option><option>成功</option><option>进行中</option><option>失败</option></select></label>
                   <input class="search" type="search" placeholder="输入操作人或变更内容搜索" aria-label="输入操作人或变更内容搜索">
-                  <div class="tb-right"><button type="button" class="aicon" data-dao="action-icon" aria-label="刷新" title="刷新">↻</button><button class="btn" data-dao="button" data-props="type=secondary">导出操作记录</button></div>
+                  <div class="tb-right"><button type="button" class="aicon" data-dao="action-icon" aria-label="刷新" title="刷新">↻</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>操作时间</th><th>操作类型</th><th>操作人</th><th>变更内容</th><th>执行状态</th><th class="col-act">操作</th></tr></thead>
+                    <thead><tr><th>操作时间</th><th>操作类型</th><th>操作人</th><th>变更摘要</th><th>执行状态</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailEventRows">
                       <tr><td>2026-08-31 16:28:12</td><td>创建服务</td><td>张晓宇</td><td>基于 DeepSeek-V4-Flash / H800 模板创建服务</td><td><span class="tag green">成功</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td></tr>
                       <tr><td>2026-08-31 16:31:07</td><td>更新配置</td><td>张晓宇</td><td>启用 RDMA，并将 prefill 副本数调整为 2</td><td><span class="tag green">成功</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td></tr>
@@ -8303,20 +8562,19 @@ llm-d-modelservice:
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-detail-versions-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">历史版本</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-detail-versions-body" hidden="">历史版本保存每次发布后的配置快照、变更摘要及发布时间；可查看版本详情，或将服务回滚到任一已发布版本。</div>
+            <div class="concept-body" id="concept-detail-versions-body" hidden="">历史版本保存每次发布后的配置快照及发布时间；可查看版本详情，或将服务回滚到任一已发布版本。</div>
           </div>
                 <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
                 <div class="tb tb--detail" data-dao="toolbar">
                   <input class="search" type="search" placeholder="输入版本或 Commit 搜索" aria-label="输入版本或 Commit 搜索">
-                  <div class="tb-right"><button class="btn" data-dao="button" data-props="type=secondary" data-open-values="">查看当前 YAML</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>版本</th><th>Commit</th><th>变更类型</th><th>变更摘要</th><th>开始时间</th><th>发布时间</th><th>状态</th><th class="col-act">操作</th></tr></thead>
+                    <thead><tr><th>版本</th><th>Commit</th><th>变更类型</th><th>开始时间</th><th>发布时间</th><th>状态</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailVersionRows">
-                      <tr><td>v1.3.2</td><td class="mono">a81c42f</td><td>配置更新</td><td>启用 RDMA；prefill 2 副本、decode 1 副本</td><td>2026-08-31 16:21</td><td>2026-08-31 16:28</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
-                      <tr><td>v1.3.1</td><td class="mono">9b7e13a</td><td>配置更新</td><td>启用 KV Cache Offload，更新服务路由参数</td><td>2026-08-30 21:09</td><td>2026-08-30 21:16</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
-                      <tr><td>v1.2.8</td><td class="mono">6f12d2e</td><td>首次发布</td><td>创建服务并启用基础监控</td><td>2026-08-28 10:31</td><td>2026-08-28 10:42</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
+                      <tr data-version-layout="current"><td>v1.3.2</td><td class="mono">a81c42f</td><td>配置更新</td><td>2026-08-31 16:21</td><td>2026-08-31 16:28</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
+                      <tr data-version-layout="current"><td>v1.3.1</td><td class="mono">9b7e13a</td><td>配置更新</td><td>2026-08-30 21:09</td><td>2026-08-30 21:16</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
+                      <tr data-version-layout="current"><td>v1.2.8</td><td class="mono">6f12d2e</td><td>首次发布</td><td>2026-08-28 10:31</td><td>2026-08-28 10:42</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -8402,6 +8660,36 @@ llm-d-modelservice:
             </div>
             <p class="switch-empty" id="serviceSwitchEmpty" hidden="">没有找到匹配的模型服务，请调整搜索关键词、状态或推理模式筛选。</p>
           </div>
+        </section>
+
+        <section id="operationLogDrawer" class="log-drawer" aria-hidden="true">
+          <button type="button" class="log-drawer-mask" data-close-log-drawer="" aria-label="关闭日志抽屉"></button>
+          <aside class="log-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="operationLogTitle">
+            <header class="log-drawer-head">
+              <div><h1 id="operationLogTitle">操作日志</h1><p id="operationLogMeta"></p></div>
+              <button type="button" class="btn text log-drawer-close" data-close-log-drawer="" aria-label="关闭">×</button>
+            </header>
+            <div class="log-drawer-body">
+              <div class="log-time-range" aria-label="日志时间范围">
+                <button type="button" data-log-range="30d">近 30 天</button><button type="button" data-log-range="7d">近 7 天</button><button type="button" data-log-range="1d">近 1 天</button><button type="button" data-log-range="1h">近 1 小时</button><button type="button" class="active" data-log-range="5m">近 5 分钟</button><button type="button" data-log-range="live">实时日志</button>
+              </div>
+              <div class="log-source-tabs" role="tablist" aria-label="日志来源">
+                <button type="button" class="active" data-log-source="argocd" role="tab" aria-selected="true">ArgoCD 日志</button>
+                <button type="button" data-log-source="container" role="tab" aria-selected="false">容器日志</button>
+              </div>
+              <section class="log-source-pane" data-log-pane="argocd">
+                <div class="log-notice"><span aria-hidden="true">ⓘ</span> 展示与本次操作关联的 ArgoCD 应用同步记录。</div>
+                <pre class="log-console" id="argocdLogContent"></pre>
+              </section>
+              <section class="log-source-pane" data-log-pane="container" hidden="">
+                <div class="log-filters">
+                  <label>Pod <select id="operationLogPod" aria-label="Pod"></select></label>
+                  <label>Container <select id="operationLogContainer" aria-label="Container"><option value="vllm">vllm</option><option value="istio-proxy">istio-proxy</option></select></label>
+                </div>
+                <pre class="log-console" id="containerLogContent"></pre>
+              </section>
+            </div>
+          </aside>
         </section>
 
         <section id="newTestModal" class="modal" aria-hidden="true">
@@ -8837,7 +9125,7 @@ llm-d-modelservice:
                   <pre class="code yaml-diff-code" id="templateYamlDiff"></pre>
                 </div>
                 <div>
-                  <p class="yaml-diff-title">编辑后 YAML</p>
+                  <p class="yaml-diff-title" id="currentYamlDiffTitle">编辑后 YAML</p>
                   <pre class="code yaml-diff-code" id="currentYamlDiff"></pre>
                 </div>
               </div>
@@ -8886,6 +9174,7 @@ llm-d-modelservice:
     const templateYamlDiff = document.querySelector("#templateYamlDiff");
     const templateYamlDiffTitle = document.querySelector("#templateYamlDiffTitle");
     const currentYamlDiff = document.querySelector("#currentYamlDiff");
+    const currentYamlDiffTitle = document.querySelector("#currentYamlDiffTitle");
     const valuesYamlTabs = document.querySelector("#valuesYamlTabs");
     const yamlModalTabs = Array.from(document.querySelectorAll("[data-yaml-modal-tab]"));
     const yamlModalPanes = Array.from(document.querySelectorAll("[data-yaml-modal-pane]"));
@@ -9059,9 +9348,8 @@ llm-d-modelservice:
     const detailTitle = document.querySelector("#detailTitle");
     const detailAlias = document.querySelector("#detailAlias");
     const detailLead = document.querySelector("#detailLead");
-    const detailHealthTag = document.querySelector("#detailHealthTag");
-    const detailSyncTag = document.querySelector("#detailSyncTag");
     const detailCommitTag = document.querySelector("#detailCommitTag");
+    const detailBasicInfo = document.querySelector("#detailBasicInfo");
     const detailTopologyHead = document.querySelector("#detailTopologyHead");
     const detailConfigHead = document.querySelector("#detailConfigHead");
     const detailTopology = document.querySelector("#detailTopology");
@@ -9071,6 +9359,13 @@ llm-d-modelservice:
     const addScalingPolicyButton = document.querySelector("#addScalingPolicyButton");
     const detailEventRows = document.querySelector("#detailEventRows");
     const detailVersionRows = document.querySelector("#detailVersionRows");
+    const operationLogDrawer = document.querySelector("#operationLogDrawer");
+    const operationLogTitle = document.querySelector("#operationLogTitle");
+    const operationLogMeta = document.querySelector("#operationLogMeta");
+    const argocdLogContent = document.querySelector("#argocdLogContent");
+    const containerLogContent = document.querySelector("#containerLogContent");
+    const operationLogPod = document.querySelector("#operationLogPod");
+    const operationLogContainer = document.querySelector("#operationLogContainer");
     const switchServiceLabel = document.querySelector("#switchServiceLabel");
     const switchServiceHint = document.querySelector("#switchServiceHint");
     const switchServiceModal = document.querySelector("#serviceSwitchModal");
@@ -9198,7 +9493,7 @@ llm-d-modelservice:
     }
 
     // 结构化配置：表格数据源 → 嵌套二级卡片（简单卡头 + KeyValueLayout，参考 集群基本信息）
-    function setDetailConfig(html) {
+    function setDetailConfig(html, modelAccessName = "") {
       if (!detailConfig) return;
       const tpl = document.createElement("template");
       tpl.innerHTML = html;
@@ -9213,12 +9508,18 @@ llm-d-modelservice:
         const rows = [...table.querySelectorAll("tr")];
         const title = rows[0]?.querySelector("th")?.textContent.trim() || "";
         const accessClass = title === "访问方式" ? " cfg-sub--access" : "";
-        const items = rows.filter(r => {
+        const detailRows = rows.filter(r => {
           const cells = r.querySelectorAll("td");
           if (cells.length !== 2) return false;
           const key = cells[0].textContent.trim();
-          return key !== "GPU型号" && key !== "端口";
-        }).map(r => {
+          return !["GPU型号", "端口", "模型访问名称", "模型 ID", "编排框架", "推理模式"].includes(key);
+        });
+        if (title === "访问方式" && modelAccessName) {
+          const modelIdRow = document.createElement("tr");
+          modelIdRow.innerHTML = `<td>模型 ID</td><td>${escapeHtml(modelAccessName)}</td>`;
+          detailRows.push(modelIdRow);
+        }
+        const items = detailRows.map(r => {
           const [k, v] = r.querySelectorAll("td");
           return `<div class="kvr"><span class="kvr-l">${k.innerHTML}</span><span class="kvr-v${v.classList.contains("mono") ? " mono" : ""}">${v.innerHTML}</span></div>`;
         }).join("");
@@ -9283,12 +9584,12 @@ llm-d-modelservice:
       if (detailVersionRows) {
         detailVersionRows.querySelectorAll("tr").forEach(row => {
           const cells = Array.from(row.children);
-          if (cells.length !== 7) return;
+          if (row.dataset.versionLayout === "current" || cells.length !== 7) return;
           const [version, commit, template, summary, status, time, action] = cells;
           const statusText = status.textContent.trim();
           const changeType = /基础|创建|初始/.test(summary.textContent) ? "首次发布" : "配置更新";
           const timestamp = escapeHtml(time.textContent.trim());
-          row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${escapeHtml(summary.textContent.trim())}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td>`;
+          row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td>`;
         });
       }
     }
@@ -9671,9 +9972,9 @@ llm-d-modelservice:
 
     const serviceRowsData = [
       { id: "deepseek-v4-flash-h800-prod", alias: "DeepSeek V4 Flash 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "deepseek-ai/DeepSeek-V4-Flash-0731", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 2/2, decode 1/1", resource: "12 GPU", pool: "h800-rdma-pool", gpuSummary: "H800", endpoint: "deepseek-v4-flash-h800-prod-istio.inferx-prod.svc", createdAt: "2026-08-31 16:28", version: "模板 v1.3.2", commit: "a81c42f", engine: "vLLM OpenAI nightly", engineFamily: "vllm", scaleRoles: [{ name: "prefill", current: 2, target: 2 }, { name: "decode", current: 1, target: 1 }], selected: true },
-      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 一体", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod-istio.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 1, target: 1 }] },
-      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab-istio.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
-      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 一体", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["Synced", "green"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod-istio.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
+      { id: "qwen3-235b-prod", alias: "Qwen3 235B 生产服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-235B", mode: "PD 一体", modeColor: "violet", status: ["Degraded", "red"], serviceState: ["不可用", "red"], issueTags: ["资源异常", "Outofsync"], sync: ["OutOfSync", "amber"], note: "model-server 0/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "qwen3-235b-prod-istio.inferx-prod.svc", createdAt: "2026-08-31 15:58", version: "通用模板", commit: "8f6b0ee", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", scaleRoles: [{ name: "model-server", current: 0, target: 1 }] },
+      { id: "dynamo-llama4-scout-lab", alias: "Llama 4 Scout 实验服务", cluster: "delivery-h800-lab", namespace: "model-serving", framework: "dynamo", frameworkColor: "violet", model: "Llama-4-Scout", mode: "PD 分离", modeColor: "blue", status: ["Progressing", "amber"], serviceState: ["未知", ""], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["OutOfSync", "amber"], note: "prefill 1/2, decode 1/1", resource: "16 GPU", pool: "lab-dynamo-pool", gpuSummary: "H800 H20", endpoint: "dynamo-llama4-scout-lab-istio.delivery-h800-lab.svc", createdAt: "2026-09-03 15:22", version: "Dynamo 模板 v0.3.8", commit: "c19f2aa", engine: "Dynamo Runtime v0.3.8", engineFamily: "dynamo", scaleRoles: [{ name: "prefill", current: 1, target: 2 }, { name: "decode", current: 1, target: 1 }, { name: "frontend", current: 1, target: 1 }] },
+      { id: "dynamo-qwen3-colocated-prod", alias: "Qwen3 32B Dynamo 服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "dynamo", frameworkColor: "violet", model: "Qwen3-32B", mode: "PD 一体", modeColor: "violet", status: ["Running", "green"], serviceState: ["可用", "green"], auxiliaryTags: [{ label: "更新中", color: "blue" }], issueTags: [], sync: ["OutOfSync", "amber"], note: "worker-pool 1/2", resource: "8 GPU", pool: "h800-dynamo-pool", gpuSummary: "H20", endpoint: "dynamo-qwen3-colocated-prod-istio.inferx-prod.svc", createdAt: "2026-09-04 09:18", version: "Dynamo 模板 v0.4.1", commit: "d4a72bc", engine: "Dynamo Runtime v0.4.1", engineFamily: "dynamo", scaleRoles: [{ name: "worker-pool", current: 1, target: 2 }] },
       { id: "external-qwen3-router-prod", alias: "Qwen3 外部接入服务", cluster: "prod-gpu-beijing-01", namespace: "inferx-prod", framework: "llm-d", frameworkColor: "blue", model: "Qwen3-External", mode: "PD 分离", modeColor: "blue", status: ["Running", "green"], serviceState: ["可用", "green"], issueTags: [], sync: ["Synced", "green"], note: "prefill 1/1, decode 1/1", resource: "8 GPU", pool: "h800-pool", gpuSummary: "H800", endpoint: "external-qwen3-router-prod-istio.inferx-prod.svc", createdAt: "2026-09-05 11:30", version: "外部接入", commit: "e72c191", engine: "vLLM OpenAI v0.8.5", engineFamily: "vllm", external: true, scaleRoles: [{ name: "prefill", current: 1, target: 1 }, { name: "decode", current: 1, target: 1 }] }
     ];
 
@@ -10049,6 +10350,33 @@ llm-d-modelservice:
       detailConfig.querySelectorAll("[data-detail-alias-row]").forEach(row => row.remove());
     }
 
+    function renderDetailBasicInfo(serviceRow) {
+      if (!detailBasicInfo) return;
+      const item = serviceRow || serviceRowsData[0];
+      if (!item) return;
+      const state = item.serviceState || item.status || ["可用", "green"];
+      const issueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])]
+        .filter(tag => (typeof tag === "string" ? tag : tag.label) !== "Outofsync")
+        .map(tag => {
+          const label = typeof tag === "string" ? tag : tag.label;
+          const color = typeof tag === "string" ? "amber" : tag.color;
+          return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
+        }).join("");
+      const resourceStatus = issueTags || (state[0] === "未知" ? "" : `<span class="${tagClass(state[1] || "green")}">${state[0] === "可用" ? "运行中" : escapeHtml(state[0])}</span>`);
+      const field = (label, value, extraClass = "") => `<div class="detail-basic-item${extraClass ? ` ${extraClass}` : ""}"><div class="detail-basic-value">${value}</div><div class="detail-basic-label">${label}</div></div>`;
+      detailBasicInfo.innerHTML = [
+        field("别名", escapeHtml(item.alias || "-")),
+        field("模型访问名称", escapeHtml(item.model || "-")),
+        field("集群", escapeHtml(item.cluster || "-"), "mono"),
+        field("命名空间", escapeHtml(item.namespace || "-"), "mono"),
+        field("推理模式", `<span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode || "-")}</span>`),
+        field("编排框架", `<span class="${tagClass(item.frameworkColor)}">${escapeHtml(item.framework || "-")}</span>`),
+        field("创建时间", escapeHtml(item.createdAt || "-"), "mono"),
+        field("资源运行状态", resourceStatus),
+        field("ArgoCD 同步状态", `<span class="${tagClass(item.sync?.[1])}">${escapeHtml(item.sync?.[0] || "-")}</span>`)
+      ].join("");
+    }
+
     function renderDetail(service) {
       const profile = detailProfiles[service] || detailProfiles["deepseek-v4-flash-h800-prod"];
       serviceRowsData.forEach(item => { item.selected = item.id === profile.title; });
@@ -10058,23 +10386,10 @@ llm-d-modelservice:
       detailTitle.textContent = profile.title;
       detailLead.textContent = profile.lead;
       const serviceRow = serviceRowsData.find(item => item.id === profile.title);
+      renderDetailBasicInfo(serviceRow);
       const alias = serviceRow?.alias || "";
       const isExternalService = Boolean(serviceRow?.external);
       const serviceState = serviceRow?.serviceState || profile.health;
-      const serviceIssues = [
-        ...(serviceRow?.auxiliaryTags || []),
-        ...(serviceRow?.issueTags || []),
-        ...(detailOnlyIssueTags[serviceRow?.id] || [])
-      ];
-      detailHealthTag.textContent = serviceState[0];
-      detailHealthTag.className = tagClass(serviceState[1]);
-      detailSyncTag.className = "detail-issue-tags";
-      detailSyncTag.hidden = serviceIssues.length === 0;
-      detailSyncTag.innerHTML = serviceIssues.map(tag => {
-        const label = typeof tag === "string" ? tag : tag.label;
-        const color = typeof tag === "string" ? "amber" : tag.color;
-        return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
-      }).join("");
       if (detailExternalTag) detailExternalTag.hidden = !isExternalService;
       document.querySelectorAll("#detail [data-edit-yaml-action], #detail [data-update-service-action]").forEach(button => {
         const disabled = !canEditService(serviceRow);
@@ -10115,7 +10430,7 @@ llm-d-modelservice:
         detailTopology.hidden = true;
         detailConfigHead.style.marginTop = "0";
         detailTopology.innerHTML = "";
-        setDetailConfig(profile.config);
+        setDetailConfig(profile.config, serviceRow?.model);
         syncDetailAlias(alias);
         detailResources.innerHTML = profile.resources;
         normalizeResourceTables();
@@ -10131,7 +10446,7 @@ llm-d-modelservice:
         detailTopology.hidden = false;
         detailConfigHead.style.marginTop = "18px";
         detailTopology.innerHTML = profile.topology;
-        setDetailConfig(profile.config);
+        setDetailConfig(profile.config, serviceRow?.model);
         syncDetailAlias(alias);
         detailResources.innerHTML = profile.resources;
         normalizeResourceTables();
@@ -10146,7 +10461,7 @@ llm-d-modelservice:
       detailTopology.hidden = false;
       detailConfigHead.style.marginTop = "18px";
       detailTopology.innerHTML = profile.topology || splitDetailSnapshot.topology;
-      setDetailConfig(profile.config || splitDetailSnapshot.config);
+      setDetailConfig(profile.config || splitDetailSnapshot.config, serviceRow?.model);
       syncDetailAlias(alias);
       detailResources.innerHTML = profile.resources || splitDetailSnapshot.resources;
       normalizeResourceTables();
@@ -10175,6 +10490,68 @@ llm-d-modelservice:
     function openModal(modal) {
       modal.classList.add("active");
       modal.setAttribute("aria-hidden", "false");
+    }
+
+    function setOperationLogSource(source) {
+      document.querySelectorAll("[data-log-source]").forEach(button => {
+        const active = button.dataset.logSource === source;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+      document.querySelectorAll("[data-log-pane]").forEach(pane => {
+        pane.hidden = pane.dataset.logPane !== source;
+      });
+    }
+
+    function containerLogText() {
+      const pod = operationLogPod?.value || "model-server-0";
+      const container = operationLogContainer?.value || "vllm";
+      return [
+        `2026-08-31T16:31:04.632Z INFO  [${container}] request completed pod=${pod} status=200 latency=84ms`,
+        `2026-08-31T16:31:11.948Z INFO  [${container}] GET /health HTTP/1.1 200 OK`,
+        `2026-08-31T16:31:18.224Z INFO  [${container}] GET /metrics HTTP/1.1 200 OK`,
+        `2026-08-31T16:31:27.406Z INFO  [${container}] prefill queue depth=12, waiting=0`,
+        `2026-08-31T16:31:35.112Z INFO  [${container}] GET /health HTTP/1.1 200 OK`,
+        `2026-08-31T16:31:42.889Z INFO  [${container}] GPU memory usage=72%, cache hit=0.91`,
+        `2026-08-31T16:31:50.001Z INFO  [${container}] GET /metrics HTTP/1.1 200 OK`
+      ].join("\n");
+    }
+
+    function openOperationLogDrawer(button) {
+      const row = button.closest("tr");
+      const cells = Array.from(row?.children || []);
+      const timestamp = cells[0]?.textContent.trim() || "2026-08-31 16:28:12";
+      const operation = cells[1]?.textContent.trim() || "更新配置";
+      const operator = cells[2]?.textContent.trim() || "系统自动执行";
+      const summary = cells[3]?.textContent.trim() || "服务配置已更新";
+      const service = serviceById(activeDetailService);
+      const pods = Array.from(detailResources?.querySelectorAll("tbody tr") || [])
+        .filter(resourceRow => resourceRow.cells[0]?.textContent.trim() === "Pod")
+        .map(resourceRow => resourceRow.cells[1]?.textContent.trim())
+        .filter(Boolean);
+      const podOptions = (pods.length ? pods : [`${service?.id || "model-service"}-0`])
+        .map(pod => `<option value="${escapeHtml(pod)}">${escapeHtml(pod)}</option>`)
+        .join("");
+      if (operationLogPod) operationLogPod.innerHTML = podOptions;
+      if (operationLogTitle) operationLogTitle.textContent = `日志 · ${operation}`;
+      if (operationLogMeta) operationLogMeta.textContent = `${service?.id || "模型服务"} · ${timestamp}`;
+      if (argocdLogContent) argocdLogContent.textContent = [
+        `${timestamp}  INFO  application/${service?.id || "model-service"} reconciliation started`,
+        `${timestamp}  INFO  requested by ${operator}`,
+        `${timestamp}  INFO  ${summary}`,
+        `${timestamp}  INFO  comparing desired state with live cluster state`,
+        `${timestamp}  INFO  sync operation applied successfully`,
+        `${timestamp}  INFO  application health: Healthy, sync: Synced`
+      ].join("\n");
+      if (containerLogContent) containerLogContent.textContent = containerLogText();
+      setOperationLogSource("argocd");
+      operationLogDrawer?.classList.add("active");
+      operationLogDrawer?.setAttribute("aria-hidden", "false");
+    }
+
+    function closeOperationLogDrawer() {
+      operationLogDrawer?.classList.remove("active");
+      operationLogDrawer?.setAttribute("aria-hidden", "true");
     }
 
     const requiredFunctionalCase = {
@@ -10789,6 +11166,32 @@ llm-d-modelservice:
       return serviceRowsData.find(item => item.id === serviceId) || serviceRowsData.find(item => item.id === activeDetailService) || serviceRowsData[0];
     }
 
+    function outOfSyncResources(service) {
+      const profile = detailProfiles[service?.id] || {};
+      const template = document.createElement("template");
+      template.innerHTML = profile.resources || splitDetailSnapshot.resources || "";
+      const affectedStatus = /outofsync|degraded|notready|progressing|scaling|rollingupdate|containercreating|\b[01]\s*(?:desired|\/)\s*\/\s*[01]\s*ready/i;
+      return Array.from(template.content.querySelectorAll("tbody tr")).map(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length < 3) return null;
+        return {
+          type: cells[0].textContent.trim(),
+          name: cells[1].textContent.trim(),
+          status: cells[2].textContent.trim()
+        };
+      }).filter(resource => resource && affectedStatus.test(resource.status));
+    }
+
+    function renderSyncStatus(item) {
+      const [label, color] = item.sync || ["-", ""];
+      if (label !== "OutOfSync") return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
+      const resources = outOfSyncResources(item);
+      const resourceList = resources.length
+        ? resources.map(resource => `<li><span>${escapeHtml(resource.type)}</span><strong>${escapeHtml(resource.name)}</strong><em>${escapeHtml(resource.status)}</em></li>`).join("")
+        : "<li class=\"svc-sync-empty\">资源列表中暂无异常资源</li>";
+      return `<span class="${tagClass(color)} svc-sync-status">${escapeHtml(label)}<span class="svc-sync-info" tabindex="0" aria-label="查看 OutOfSync 资源清单"><span aria-hidden="true">i</span><span class="svc-sync-popover" role="tooltip"><b>OutOfSync 资源</b><ul>${resourceList}</ul></span></span></span>`;
+    }
+
     function reportTaskId(config) {
       if (config.name === "api-cli-deepseek-0824") return "api-cli-20260824-095356-e81b4fab";
       return config.name || "api-cli-generated";
@@ -11158,15 +11561,21 @@ ${currentYamlPreview.innerHTML}
       serviceRows.innerHTML = items.map(item => {
         const gpu = String(item.resource).split(" ")[0];
         const gpuSummary = item.gpuSummary || "";
-        const gpuTypeSummary = gpuSummary ? `<span class="svc-metric-l">${escapeHtml(gpuSummary)}</span>` : "";
         const canSync = item.sync[0] === "OutOfSync";
         const state = item.serviceState || item.status || ["可用", "green"];
         const editDisabled = disabledServiceActionAttr(item);
         const externalDisabled = externalServiceDisabledAttr(item);
         const pauseDisabled = pauseUpdateDisabledAttr(item);
         const externalTag = item.external ? `<span class="tag external-access-tag">外部接入</span>` : "";
-        const metric = `<div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>GPU</span></div>${gpuTypeSummary}`;
-        const issueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])].map(tag => {
+        const syncStatus = renderSyncStatus(item);
+        const roleMetrics = (item.scaleRoles || []).slice(0, 2).map(role => `
+          <div class="svc-metric">
+            <div class="svc-metric-v"><strong>${escapeHtml(role.current)}</strong><span>/ ${escapeHtml(role.target)}</span></div>
+            <span class="svc-metric-l">${escapeHtml(role.name)} 可用 / 总数</span>
+          </div>`).join("");
+        const metric = `<div class="svc-metric svc-metric--total"><div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>/ ${escapeHtml(gpuSummary || "GPU")}</span></div><span class="svc-metric-l">GPU 数 / 型号</span></div>`;
+        const allIssueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])];
+        const renderIssueTags = tags => tags.map(tag => {
           const label = typeof tag === "string" ? tag : tag.label;
           const color = typeof tag === "string" ? "amber" : tag.color;
           const outOfSyncHelp = label === "Outofsync"
@@ -11174,11 +11583,15 @@ ${currentYamlPreview.innerHTML}
             : "";
           return `<span class="${tagClass(color)}">${escapeHtml(label)}${outOfSyncHelp}</span>`;
         }).join("");
+        const issueTags = renderIssueTags(allIssueTags);
+        const resourceIssueTags = renderIssueTags(allIssueTags.filter(tag => (typeof tag === "string" ? tag : tag.label) !== "Outofsync"));
+        const resourceStatus = resourceIssueTags || (state[0] === "未知" ? "" : `<span class="${tagClass(state[1] || "green")}">${state[0] === "可用" ? "运行中" : escapeHtml(state[0])}</span>`);
         return `
           <article class="svc-card${item.selected ? " is-selected" : ""}" data-service-row="${escapeHtml(item.id)}" data-od-id="service-card-${escapeHtml(item.id)}">
             <header class="svc-card-head">
               <span class="svc-ic" aria-hidden="true">◎</span>
               <button class="service-name" data-service="${escapeHtml(item.id)}">${escapeHtml(item.id)}</button>
+              <span class="state svc-head-state ${stateClassByColor[state[1]] || "state--off"}"><i class="state-dot" aria-hidden="true"></i>${escapeHtml(state[0])}</span>
               ${externalTag}
               <span class="ops svc-ops">
                 <button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button>
@@ -11208,13 +11621,11 @@ ${currentYamlPreview.innerHTML}
                 <div><dt>命名空间</dt><dd class="mono">${escapeHtml(item.namespace)}</dd></div>
                 <div><dt>推理模式</dt><dd><span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode)}</span> <span class="${tagClass(item.frameworkColor)}">${escapeHtml(item.framework)}</span></dd></div>
                 <div><dt>创建时间</dt><dd class="mono">${escapeHtml(item.createdAt || "-")}</dd></div>
+                <div><dt>资源运行状态</dt><dd>${resourceStatus}</dd></div>
+                <div><dt>ArgoCD 同步状态</dt><dd>${syncStatus}</dd></div>
               </dl>
-              <div class="svc-side">
-                <span class="state ${stateClassByColor[state[1]] || "state--off"}"><i class="state-dot" aria-hidden="true"></i>${escapeHtml(state[0])}</span>
-                <span class="svc-issue-tags">${issueTags}</span>
-                <span class="svc-note">${escapeHtml(item.note)}</span>
-              </div>
-              <div class="svc-metric">
+              <div class="svc-metrics">
+                ${roleMetrics}
                 ${metric}
               </div>
             </div>
@@ -12022,11 +12433,52 @@ llm-d-modelservice:
       setYamlModalTab(defaultTab);
     }
 
+    function versionYamlSnapshots(serviceId) {
+      const current = yamlFromValues(valuesForService(serviceId));
+      const addAfter = (yaml, needle, addition) => yaml.includes(needle) ? yaml.replace(needle, `${needle}${addition}`) : yaml;
+      const withoutOffload = current
+        .replace("      replicas: 2", "      replicas: 1")
+        .replace("      enabled: true", "      enabled: false");
+      const withOffload = addAfter(withoutOffload, "  routing:\n    proxy:\n      enabled: false", "\n  kvCacheOffload:\n    enabled: true");
+      const latest = addAfter(current, "  routing:\n    proxy:\n      enabled: true", "\n  rdma:\n    enabled: true");
+      return [latest, withOffload, withoutOffload];
+    }
+
+    function openVersionYamlDiff(button) {
+      const row = button.closest("tr");
+      const rows = Array.from(detailVersionRows?.querySelectorAll("tr") || []);
+      const index = rows.indexOf(row);
+      if (index < 0) return;
+      const version = row.cells[0]?.textContent.trim() || "所选版本";
+      const previousRow = rows[index + 1];
+      const previousVersion = previousRow?.cells[0]?.textContent.trim();
+      const snapshots = versionYamlSnapshots(activeDetailService);
+      const selectedYaml = snapshots[Math.min(index, snapshots.length - 1)];
+      const previousYaml = previousRow
+        ? snapshots[Math.min(index + 1, snapshots.length - 1)]
+        : "# 首次发布：无上一版本可对比\n";
+      const [previousDiff, selectedDiff] = diffLines(previousYaml, selectedYaml);
+
+      if (valuesTitle) valuesTitle.textContent = `${version} YAML 配置`;
+      if (downloadTestReportButton) downloadTestReportButton.hidden = true;
+      currentYamlPreview.className = "code yaml-preview-code";
+      currentYamlPreview.textContent = selectedYaml;
+      if (templateYamlDiffTitle) templateYamlDiffTitle.textContent = previousVersion ? `${previousVersion} YAML` : "首次发布（无上一版本）";
+      if (currentYamlDiffTitle) currentYamlDiffTitle.textContent = `${version} YAML`;
+      if (templateYamlDiff) templateYamlDiff.innerHTML = previousDiff;
+      if (currentYamlDiff) currentYamlDiff.innerHTML = selectedDiff;
+      if (valuesYamlTabs) valuesYamlTabs.hidden = false;
+      yamlModalTabs.forEach(tab => { tab.hidden = false; });
+      setYamlModalTab("preview");
+      openModal(valuesModal);
+    }
+
     function closeModals() {
       document.querySelectorAll(".modal").forEach(modal => {
         modal.classList.remove("active");
         modal.setAttribute("aria-hidden", "true");
       });
+      closeOperationLogDrawer();
     }
 
     function setButtonGroup(selector, value, key) {
@@ -12452,6 +12904,30 @@ llm-d-modelservice:
     });
 
     document.addEventListener("click", event => {
+      const logButton = event.target.closest("#detailEventRows .btn");
+      if (logButton?.textContent.trim() === "查看日志") {
+        openOperationLogDrawer(logButton);
+        return;
+      }
+      if (event.target.closest("[data-close-log-drawer]")) {
+        closeOperationLogDrawer();
+        return;
+      }
+      const sourceTab = event.target.closest("[data-log-source]");
+      if (sourceTab) {
+        setOperationLogSource(sourceTab.dataset.logSource);
+        return;
+      }
+      const rangeButton = event.target.closest("[data-log-range]");
+      if (rangeButton) {
+        document.querySelectorAll("[data-log-range]").forEach(item => item.classList.toggle("active", item === rangeButton));
+        return;
+      }
+      const versionButton = event.target.closest("[data-version-diff]");
+      if (versionButton) {
+        openVersionYamlDiff(versionButton);
+        return;
+      }
       if (event.target.closest("#downloadTestReportButton")) {
         downloadCurrentTestReport();
         return;
@@ -12470,6 +12946,12 @@ llm-d-modelservice:
         });
         openModal(valuesModal);
       }
+    });
+
+    [operationLogPod, operationLogContainer].filter(Boolean).forEach(control => {
+      control.addEventListener("change", () => {
+        if (containerLogContent) containerLogContent.textContent = containerLogText();
+      });
     });
 
     document.addEventListener("click", event => {
