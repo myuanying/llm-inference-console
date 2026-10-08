@@ -6394,6 +6394,13 @@
       .template-import-yaml { height: 360px !important; }
       .yaml-custom-grid { grid-template-columns: 1fr; }
     }
+
+    /* 任务、记录和版本是常用详情入口；扩缩容仍保持次级灰色。 */
+    #detail .rail-nav button[data-detail-tab="tests"]:not(.active),
+    #detail .rail-nav button[data-detail-tab="events"]:not(.active),
+    #detail .rail-nav button[data-detail-tab="versions"]:not(.active) {
+      color: var(--fg);
+    }
   </style>
 </head>
 <body>
@@ -6571,7 +6578,6 @@ resources:
                           <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 分离</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>prefill 2副本 * H800 * 4卡，decode 1副本 * H800 * 4卡</b></span>
                           <small>生产可用</small>
-                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 DeepSeek-V4-Flash 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-08-31 16:28<br>描述：面向长上下文高并发场景的 llm-d PD 分离模板，预置 prefill / decode 资源配比与 H800 GPU 配置。</span>
                           </span>
                           <span role="button" tabindex="0" class="template-card" data-template-card="glm" data-template-name="Qwen3-32B" data-model-name="Qwen3-32B" data-model="Qwen3-32B Dynamo Qwen3" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 一体" data-engine="vLLM" data-resource="H800 8卡节点">
@@ -6580,7 +6586,6 @@ resources:
                           <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 一体</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>worker-pool 2副本 * H800 * 4卡</b></span>
                           <small>生产可用</small>
-                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-32B 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-09-04 09:18<br>描述：适用于 Dynamo worker-pool 共置部署，覆盖 Qwen3 32B 模型的基础资源、路由和观测配置。</span>
                           </span>
                           <span role="button" tabindex="0" class="template-card" data-template-card="qwen" data-template-name="Qwen3-235B" data-model-name="Qwen3-235B-A22B-FP8" data-model="Qwen3-235B Qwen3-235B-A22B-FP8" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="llm-d" data-mode="PD 一体" data-engine="vLLM" data-resource="H800 8卡节点">
@@ -6589,7 +6594,6 @@ resources:
                           <span class="template-tags"><span class="tag blue">llm-d</span><span class="tag">PD 一体</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>model-server 1副本 * H800 * 8卡</b></span>
                           <small>生产可用</small>
-                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Qwen3-235B 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-08-28 10:42<br>描述：面向大参数模型的 llm-d PD 一体模板，适合资源集中、部署链路较简单的生产服务。</span>
                           </span>
                           <span role="button" tabindex="0" class="template-card" data-template-card="dynamoScout" data-template-name="Llama-4-Scout" data-model-name="Llama-4-Scout" data-model="Llama-4-Scout" data-gpu="nvidia 英伟达 NVIDIA H800 H800" data-framework="dynamo" data-mode="PD 分离" data-engine="vLLM" data-resource="H800 8卡节点">
@@ -6598,7 +6602,6 @@ resources:
                           <span class="template-tags"><span class="tag blue">dynamo</span><span class="tag">PD 分离</span><span class="tag">vLLM</span></span>
                           <span class="template-resource-line">资源配置：<b>prefill 2副本 * H800 * 4卡，decode 2副本 * H800 * 4卡</b></span>
                           <small>抢先体验</small>
-                          <button type="button" class="template-edit-btn" data-edit-from-template="" aria-label="编辑 Llama-4-Scout 部署">编辑部署</button>
                           <span class="template-detail">创建时间：2026-09-03 15:22<br>描述：用于实验集群的 Dynamo PD 分离模板，包含 prefill / decode worker pool 与 KV router 配置。</span>
                           </span>
                         </span>
@@ -6840,7 +6843,7 @@ resources:
                         </span>
                       </span>
                     </label>
-                    <label class="field" data-resource-field="shm" id="shmSizeField" hidden="">
+                    <label class="field" data-resource-field="shm" id="shmSizeField">
                       <span class="label">SHM大小</span>
                       <span class="num-field">
                         <input id="shmSizeInput" type="number" min="0" step="1" inputmode="numeric" value="16" data-unit="Gi">
@@ -8031,7 +8034,7 @@ llm-d-modelservice:
                 <button type="button" data-detail-tab="metrics"><span class="rail-ic" aria-hidden="true">◔</span>运行监控</button>
                 <button type="button" data-detail-tab="tests"><span class="rail-ic" aria-hidden="true">✓</span>测试任务</button>
                 <button type="button" data-detail-tab="scaling"><span class="rail-ic" aria-hidden="true">⇅</span>扩缩容</button>
-                <button type="button" data-detail-tab="events"><span class="rail-ic" aria-hidden="true">≣</span>操作日志</button>
+                <button type="button" data-detail-tab="events"><span class="rail-ic" aria-hidden="true">≣</span>操作记录</button>
                 <button type="button" data-detail-tab="versions"><span class="rail-ic" aria-hidden="true">↺</span>历史版本</button>
               </nav>
               <div class="rail-foot">
@@ -8242,24 +8245,24 @@ llm-d-modelservice:
                 <!-- map: <dao-expansion type="doc"> 概念说明条 · src: dao-style/src/components/expansion -->
           <div class="concept concept--pane" data-dao="expansion" data-props="type=doc" data-od-id="concept-detail-events">
             <div class="concept-head">
-              <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-detail-events-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">操作日志</span></button>
+              <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-detail-events-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">操作记录</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-detail-events-body" hidden="">操作日志记录服务的部署、更新、扩缩容与告警事件，来源包括 Argo CD、控制器与人工操作。</div>
+            <div class="concept-body" id="concept-detail-events-body" hidden="">操作记录保留该服务的创建、配置更新、扩缩容、回滚等管理操作，便于按操作人、来源和执行状态追溯变更。</div>
           </div>
                 <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
                 <div class="tb tb--detail" data-dao="toolbar">
-                  <label class="tb-field"><span class="tb-label">来源</span><select class="mini-select sel" aria-label="来源"><option>全部来源</option><option>Argo CD</option><option>prefill</option><option>decode</option><option>gateway</option></select></label><label class="tb-field"><span class="tb-label">级别</span><select class="mini-select sel" aria-label="级别"><option>全部级别</option><option>Info</option><option>Warn</option><option>Error</option></select></label>
-                  <input class="search" type="search" placeholder="输入摘要关键词搜索" aria-label="输入摘要关键词搜索">
-                  <div class="tb-right"><button type="button" class="aicon" data-dao="action-icon" aria-label="刷新" title="刷新">↻</button><button class="btn" data-dao="button" data-props="type=secondary">导出日志</button></div>
+                  <label class="tb-field"><span class="tb-label">操作类型</span><select class="mini-select sel" aria-label="操作类型"><option>全部操作</option><option>创建服务</option><option>更新配置</option><option>扩缩容</option><option>回滚版本</option></select></label><label class="tb-field"><span class="tb-label">执行状态</span><select class="mini-select sel" aria-label="执行状态"><option>全部状态</option><option>成功</option><option>进行中</option><option>失败</option></select></label>
+                  <input class="search" type="search" placeholder="输入操作人或变更内容搜索" aria-label="输入操作人或变更内容搜索">
+                  <div class="tb-right"><button type="button" class="aicon" data-dao="action-icon" aria-label="刷新" title="刷新">↻</button><button class="btn" data-dao="button" data-props="type=secondary">导出操作记录</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>时间</th><th>来源</th><th>级别</th><th>摘要</th><th class="col-act"></th></tr></thead>
+                    <thead><tr><th>操作时间</th><th>操作类型</th><th>操作人</th><th>变更内容</th><th>执行状态</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailEventRows">
-                      <tr><td>16:28:12</td><td>Argo CD</td><td><span class="tag green">Info</span></td><td>Application synced to commit a81c42f</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
-                      <tr><td>16:31:07</td><td>prefill-0</td><td><span class="tag green">Info</span></td><td>vLLM engine ready, metrics endpoint started</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
-                      <tr><td>16:42:55</td><td>decode-0</td><td><span class="tag amber">Warn</span></td><td>GPU 利用率连续 30 分钟高于 80%</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button">日志</button></span></span></td></tr>
+                      <tr><td>2026-08-31 16:28:12</td><td>创建服务</td><td>张晓宇</td><td>基于 DeepSeek-V4-Flash / H800 模板创建服务</td><td><span class="tag green">成功</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td></tr>
+                      <tr><td>2026-08-31 16:31:07</td><td>更新配置</td><td>张晓宇</td><td>启用 RDMA，并将 prefill 副本数调整为 2</td><td><span class="tag green">成功</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td></tr>
+                      <tr><td>2026-08-31 16:42:55</td><td>扩缩容</td><td>自动扩缩容策略</td><td>decode 队列持续高于阈值，已触发扩容检查</td><td><span class="tag amber">进行中</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -8300,21 +8303,20 @@ llm-d-modelservice:
               <button type="button" class="concept-trigger" data-concept-toggle="" aria-expanded="false" aria-controls="concept-detail-versions-body"><span class="concept-arrow" aria-hidden="true">›</span><span class="concept-title">历史版本</span></button>
               <button type="button" class="concept-close" data-concept-close="" aria-label="关闭说明">×</button>
             </div>
-            <div class="concept-body" id="concept-detail-versions-body" hidden="">历史版本记录每次配置变更对应的模板版本与 Commit，可查看当次 YAML 或回滚到任一历史版本。</div>
+            <div class="concept-body" id="concept-detail-versions-body" hidden="">历史版本保存每次发布后的配置快照、变更摘要及发布时间；可查看版本详情，或将服务回滚到任一已发布版本。</div>
           </div>
                 <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
                 <div class="tb tb--detail" data-dao="toolbar">
-                  <label class="tb-field"><span class="tb-label">状态</span><select class="mini-select sel" aria-label="状态"><option>全部版本</option><option>当前版本</option><option>历史版本</option></select></label>
                   <input class="search" type="search" placeholder="输入版本或 Commit 搜索" aria-label="输入版本或 Commit 搜索">
                   <div class="tb-right"><button class="btn" data-dao="button" data-props="type=secondary" data-open-values="">查看当前 YAML</button></div>
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>版本</th><th>Commit</th><th>模板版本</th><th>配置摘要</th><th>状态</th><th>更新时间</th><th class="col-act"></th></tr></thead>
+                    <thead><tr><th>版本</th><th>Commit</th><th>变更类型</th><th>变更摘要</th><th>开始时间</th><th>发布时间</th><th>状态</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailVersionRows">
-                      <tr><td>v1.3.2</td><td class="mono">a81c42f</td><td>DeepSeek-V4-Flash / H800</td><td>prefill 2 副本，decode 1 副本，RDMA 开启</td><td><span class="tag green">当前版本</span></td><td>2026-08-31 16:28</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values="">查看 YAML</button></span></span></td></tr>
-                      <tr><td>v1.3.1</td><td class="mono">9b7e13a</td><td>DeepSeek-V4-Flash / H800</td><td>prefill 2 副本，decode 1 副本，KV Offload 开启</td><td><span class="tag">历史版本</span></td><td>2026-08-30 21:16</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values="">查看 YAML</button><button type="button">回滚到此版本</button></span></span></td></tr>
-                      <tr><td>v1.2.8</td><td class="mono">6f12d2e</td><td>DeepSeek-V4-Flash / H800</td><td>prefill 1 副本，decode 1 副本，基础监控启用</td><td><span class="tag">历史版本</span></td><td>2026-08-28 10:42</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-values="">查看 YAML</button><button type="button">回滚到此版本</button></span></span></td></tr>
+                      <tr><td>v1.3.2</td><td class="mono">a81c42f</td><td>配置更新</td><td>启用 RDMA；prefill 2 副本、decode 1 副本</td><td>2026-08-31 16:21</td><td>2026-08-31 16:28</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
+                      <tr><td>v1.3.1</td><td class="mono">9b7e13a</td><td>配置更新</td><td>启用 KV Cache Offload，更新服务路由参数</td><td>2026-08-30 21:09</td><td>2026-08-30 21:16</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
+                      <tr><td>v1.2.8</td><td class="mono">6f12d2e</td><td>首次发布</td><td>创建服务并启用基础监控</td><td>2026-08-28 10:31</td><td>2026-08-28 10:42</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -9140,7 +9142,7 @@ llm-d-modelservice:
       roles: "资源列表",
       scaling: "扩缩容",
       metrics: "运行监控",
-      events: "操作日志",
+      events: "操作记录",
       tests: "测试任务",
       versions: "历史版本"
     };
@@ -9260,6 +9262,35 @@ llm-d-modelservice:
           }
         });
       });
+    }
+
+    // 各服务详情的数据来源不同：旧数据中的「事件」统一转换为面向运维人员的操作审计记录，
+    // 版本快照补充变更类型、来源与发布时间，避免切换服务后出现表头与内容不一致。
+    function normalizeDetailAuditRows() {
+      if (detailEventRows) {
+        detailEventRows.querySelectorAll("tr").forEach(row => {
+          const cells = Array.from(row.children);
+          if (cells.length !== 5) return;
+          const [time, source, level, summary, action] = cells;
+          const summaryText = summary.textContent.trim();
+          const levelText = level.textContent.trim();
+          const operation = /扩容|缩容|scale/i.test(summaryText) ? "扩缩容" : /回滚|rollback/i.test(summaryText) ? "回滚版本" : /创建|create/i.test(summaryText) ? "创建服务" : "更新配置";
+          const result = levelText === "Error" ? ["失败", "red"] : levelText === "Warn" ? ["进行中", "amber"] : ["成功", "green"];
+          const operator = /Argo CD/i.test(source.textContent) ? "GitOps 自动化" : /controller/i.test(source.textContent) ? "平台控制器" : "系统自动执行";
+          row.innerHTML = `<td>${escapeHtml(time.textContent.trim())}</td><td>${operation}</td><td>${operator}</td><td>${escapeHtml(summaryText)}</td><td><span class="tag ${result[1]}">${result[0]}</span></td><td class="col-act"><button type="button" class="btn text">查看日志</button></td>`;
+        });
+      }
+      if (detailVersionRows) {
+        detailVersionRows.querySelectorAll("tr").forEach(row => {
+          const cells = Array.from(row.children);
+          if (cells.length !== 7) return;
+          const [version, commit, template, summary, status, time, action] = cells;
+          const statusText = status.textContent.trim();
+          const changeType = /基础|创建|初始/.test(summary.textContent) ? "首次发布" : "配置更新";
+          const timestamp = escapeHtml(time.textContent.trim());
+          row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${escapeHtml(summary.textContent.trim())}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-open-values="">查看详情</button></td>`;
+        });
+      }
     }
 
     const splitDetailSnapshot = {
@@ -10091,6 +10122,7 @@ llm-d-modelservice:
         detailScalingRows.innerHTML = profile.scalingRows;
         detailEventRows.innerHTML = profile.eventRows;
         detailVersionRows.innerHTML = profile.versionRows;
+        normalizeDetailAuditRows();
         return;
       }
 
@@ -10106,6 +10138,7 @@ llm-d-modelservice:
         detailScalingRows.innerHTML = profile.scalingRows;
         detailEventRows.innerHTML = profile.eventRows;
         detailVersionRows.innerHTML = profile.versionRows;
+        normalizeDetailAuditRows();
         return;
       }
 
@@ -10120,6 +10153,7 @@ llm-d-modelservice:
       detailScalingRows.innerHTML = profile.scalingRows || splitDetailSnapshot.scalingRows;
       detailEventRows.innerHTML = profile.eventRows || splitDetailSnapshot.eventRows;
       detailVersionRows.innerHTML = profile.versionRows || splitDetailSnapshot.versionRows;
+      normalizeDetailAuditRows();
     }
 
     function normalizeDetailConfig(html) {
@@ -11739,7 +11773,7 @@ llm-d-modelservice:
       if (gpusField) gpusField.hidden = enabled;
       else if (gpusInput) gpusInput.hidden = enabled;
       if (distributedGpuRow) distributedGpuRow.hidden = !enabled;
-      if (shmSizeField) shmSizeField.hidden = !enabled;
+      if (shmSizeField) shmSizeField.hidden = false;
       if (machineGpusInput && gpusInput) {
         if (!machineGpusInput.value) machineGpusInput.value = "8";
         machineGpusInput.disabled = false;
