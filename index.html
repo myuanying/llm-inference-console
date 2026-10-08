@@ -12450,23 +12450,20 @@ llm-d-modelservice:
       const index = rows.indexOf(row);
       if (index < 0) return;
       const version = row.cells[0]?.textContent.trim() || "所选版本";
-      const previousRow = rows[index + 1];
-      const previousVersion = previousRow?.cells[0]?.textContent.trim();
+      const currentVersion = rows[0]?.cells[0]?.textContent.trim() || "当前版本";
       const snapshots = versionYamlSnapshots(activeDetailService);
       const selectedYaml = snapshots[Math.min(index, snapshots.length - 1)];
-      const previousYaml = previousRow
-        ? snapshots[Math.min(index + 1, snapshots.length - 1)]
-        : "# 首次发布：无上一版本可对比\n";
-      const [previousDiff, selectedDiff] = diffLines(previousYaml, selectedYaml);
+      const currentYaml = snapshots[0];
+      const [selectedDiff, currentDiff] = diffLines(selectedYaml, currentYaml);
 
       if (valuesTitle) valuesTitle.textContent = `${version} YAML 配置`;
       if (downloadTestReportButton) downloadTestReportButton.hidden = true;
       currentYamlPreview.className = "code yaml-preview-code";
       currentYamlPreview.textContent = selectedYaml;
-      if (templateYamlDiffTitle) templateYamlDiffTitle.textContent = previousVersion ? `${previousVersion} YAML` : "首次发布（无上一版本）";
-      if (currentYamlDiffTitle) currentYamlDiffTitle.textContent = `${version} YAML`;
-      if (templateYamlDiff) templateYamlDiff.innerHTML = previousDiff;
-      if (currentYamlDiff) currentYamlDiff.innerHTML = selectedDiff;
+      if (templateYamlDiffTitle) templateYamlDiffTitle.textContent = `${version} YAML`;
+      if (currentYamlDiffTitle) currentYamlDiffTitle.textContent = `当前版本 ${currentVersion} YAML`;
+      if (templateYamlDiff) templateYamlDiff.innerHTML = selectedDiff;
+      if (currentYamlDiff) currentYamlDiff.innerHTML = currentDiff;
       if (valuesYamlTabs) valuesYamlTabs.hidden = false;
       yamlModalTabs.forEach(tab => { tab.hidden = false; });
       setYamlModalTab("preview");
