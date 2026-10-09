@@ -6608,6 +6608,9 @@
     .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list {
       grid-template-columns: minmax(0, 1.5fr) minmax(110px, 0.4fr) minmax(0, 1fr);
     }
+    .shell.immersive-detail #detailConfig .cfg-sub:nth-of-type(2) .kv-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
     .shell.immersive-detail #detailConfig .kvr {
       display: flex;
       min-width: 0;
@@ -6637,11 +6640,13 @@
       .shell.immersive-detail #detailTopology { grid-template-columns: 1fr !important; }
       .shell.immersive-detail #detailConfig.config-cards { grid-template-columns: 1fr !important; }
       .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .shell.immersive-detail #detailConfig .cfg-sub:nth-of-type(2) .kv-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .shell.immersive-detail #detailBasicInfo.detail-basic-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 700px) {
       .shell.immersive-detail #detailConfig .kv-list,
       .shell.immersive-detail #detailConfig .cfg-sub--access .kv-list { grid-template-columns: 1fr; }
+      .shell.immersive-detail #detailConfig .cfg-sub:nth-of-type(2) .kv-list { grid-template-columns: 1fr; }
     }
 
     /* 服务列表卡片：提高正文信息密度的可读性，并按放大后的字体回补垂直留白。 */
@@ -6658,6 +6663,12 @@
     #services .svc-metric-v strong { font-size: 26px; line-height: 32px; }
     #services .svc-metric-v span { font-size: 12px; }
     #services .svc-metric-l { font-size: 11px; line-height: 16px; }
+
+    .topology, .topology .node { overflow: visible; }
+    .shell.immersive-detail #detailTopology .node .topology-help { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; margin-left: 4px; border-radius: 50%; color: var(--muted); font-size: 12px; line-height: 1; cursor: help; }
+    .shell.immersive-detail #detailTopology .node .topology-help::after { content: attr(data-tooltip); position: absolute; z-index: 100; left: 50%; top: calc(100% + 8px); width: max-content; max-width: 260px; padding: 8px 10px; border-radius: 4px; background: #273446; color: #fff !important; display: block !important; font-size: 12px; font-weight: 400; line-height: 18px; white-space: nowrap; box-shadow: 0 4px 12px rgba(18, 34, 54, .2); opacity: 0; pointer-events: none; transform: translate(-50%, -3px); transition: opacity .15s ease, transform .15s ease; }
+    .shell.immersive-detail #detailTopology .node .topology-help:hover::after, .shell.immersive-detail #detailTopology .node .topology-help:focus::after { opacity: 1; transform: translate(-50%, 0); }
+    .resource-head-status { margin-left: 6px; color: var(--fg); font-size: 12px; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -8309,17 +8320,19 @@ llm-d-modelservice:
                   <h2>服务拓扑</h2>
                 </div>
                 <div class="topology" id="detailTopology">
-                  <div class="node"><strong>model-gateway</strong><span>统一入口、路由</span><span>1/1 Ready</span></div>
+                  <div class="node"><strong>llm-d router</strong><span>统一入口、路由</span><span>1 正常 / 1 总量</span></div>
                   <div class="node">
-                    <strong>prefill pool</strong>
+                    <strong>prefill</strong>
                     <span class="node-line"><span class="node-label">资源配置</span><span>2 副本，8 GPU H800，每副本 4 GPU，DP4</span></span>
-                    <span class="node-line"><span class="node-label">增强能力</span><span class="tag">KV Cache Offload</span></span>
-                    <span class="node-line"><span class="node-label">资源状态</span><span>2/2 Ready</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/vllm/vllm-openai:nightly</span></span>
+                    <span class="node-line"><span class="node-label">增强能力</span><span class="tag">KV Cache Offload <span class="topology-help" tabindex="0" aria-label="Redis 服务：redhare-kvcache-prod" title="Redis 服务：redhare-kvcache-prod" data-tooltip="Redis 服务：redhare-kvcache-prod">ⓘ</span></span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>2 正常 / 2 总量</span></span>
                   </div>
                   <div class="node">
-                    <strong>decode pool</strong>
+                    <strong>decode</strong>
                     <span class="node-line"><span class="node-label">资源配置</span><span>1 副本，4 GPU H800，每副本 4 GPU，DP4 + EP</span></span>
-                    <span class="node-line"><span class="node-label">资源状态</span><span>1/1 Ready</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/vllm/vllm-openai:nightly</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>1 正常 / 1 总量</span></span>
                   </div>
                 </div>
 
@@ -8328,11 +8341,11 @@ llm-d-modelservice:
                 </div>
                 <div class="config-groups" id="detailConfig">
                   <table>
-                    <tbody><tr><th colspan="2">模型与镜像</th></tr>
+                    <tbody><tr><th colspan="2">模型权重</th></tr>
                     <tr><td>模型访问名称</td><td>deepseek-ai/DeepSeek-V4-Flash-0731</td></tr>
-                    <tr><td>模型来源</td><td>PVC / 模型子路径：/models/deepseek-v4-flash-0731 / 挂载路径：/mnt/data</td></tr>
-                    <tr><td>Prefill 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
-                    <tr><td>Decode 镜像</td><td class="mono">docker.m.daocloud.io/vllm/vllm-openai:nightly</td></tr>
+                    <tr><td>模型来源</td><td>PVC</td></tr>
+                    <tr><td>模型子路径</td><td class="mono">/models/deepseek-v4-flash-0731</td></tr>
+                    <tr><td>挂载路径</td><td class="mono">/mnt/data</td></tr>
                   </tbody></table>
                   <table>
                     <tbody><tr><th colspan="2">推理与资源</th></tr>
@@ -9493,7 +9506,16 @@ llm-d-modelservice:
     }
 
     // 结构化配置：表格数据源 → 嵌套二级卡片（简单卡头 + KeyValueLayout，参考 集群基本信息）
-    function setDetailConfig(html, modelAccessName = "") {
+    function pvcNameForService(serviceId) {
+      return {
+        "deepseek-v4-flash-h800-prod": "model-pvc-prod-h800",
+        "qwen3-235b-prod": "model-pvc-qwen-prod",
+        "dynamo-llama4-scout-lab": "model-pvc-dynamo-lab",
+        "dynamo-qwen3-colocated-prod": "model-pvc-qwen-prod"
+      }[serviceId] || "model-pvc-shared";
+    }
+
+    function setDetailConfig(html, modelAccessName = "", pvcName = "model-pvc-shared") {
       if (!detailConfig) return;
       const tpl = document.createElement("template");
       tpl.innerHTML = html;
@@ -9504,24 +9526,51 @@ llm-d-modelservice:
         if (rightTitle === "访问方式") return 1;
         return 0;
       });
-      const cards = tables.map(table => {
+      const cards = tables.filter(table => {
+        const title = table.querySelector("th")?.textContent.trim() || "";
+        return title !== "推理与资源";
+      }).map(table => {
         const rows = [...table.querySelectorAll("tr")];
-        const title = rows[0]?.querySelector("th")?.textContent.trim() || "";
+        const rawTitle = rows[0]?.querySelector("th")?.textContent.trim() || "";
+        const title = rawTitle === "模型与镜像" ? "模型权重" : rawTitle;
         const accessClass = title === "访问方式" ? " cfg-sub--access" : "";
         const detailRows = rows.filter(r => {
           const cells = r.querySelectorAll("td");
           if (cells.length !== 2) return false;
           const key = cells[0].textContent.trim();
-          return !["GPU型号", "端口", "模型访问名称", "模型 ID", "编排框架", "推理模式"].includes(key);
+          if (title === "模型权重" && ["模型", "镜像"].includes(key)) return false;
+          return !["GPU型号", "端口", "模型访问名称", "模型 ID", "编排框架", "推理模式", "Prefill 镜像", "Decode 镜像"].includes(key);
         });
         if (title === "访问方式" && modelAccessName) {
           const modelIdRow = document.createElement("tr");
           modelIdRow.innerHTML = `<td>模型 ID</td><td>${escapeHtml(modelAccessName)}</td>`;
           detailRows.push(modelIdRow);
         }
-        const items = detailRows.map(r => {
+        const displayRows = detailRows.flatMap(r => {
           const [k, v] = r.querySelectorAll("td");
-          return `<div class="kvr"><span class="kvr-l">${k.innerHTML}</span><span class="kvr-v${v.classList.contains("mono") ? " mono" : ""}">${v.innerHTML}</span></div>`;
+          const sourceParts = k.textContent.trim() === "模型来源"
+            ? v.textContent.trim().match(/^(.+?)\s*\/\s*模型子路径：\s*(.+?)\s*\/\s*挂载路径：\s*(.+)$/)
+            : null;
+          if (sourceParts) {
+            return [
+              { label: "模型来源", value: sourceParts[1], mono: false },
+              { label: "PVC 名称", value: pvcName, mono: true },
+              { label: "模型子路径", value: sourceParts[2], mono: true },
+              { label: "挂载路径", value: sourceParts[3], mono: true }
+            ];
+          }
+          if (title === "模型权重" && k.textContent.trim() === "模型来源") {
+            return [
+              { label: "模型来源", value: v.innerHTML, mono: false, trusted: true },
+              { label: "PVC 名称", value: pvcName, mono: true }
+            ];
+          }
+          return [{ label: k.innerHTML, value: v.innerHTML, mono: v.classList.contains("mono"), trusted: true }];
+        });
+        const items = displayRows.map(row => {
+          const label = row.trusted ? row.label : escapeHtml(row.label);
+          const value = row.trusted ? row.value : escapeHtml(row.value);
+          return `<div class="kvr"><span class="kvr-l">${label}</span><span class="kvr-v${row.mono ? " mono" : ""}">${value}</span></div>`;
         }).join("");
         return `<!-- map: <dao-card type="simple"> + <dao-key-value-layout direction="vertical"> · src: dao-style-extend/src/components/key-value-layout -->
           <section class="cfg-sub${accessClass}" data-dao="key-value-layout"><h3 class="cfg-sub-title">${title}</h3><div class="kv-list">${items}</div></section>`;
@@ -9533,6 +9582,43 @@ llm-d-modelservice:
     function normalizeResourceTables() {
       if (!detailResources) return;
       detailResources.querySelectorAll(".resource-group-head .muted").forEach(item => item.remove());
+      const service = serviceById(activeDetailService);
+      const framework = service?.framework;
+      if (service?.id === "dynamo-llama4-scout-lab") {
+        let frontendGroup = null;
+        detailResources.querySelectorAll(".resource-group").forEach(group => {
+          const title = group.querySelector(".resource-group-head h3")?.childNodes[0]?.textContent.trim();
+          if (title === "gateway" || title === "planner") group.remove();
+          if (title === "frontend") frontendGroup = group;
+        });
+        if (frontendGroup) detailResources.append(frontendGroup);
+      }
+      if (service?.id === "dynamo-qwen3-colocated-prod") {
+        const frontendGroup = Array.from(detailResources.querySelectorAll(".resource-group"))
+          .find(group => group.querySelector(".resource-group-head h3")?.childNodes[0]?.textContent.trim() === "gateway");
+        if (frontendGroup) detailResources.append(frontendGroup);
+      }
+      if (service?.id === "qwen3-235b-prod") {
+        const routerGroup = Array.from(detailResources.querySelectorAll(".resource-group"))
+          .find(group => group.querySelector(".resource-group-head h3")?.childNodes[0]?.textContent.trim() === "model-gateway");
+        if (routerGroup) detailResources.append(routerGroup);
+      }
+      detailResources.querySelectorAll(".resource-group-head h3").forEach(heading => {
+        const titleNode = Array.from(heading.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+        const rawRole = titleNode?.textContent.trim() || "";
+        const normalizedRole = /^(?:model-)?gateway$/i.test(rawRole)
+          ? (framework === "dynamo" ? "frontend" : "llm-d router")
+          : rawRole === "prefill-workers" ? "prefill"
+          : rawRole === "decode-workers" ? "decode"
+          : rawRole;
+        if (titleNode) titleNode.textContent = `${normalizedRole} `;
+
+        const status = heading.querySelector(".tag");
+        if (!status) return;
+        const count = status.textContent.trim().match(/(\d+)\s*\/\s*(\d+)\s*Ready/i);
+        status.className = "resource-head-status";
+        status.textContent = count ? `${count[1]} 正常 / ${count[2]} 总量` : status.textContent.trim();
+      });
       detailResources.querySelectorAll("table").forEach(table => {
         const headers = Array.from(table.querySelectorAll("thead th"));
         const namespaceIndex = headers.findIndex(th => th.textContent.trim() === "命名空间");
@@ -9603,7 +9689,6 @@ llm-d-modelservice:
       versionRows: detailVersionRows.innerHTML
     };
     setDetailConfig(splitDetailSnapshot.config);
-    normalizeResourceTables();
 
     const detailProfiles = {
       "deepseek-v4-flash-h800-prod": {
@@ -9621,6 +9706,15 @@ llm-d-modelservice:
         sync: ["OutOfSync", "amber"],
         commit: "commit 8f6b0ee",
         layout: "colocated",
+        topology: `
+                  <div class="node"><strong>llm-d router</strong><span>统一入口、路由</span><span>1 正常 / 1 总量</span></div>
+                  <div class="node">
+                    <strong>model-server</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>1 副本，8 GPU H800，每副本 8 GPU，TP8</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/vllm/vllm-openai:v0.8.5</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>0 正常 / 1 总量</span></span>
+                  </div>
+        `,
         config: `
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
@@ -9643,6 +9737,20 @@ llm-d-modelservice:
                   </table>
         `,
         resources: `
+                  <div class="resource-group">
+                    <div class="resource-group-head">
+                      <h3>model-gateway <span class="tag green">1/1 Ready</span></h3>
+                    </div>
+                    <div class="table-scroll">
+                      <table>
+                        <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
+                        <tbody>
+                          <tr><td>Deployment</td><td class="mono">qwen3-235b-router</td><td><span class="tag green">Available</span></td><td>inferx-prod</td><td>role=router</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Service</td><td class="mono">qwen3-235b-prod</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                   <div class="resource-group">
                     <div class="resource-group-head">
                       <h3>model-server <span class="tag red">0/1 Ready</span></h3>
@@ -9685,10 +9793,19 @@ llm-d-modelservice:
         commit: "commit c19f2aa",
         layout: "dynamo",
         topology: `
-                  <div class="node"><strong>gateway</strong><span>测试入口、路由</span><span>1/1 Ready</span></div>
-                  <div class="node"><strong>dynamo-frontend</strong><span>请求切分、协议适配</span><span>1/1 Ready</span></div>
-                  <div class="node"><strong>prefill worker pool</strong><span>1/2 Ready，单实例 4 GPU</span><span>共享 KV 索引，创建中</span></div>
-                  <div class="node"><strong>decode worker pool</strong><span>1/1 Ready，单实例 4 GPU</span></div>
+                  <div class="node"><strong>gateway</strong><span>统一入口、路由</span><span>1/1 Ready</span></div>
+                  <div class="node">
+                    <strong>prefill</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>2 副本，8 GPU H800，每副本 4 GPU，DP4</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>1 正常 / 2 总量</span></span>
+                  </div>
+                  <div class="node">
+                    <strong>decode</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>1 副本，8 GPU H20，每副本 4 GPU，DP4</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/dynamo/dynamo-runtime:v0.3.8</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>1 正常 / 1 总量</span></span>
+                  </div>
         `,
         config: `
                   <table>
@@ -9816,6 +9933,15 @@ llm-d-modelservice:
         sync: ["Synced", "green"],
         commit: "commit d4a72bc",
         layout: "colocated",
+        topology: `
+                  <div class="node"><strong>frontend</strong><span>统一入口、路由</span><span>1 正常 / 1 总量</span></div>
+                  <div class="node">
+                    <strong>worker-pool</strong>
+                    <span class="node-line"><span class="node-label">资源配置</span><span>2 副本，8 GPU H20，每副本 4 GPU，DP2</span></span>
+                    <span class="node-line"><span class="node-label">镜像</span><span>docker.m.daocloud.io/dynamo/dynamo-runtime:v0.4.1</span></span>
+                    <span class="node-line"><span class="node-label">资源状态</span><span>1 正常 / 2 总量</span></span>
+                  </div>
+        `,
         config: `
                   <table>
                     <tr><th colspan="2">模型与镜像</th></tr>
@@ -9838,6 +9964,20 @@ llm-d-modelservice:
                   </table>
         `,
         resources: `
+                  <div class="resource-group">
+                    <div class="resource-group-head">
+                      <h3>gateway <span class="tag green">1/1 Ready</span></h3>
+                    </div>
+                    <div class="table-scroll">
+                      <table>
+                        <thead><tr><th>资源类型</th><th>名称</th><th>状态</th><th>命名空间</th><th>节点 / 选择器</th><th>操作</th></tr></thead>
+                        <tbody>
+                          <tr><td>DynamoGraphDeployment</td><td class="mono">dynamo-qwen3-colocated-frontend</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>role=frontend</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                          <tr><td>Service</td><td class="mono">dynamo-qwen3-colocated-prod</td><td><span class="tag green">Ready</span></td><td>inferx-prod</td><td>ClusterIP</td><td><button class="btn text" data-open-values>查看 YAML</button></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                   <div class="resource-group">
                     <div class="resource-group-head">
                       <h3>worker-pool <span class="tag amber">1/2 Ready</span></h3>
@@ -10363,18 +10503,46 @@ llm-d-modelservice:
           return `<span class="${tagClass(color)}">${escapeHtml(label)}</span>`;
         }).join("");
       const resourceStatus = issueTags || (state[0] === "未知" ? "" : `<span class="${tagClass(state[1] || "green")}">${state[0] === "可用" ? "运行中" : escapeHtml(state[0])}</span>`);
+      const availabilityStatus = `<span class="${tagClass(state[1] || "green")}">${escapeHtml(state[0] || "-")}</span>`;
       const field = (label, value, extraClass = "") => `<div class="detail-basic-item${extraClass ? ` ${extraClass}` : ""}"><div class="detail-basic-value">${value}</div><div class="detail-basic-label">${label}</div></div>`;
       detailBasicInfo.innerHTML = [
+        field("模型服务名称", escapeHtml(item.id || "-"), "mono"),
         field("别名", escapeHtml(item.alias || "-")),
         field("模型访问名称", escapeHtml(item.model || "-")),
+        field("创建时间", escapeHtml(item.createdAt || "-"), "mono"),
         field("集群", escapeHtml(item.cluster || "-"), "mono"),
         field("命名空间", escapeHtml(item.namespace || "-"), "mono"),
         field("推理模式", `<span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode || "-")}</span>`),
         field("编排框架", `<span class="${tagClass(item.frameworkColor)}">${escapeHtml(item.framework || "-")}</span>`),
-        field("创建时间", escapeHtml(item.createdAt || "-"), "mono"),
-        field("资源运行状态", resourceStatus),
-        field("ArgoCD 同步状态", `<span class="${tagClass(item.sync?.[1])}">${escapeHtml(item.sync?.[0] || "-")}</span>`)
+        field("可用状态", availabilityStatus),
+        field("ArgoCD 同步状态", `<span class="${tagClass(item.sync?.[1])}">${escapeHtml(item.sync?.[0] || "-")}</span>`),
+        field("资源运行状态", resourceStatus)
       ].join("");
+    }
+
+    function normalizeDetailTopology(serviceRow) {
+      if (!detailTopology) return;
+      const nodes = Array.from(detailTopology.querySelectorAll(".node"));
+      if (!nodes.length) return;
+
+      const primaryTitle = nodes[0].querySelector("strong");
+      if (primaryTitle && /gateway|router|frontend/i.test(primaryTitle.textContent)) {
+        primaryTitle.textContent = serviceRow?.framework === "dynamo" ? "frontend" : "llm-d router";
+      }
+
+      nodes.slice(1).forEach(node => {
+        const title = node.querySelector("strong");
+        if (!title) return;
+        const text = title.textContent.toLowerCase();
+        if (text.includes("prefill")) title.textContent = "prefill";
+        if (text.includes("decode")) title.textContent = "decode";
+      });
+
+      detailTopology.querySelectorAll(".node > span, .node-line > span:last-child").forEach(element => {
+        const text = element.textContent.trim();
+        const match = text.match(/^(\d+)\s*\/\s*(\d+)\s*(?:Ready|正常\/总量)$/i);
+        if (match) element.textContent = `${match[1]} 正常 / ${match[2]} 总量`;
+      });
     }
 
     function renderDetail(service) {
@@ -10426,11 +10594,13 @@ llm-d-modelservice:
       }
 
       if (profile.layout === "colocated") {
-        detailTopologyHead.hidden = true;
-        detailTopology.hidden = true;
-        detailConfigHead.style.marginTop = "0";
-        detailTopology.innerHTML = "";
-        setDetailConfig(profile.config, serviceRow?.model);
+        const hasTopology = Boolean(profile.topology);
+        detailTopologyHead.hidden = !hasTopology;
+        detailTopology.hidden = !hasTopology;
+        detailConfigHead.style.marginTop = hasTopology ? "18px" : "0";
+        detailTopology.innerHTML = profile.topology || "";
+        if (hasTopology) normalizeDetailTopology(serviceRow);
+        setDetailConfig(profile.config, serviceRow?.model, pvcNameForService(profile.title));
         syncDetailAlias(alias);
         detailResources.innerHTML = profile.resources;
         normalizeResourceTables();
@@ -10446,7 +10616,8 @@ llm-d-modelservice:
         detailTopology.hidden = false;
         detailConfigHead.style.marginTop = "18px";
         detailTopology.innerHTML = profile.topology;
-        setDetailConfig(profile.config, serviceRow?.model);
+        normalizeDetailTopology(serviceRow);
+        setDetailConfig(profile.config, serviceRow?.model, pvcNameForService(profile.title));
         syncDetailAlias(alias);
         detailResources.innerHTML = profile.resources;
         normalizeResourceTables();
@@ -10461,7 +10632,8 @@ llm-d-modelservice:
       detailTopology.hidden = false;
       detailConfigHead.style.marginTop = "18px";
       detailTopology.innerHTML = profile.topology || splitDetailSnapshot.topology;
-      setDetailConfig(profile.config || splitDetailSnapshot.config, serviceRow?.model);
+      normalizeDetailTopology(serviceRow);
+      setDetailConfig(profile.config || splitDetailSnapshot.config, serviceRow?.model, pvcNameForService(profile.title));
       syncDetailAlias(alias);
       detailResources.innerHTML = profile.resources || splitDetailSnapshot.resources;
       normalizeResourceTables();
