@@ -5013,6 +5013,19 @@
     .modal-shell.deploy-choice-modal { width: min(640px, calc(100vw - 56px)); }
     .modal-shell.parse-error-modal { width: min(480px, calc(100vw - 56px)); }
     .modal-shell.test-config-modal { width: min(900px, calc(100vw - 56px)); max-width: none; }
+    .modal-shell.test-config-modal {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 140px);
+      overflow: hidden;
+    }
+    .modal-shell.test-config-modal .config-view {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .modal-shell.test-config-modal .footer-actions { flex: none; }
     .modal-shell.switch-modal { width: min(720px, calc(100vw - 56px)); }
     /* ---- 确认弹窗（删除服务 / 删除模板 / 解析错误）：480px，正文 13/20，输入 30px ---- */
     .modal-shell.confirm-modal { width: min(480px, calc(100vw - 56px)); }
@@ -5939,6 +5952,10 @@
     /* ---- 操作弹窗：摘要 + 结果反馈 ---- */
     .modal-shell.update-modal { width: min(860px, calc(100vw - 56px)); }
     .modal-shell.test-modal { width: min(900px, calc(100vw - 56px)); }
+    .test-create-page { max-width: 900px; margin: 0 auto; padding: 24px; border-radius: 10px; background: var(--surface); box-shadow: var(--elev-raised); }
+    .test-create-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .test-create-head h1 { margin: 0; color: var(--fg); font-size: 18px; line-height: 28px; font-weight: 600; }
+    .test-create-view .footer-actions { margin-top: 20px; }
     .scale-role-list { display: grid; gap: 10px; margin-top: 16px; }
     .scale-role-row { display: grid; grid-template-columns: minmax(0, 1fr) 120px 180px; align-items: center; gap: 14px; min-height: 48px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle); }
     .scale-role-row strong { display: block; color: var(--fg-2); font-size: 13px; line-height: 20px; }
@@ -6571,6 +6588,14 @@
       margin-top: 5px;
     }
     .shell.immersive-detail #detailTopology .node .node-label { color: var(--meta); }
+    .shell.immersive-detail #detailTopology .node .node-value-truncate {
+      min-width: 0;
+      overflow: hidden !important;
+      overflow-wrap: normal !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: help;
+    }
     .shell.immersive-detail #detailConfigHead { margin-top: 2px !important; }
     .shell.immersive-detail #detailConfig.config-cards {
       display: grid !important;
@@ -8032,8 +8057,8 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 <tbody id="modelTestRows">
                   <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag green">通过</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                   <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>-</td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag red">未通过</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="health_check,messages_structure,message_elements,sse_stream"><td><span class="test-name-link">external-router-error-0902</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag red">错误</span></td><td>-</td><td>2026-09-02 11:20:18</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control" data-detail-cases="health_check,messages_structure,message_elements,sse_stream"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag red">不通过</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="health_check,messages_structure,message_elements,sse_stream" data-detail-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">external-router-error-0902</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag red">错误</span></td><td>-</td><td>2026-09-02 11:20:18</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                   <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag">暂停</span></td><td>-</td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                 </tbody>
               </table>
@@ -8705,14 +8730,10 @@ llm-d-modelservice:
           </aside>
         </section>
 
-        <section id="newTestModal" class="modal" aria-hidden="true">
-          <div class="modal-backdrop" data-close-modal=""></div>
-          <div class="modal-shell compact test-modal" role="dialog" aria-modal="true" aria-labelledby="newTestTitle">
-            <div class="modal-head">
-              <div>
-                <h1 id="newTestTitle">新建测试</h1>
-              </div>
-              <button class="btn" type="button" data-close-modal="">关闭</button>
+        <section id="new-test" class="view test-create-view" data-od-id="view-new-test">
+          <div class="test-create-page">
+            <div class="test-create-head">
+              <h1 id="newTestTitle">新建测试</h1>
             </div>
 
             <div class="test-grid">
@@ -8856,8 +8877,8 @@ llm-d-modelservice:
             </div>
 
             <div class="footer-actions">
-              <button class="btn" type="button" data-close-modal="">取消</button>
-              <button class="btn primary" type="button" id="submitNewTest">确定</button>
+              <button class="btn" type="button" data-return-new-test="">取消</button>
+              <button class="btn primary" type="button" id="submitNewTest">创建测试</button>
             </div>
           </div>
         </section>
@@ -8979,8 +9000,8 @@ llm-d-modelservice:
               <label class="retry-mode-option">
                 <input type="radio" name="testRetryMode" value="failed" checked="">
                 <span>
-                  <strong>非通过任务重试</strong>
-                  <small>仅重新执行上次结果非通过的测试项，保留已通过结果。</small>
+                  <strong>未通过任务重试</strong>
+                  <small>仅重新执行上次结果未通过的测试项，保留已通过结果。</small>
                 </span>
               </label>
               <label class="retry-mode-option">
@@ -9386,7 +9407,7 @@ llm-d-modelservice:
     const switchServiceStatus = document.querySelector("#serviceSwitchStatus");
     const switchServiceMode = document.querySelector("#serviceSwitchMode");
     const switchServiceEmpty = document.querySelector("#serviceSwitchEmpty");
-    const newTestModal = document.querySelector("#newTestModal");
+    const newTestModal = document.querySelector("#new-test");
     const testConfigModal = document.querySelector("#testConfigModal");
     const testConfigTitle = document.querySelector("#testConfigTitle");
     const testConfigBody = document.querySelector("#testConfigBody");
@@ -10363,6 +10384,7 @@ llm-d-modelservice:
       services: "模型服务",
       "service-observability": "服务观测",
       "model-tests": "模型测试",
+      "new-test": "新建测试",
       "template-library": "部署模板库",
       "template-import": "导入模板",
       "template-detail": "查看模板",
@@ -10381,6 +10403,7 @@ llm-d-modelservice:
       "maas-create": "maas-models",
       "template-import": "template-library",
       "template-detail": "template-library",
+      "new-test": "model-tests",
       detail: "services"
     };
     // 实际返回目标按「从哪个页面进来」记录：从模型测试进详情就回模型测试，从模板库进部署就回模板库。
@@ -10402,10 +10425,12 @@ llm-d-modelservice:
           ? "maas-models"
           : id === "template-import" || id === "template-detail"
             ? "template-library"
-          : id;
+            : id === "new-test"
+              ? "model-tests"
+            : id;
       sideNavButtons.forEach(button => button.classList.toggle("active", button.dataset.view === navTarget));
       if (maasModelNav) maasModelNav.classList.toggle("active", ["maas-models", "maas-create"].includes(id));
-      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "template-library", "template-import", "template-detail"].includes(id));
+      if (modelServiceNav) modelServiceNav.classList.toggle("active", ["services", "deploy", "detail", "edit-yaml", "sync-restore", "service-observability", "model-tests", "new-test", "template-library", "template-import", "template-detail"].includes(id));
       // 记住来源，返回按钮据此回到对应的功能页；
       // 如果目标页正是当前页的返回目标（说明这是一次「返回」），则不改写来源，避免来回互相覆盖。
       // 来源只能是功能页或另一个配置页；进入顶层功能页时清掉挂在它下面的旧来源，避免串到别的入口。
@@ -10529,6 +10554,28 @@ llm-d-modelservice:
       if (primaryTitle && /gateway|router|frontend/i.test(primaryTitle.textContent)) {
         primaryTitle.textContent = serviceRow?.framework === "dynamo" ? "frontend" : "llm-d router";
       }
+
+      nodes.forEach(node => {
+        const title = node.querySelector("strong")?.textContent.trim();
+        if (title !== "llm-d router" && title !== "frontend") return;
+        const role = title === "frontend" ? "frontend" : "router";
+        const scaleRole = serviceRow?.scaleRoles?.find(item => item.name === role);
+        const current = scaleRole?.current ?? 1;
+        const target = scaleRole?.target ?? 1;
+        const image = title === "frontend"
+          ? `docker.m.daocloud.io/dynamo/dynamo-runtime:${/v0\.4\.1/i.test(serviceRow?.engine || "") ? "v0.4.1" : "v0.3.8"}`
+          : "docker.m.daocloud.io/llm-d/llm-d-router:latest";
+        Array.from(node.children).forEach(child => {
+          if (child.tagName === "SPAN" && !child.classList.contains("node-line")) child.remove();
+        });
+        node.querySelectorAll(".node-line").forEach(line => {
+          const label = line.querySelector(".node-label")?.textContent.trim();
+          if (label === "镜像" || label === "资源状态") line.remove();
+        });
+        node.insertAdjacentHTML("beforeend", `
+          <span class="node-line"><span class="node-label">镜像</span><span class="node-value-truncate" title="${image}">${image}</span></span>
+          <span class="node-line"><span class="node-label">资源状态</span><span>${current} 正常 / ${target} 总量</span></span>`);
+      });
 
       nodes.slice(1).forEach(node => {
         const title = node.querySelector("strong");
@@ -10948,7 +10995,7 @@ llm-d-modelservice:
       });
       syncNewTestType();
       syncFunctionalCaseCounts();
-      openModal(newTestModal);
+      showView("new-test");
     }
 
     function currentMinuteText(withSeconds = false) {
@@ -11002,7 +11049,7 @@ llm-d-modelservice:
     const testStatusActionMeta = {
       pause: { label: "暂停", nextStatus: "暂停", title: "暂停测试", message: "暂停后，该测试任务将停止继续执行，后续可通过「启动」恢复执行。" },
       start: { label: "启动", nextStatus: "进行中", title: "启动测试", message: "启动后，该测试任务将从暂停状态恢复为进行中。" },
-      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。非通过任务重试仅重新执行上次结果非通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果；重新配置测试项会覆盖当前测试项后重新执行。" }
+      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。未通过任务重试仅重新执行上次结果未通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果；重新配置测试项会覆盖当前测试项后重新执行。" }
     };
 
     let pendingTestStatusRow = null;
@@ -11049,7 +11096,7 @@ llm-d-modelservice:
         status: isDetailRow ? (cells[2]?.textContent.trim() || "") : (cells[3]?.textContent.trim() || ""),
         result: isDetailRow ? "" : (cells[4]?.textContent.trim() || ""),
         created: cells[createdIndex]?.textContent.trim() || "",
-        cases: row?.dataset.cases || functionalCaseCatalog.filter(item => item.category === "basic").map(item => item.id).join(",")
+        cases: row?.dataset.detailCases || row?.dataset.cases || functionalCaseCatalog.filter(item => item.category === "basic").map(item => item.id).join(",")
       };
     }
 
@@ -11082,7 +11129,7 @@ llm-d-modelservice:
     function setTestRowResult(row, result) {
       const cell = testResultCell(row);
       if (!cell) return;
-      const color = result === "通过" ? "green" : result === "未通过" ? "red" : result === "部分通过" ? "amber" : "";
+      const color = result === "通过" ? "green" : (result === "未通过" || result === "不通过") ? "red" : result === "部分通过" ? "amber" : "";
       cell.innerHTML = color ? `<span class="tag ${color}">${escapeHtml(result)}</span>` : escapeHtml(result);
     }
 
@@ -11171,11 +11218,13 @@ llm-d-modelservice:
       const basicCases = selectedCases.filter(item => item.category === "basic");
       const optionalCases = selectedCases.filter(item => item.category === "optional");
       const healthFailed = isErrorStatus(config.status);
-      const taskNotPassed = config.result === "未通过" || /validators/.test(config.name);
-      const resultClass = result => result === "通过" ? "tag green" : result === "未通过" ? "tag red" : result === "告警" ? "tag amber" : result === "跳过" || result === "未执行" ? "tag" : "tag";
+      const taskNotPassed = config.result === "未通过" || config.result === "不通过" || /validators/.test(config.name);
+      const resultClass = result => result === "通过" ? "tag green" : (result === "未通过" || result === "不通过") ? "tag red" : result === "告警" ? "tag amber" : result === "跳过" || result === "未执行" ? "tag" : "tag";
       const rowExecutionStatus = item => {
         if (healthFailed && item.id === "health_check") return "错误";
         if (healthFailed) return "未执行";
+        if (taskNotPassed && item.id === "health_check") return "已完成";
+        if (taskNotPassed) return "未执行";
         if (config.status === "进行中") return "执行中";
         if (config.status === "暂停") return "暂停";
         if (config.status === "已完成") return "已完成";
@@ -11183,9 +11232,10 @@ llm-d-modelservice:
       };
       const caseResult = item => {
         if (config.status === "进行中" || config.status === "暂停") return "-";
-        if (healthFailed && item.id === "health_check") return "未通过";
-        if (healthFailed) return "未执行";
-        if (taskNotPassed && item.id === "auth_security") return "未通过";
+        if (healthFailed && item.id === "health_check") return "-";
+        if (healthFailed) return "-";
+        if (taskNotPassed && item.id === "health_check") return "不通过";
+        if (taskNotPassed) return "-";
         if (item.id === "cache_verification") return "告警";
         if (item.id === "thinking_control") return "跳过";
         return "通过";
@@ -11217,7 +11267,7 @@ llm-d-modelservice:
           <div><dt>服务端点</dt><dd class="mono">${escapeHtml(service?.endpoint || `${config.service}-istio.inferx-prod.svc`)}</dd></div>
           <div><dt>测试范围</dt><dd>${escapeHtml(config.type)}</dd></div>
           <div><dt>状态</dt><dd>${escapeHtml(config.status)}</dd></div>
-          <div><dt>测试结果</dt><dd>${escapeHtml(config.result || (config.status === "已完成" ? (taskNotPassed ? "未通过" : "通过") : isErrorStatus(config.status) ? "-" : "-"))}</dd></div>
+          <div><dt>测试结果</dt><dd>${escapeHtml(config.result || (config.status === "已完成" ? (taskNotPassed ? "不通过" : "通过") : isErrorStatus(config.status) ? "-" : "-"))}</dd></div>
           <div><dt>创建时间</dt><dd>${escapeHtml(config.created)}</dd></div>
         </dl>
         <section class="test-detail-section">
@@ -11237,7 +11287,7 @@ llm-d-modelservice:
       if (valuesTitle) valuesTitle.textContent = "测试报告";
       activeTestReportFileName = `${safeFileName(config.name || "model-test-report")}-测试报告.html`;
       if (downloadTestReportButton) downloadTestReportButton.hidden = false;
-      const failed = isErrorStatus(config.status) || config.result === "未通过" || /validators/.test(config.name);
+      const failed = isErrorStatus(config.status) || config.result === "未通过" || config.result === "不通过" || /validators/.test(config.name);
       const selectedCases = casesFromLabels(config.cases.split(","));
       const basicCases = selectedCases.filter(item => item.category === "basic");
       const optionalCases = selectedCases.filter(item => item.category === "optional");
@@ -11260,7 +11310,7 @@ llm-d-modelservice:
         return items.length ? items.map(([label, count]) => `${label}：${count}`).join("　") : "未选择";
       };
       const reportStatus = failed
-        ? { label: "未通过", tag: "tag red", health: "未通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
+        ? { label: "不通过", tag: "tag red", health: "不通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
         : (failCount + warnCount + skipCount + notRunCount > 0 || passCount < allRows.length)
           ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
           : { label: "通过", tag: "tag green", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" };
@@ -11331,7 +11381,7 @@ llm-d-modelservice:
         const total = modelTestRows.closest(".view")?.querySelector(".pg-total");
         if (total) total.textContent = `总共 ${modelTestRows.children.length} 条`;
       }
-      closeModals();
+      showView(returnTargetFor("new-test") || "model-tests");
     }
 
     function serviceById(serviceId) {
@@ -13197,6 +13247,9 @@ llm-d-modelservice:
       });
     });
     if (submitNewTest) submitNewTest.addEventListener("click", submitNewTestTask);
+    document.querySelectorAll("[data-return-new-test]").forEach(button => {
+      button.addEventListener("click", () => showView(returnTargetFor("new-test") || "model-tests"));
+    });
 
     if (upgradeStrategySelect) {
       upgradeStrategySelect.addEventListener("change", syncUpgradeStrategyFields);
