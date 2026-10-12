@@ -10528,6 +10528,14 @@ llm-d-modelservice:
         }).join("");
       const resourceStatus = issueTags || (state[0] === "未知" ? "" : `<span class="${tagClass(state[1] || "green")}">${state[0] === "可用" ? "运行中" : escapeHtml(state[0])}</span>`);
       const availabilityStatus = `<span class="${tagClass(state[1] || "green")}">${escapeHtml(state[0] || "-")}</span>`;
+      const deploymentMethods = {
+        "deepseek-v4-flash-h800-prod": "优选模板 ｜ DeepSeek-V4-Flash",
+        "qwen3-235b-prod": "通用模板",
+        "dynamo-llama4-scout-lab": "优选模板 ｜ Llama-4-Scout",
+        "dynamo-qwen3-colocated-prod": "优选模板 ｜ Qwen3-32B",
+        "external-qwen3-router-prod": "自定义部署"
+      };
+      const deploymentMethod = deploymentMethods[item.id] || "自定义部署";
       const field = (label, value, extraClass = "") => `<div class="detail-basic-item${extraClass ? ` ${extraClass}` : ""}"><div class="detail-basic-value">${value}</div><div class="detail-basic-label">${label}</div></div>`;
       detailBasicInfo.innerHTML = [
         field("模型服务名称", escapeHtml(item.id || "-"), "mono"),
@@ -10538,6 +10546,7 @@ llm-d-modelservice:
         field("命名空间", escapeHtml(item.namespace || "-"), "mono"),
         field("推理模式", `<span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode || "-")}</span>`),
         field("编排框架", `<span class="${tagClass(item.frameworkColor)}">${escapeHtml(item.framework || "-")}</span>`),
+        field("部署方式", escapeHtml(deploymentMethod)),
         field("可用状态", availabilityStatus),
         field("ArgoCD 同步状态", `<span class="${tagClass(item.sync?.[1])}">${escapeHtml(item.sync?.[0] || "-")}</span>`),
         field("资源运行状态", resourceStatus)
