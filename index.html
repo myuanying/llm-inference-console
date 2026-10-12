@@ -5416,6 +5416,8 @@
     .resource-type-cell { color: var(--fg-2); font-weight: 600; }
     .resource-name-link { color: var(--accent); font-weight: 600; cursor: pointer; }
     .resource-name-link:hover { color: var(--accent-hover); text-decoration: underline; }
+    .resource-jump-icon { display: inline-block; margin-left: 4px; color: var(--accent); font-size: 12px; line-height: 1; vertical-align: 1px; }
+    .resource-log-link .resource-jump-icon { margin-left: 3px; }
     .shell.immersive-detail #detail .list-block .table-scroll, .shell.immersive-detail #detail .resource-group .table-scroll { border-radius: 0 0 10px 10px; box-shadow: none; }
     .shell.immersive-detail #detail .list-block { border-radius: 0 0 8px 8px; }
     .shell.immersive-detail #detail table th.col-act, .shell.immersive-detail #detail table td.col-act { width: 60px; padding: 0; text-align: center; }
@@ -8111,16 +8113,6 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
                 </div>
               </div>
               <div class="tl-group" data-tl-group="">
-                <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">模型名称<span class="tl-caret" aria-hidden="true">⌄</span></button>
-                <select class="hidden-control" id="templateLibraryModelFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="DeepSeek-V4-Flash-0731">DeepSeek-V4-Flash-0731</option><option value="Qwen3-32B">Qwen3-32B</option><option value="Qwen3-235B-A22B-FP8">Qwen3-235B-A22B-FP8</option><option value="Llama-4-Scout">Llama-4-Scout</option></select>
-                <div class="filter-chip-list" data-template-library-filter="templateLibraryModelFilter" role="group" aria-label="模型名称">
-                  <button type="button" class="filter-chip" data-filter-value="DeepSeek-V4-Flash-0731">DeepSeek-V4-Flash-0731</button>
-                  <button type="button" class="filter-chip" data-filter-value="Qwen3-32B">Qwen3-32B</button>
-                  <button type="button" class="filter-chip" data-filter-value="Qwen3-235B-A22B-FP8">Qwen3-235B</button>
-                  <button type="button" class="filter-chip" data-filter-value="Llama-4-Scout">Llama-4-Scout</button>
-                </div>
-              </div>
-              <div class="tl-group" data-tl-group="">
                 <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">编排框架<span class="tl-caret" aria-hidden="true">⌄</span></button>
                 <select class="hidden-control" id="templateLibraryFrameworkFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="llm-d">llm-d</option><option value="dynamo">dynamo</option></select>
                 <div class="filter-chip-list" data-template-library-filter="templateLibraryFrameworkFilter" role="group" aria-label="编排框架">
@@ -9238,7 +9230,6 @@ llm-d-modelservice:
     const templateModeFilter = document.querySelector("#templateModeFilter");
     const templateLibrarySearch = document.querySelector("#templateLibrarySearch");
     const templateLibraryGpuFilter = document.querySelector("#templateLibraryGpuFilter");
-    const templateLibraryModelFilter = document.querySelector("#templateLibraryModelFilter");
     const templateLibraryFrameworkFilter = document.querySelector("#templateLibraryFrameworkFilter");
     const templateLibraryModeFilter = document.querySelector("#templateLibraryModeFilter");
     const templateLibraryStatusFilter = document.querySelector("#templateLibraryStatusFilter");
@@ -9663,6 +9654,14 @@ llm-d-modelservice:
           if (nameCell && !nameCell.querySelector(".resource-name-link")) {
             nameCell.innerHTML = `<span class="resource-name-link">${escapeHtml(nameCell.textContent.trim())}</span>`;
           }
+          if (nameCell && !nameCell.querySelector(".resource-jump-icon")) {
+            nameCell.insertAdjacentHTML("beforeend", '<span class="resource-jump-icon" aria-hidden="true" title="跳转">↗</span>');
+          }
+          row.querySelectorAll("button").forEach(button => {
+            if (!/^日志$/.test(button.textContent.trim()) || button.querySelector(".resource-jump-icon")) return;
+            button.classList.add("resource-log-link");
+            button.insertAdjacentHTML("beforeend", '<span class="resource-jump-icon" aria-hidden="true">↗</span>');
+          });
           const resourceType = typeCell?.textContent.trim() || "";
           const nodeCell = nodeIndex >= 0 ? row.children[nodeIndex] : null;
           if (nodeCell && resourceType !== "Pod") {
@@ -11971,14 +11970,12 @@ ${currentYamlPreview.innerHTML}
     function matchesTemplateLibraryFilter(row) {
       const search = (templateLibrarySearch?.value || "").trim().toLowerCase();
       const gpu = templateLibraryGpuFilter?.value || "";
-      const model = templateLibraryModelFilter?.value || "";
       const framework = templateLibraryFrameworkFilter?.value || "";
       const mode = templateLibraryModeFilter?.value || "";
       const status = templateLibraryStatusFilter?.value || "";
       const searchable = `${row.dataset.model || ""} ${row.textContent || ""}`.toLowerCase();
       return (!search || searchable.includes(search))
         && (!gpu || (row.dataset.gpu || "").includes(gpu))
-        && (!model || row.dataset.modelName === model)
         && (!framework || row.dataset.framework === framework)
         && (!mode || row.dataset.mode === mode)
         && (!status || row.dataset.status === status);
@@ -12234,7 +12231,6 @@ ${currentYamlPreview.innerHTML}
     [
       templateLibrarySearch,
       templateLibraryGpuFilter,
-      templateLibraryModelFilter,
       templateLibraryFrameworkFilter,
       templateLibraryModeFilter,
       templateLibraryStatusFilter
