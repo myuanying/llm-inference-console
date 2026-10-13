@@ -10979,11 +10979,25 @@ llm-d-modelservice:
       if (performanceConfigField) performanceConfigField.hidden = isAcceptance;
     }
 
+    function populateNewTestServices(preferredServiceId) {
+      if (!newTestService) return;
+      const availableServices = serviceRowsData.filter(item => item.serviceState?.[0] === "可用");
+      newTestService.innerHTML = serviceRowsData.map(item => {
+        const status = item.serviceState?.[0] || "未知";
+        const disabled = status !== "可用" ? " disabled" : "";
+        return `<option value="${escapeHtml(item.id)}"${disabled}>${escapeHtml(item.id)}（${escapeHtml(status)}）</option>`;
+      }).join("");
+      const selectedId = availableServices.some(item => item.id === preferredServiceId)
+        ? preferredServiceId
+        : availableServices[0]?.id || "";
+      newTestService.value = selectedId;
+    }
+
     function openNewTest(serviceId = activeDetailService, options = {}) {
       if (!newTestModal) return;
       const service = serviceById(serviceId);
       const shortId = service?.id?.split("-")[0] || "model";
-      if (newTestService && service) newTestService.value = service.id;
+      populateNewTestServices(service?.id);
       const copiedType = options.type && !String(options.type).includes("功能") ? "performance" : "acceptance";
       if (newTestType) newTestType.value = copiedType;
       if (newTestName) {
@@ -11372,6 +11386,7 @@ llm-d-modelservice:
     function submitNewTestTask() {
       const name = (newTestName?.value || newTestName?.placeholder || "").trim();
       const serviceId = newTestService?.value || activeDetailService;
+      if (serviceById(serviceId)?.serviceState?.[0] !== "可用") return;
       const isAcceptance = (newTestType?.value || "acceptance") === "acceptance";
       const datasets = selectedAcceptanceDatasets();
       if (!name || (isAcceptance && datasets.length === 0)) return;
