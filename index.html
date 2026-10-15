@@ -7100,7 +7100,19 @@
     <main class="main">
       <header class="topbar" data-od-id="page-header" style="transform: translate(4px, 4px);">
         <div class="crumb"><button type="button" class="crumb-back" data-view="services" aria-label="返回模型服务" title="返回模型服务" hidden="">←</button> <span id="crumbLabel">模型服务</span></div>
-        <button type="button" class="btn topbar-test-report" id="downloadModelTestReport" hidden>下载报告</button>
+        <span class="ops topbar-test-actions" id="modelTestDetailActions" hidden>
+          <button type="button" class="btn ops-trigger" aria-label="操作" aria-haspopup="menu">操作</button>
+          <span class="ops-menu" role="menu">
+            <button type="button" id="downloadModelTestReport" disabled>下载报告</button>
+            <button type="button" data-detail-test-action="rerun">重新执行</button>
+            <button type="button" data-detail-test-action="copy">复制任务</button>
+            <span class="ops-submenu">
+              <button type="button" class="ops-submenu-trigger" aria-haspopup="menu">修改状态</button>
+              <span class="ops-submenu-menu" role="menu"></span>
+            </span>
+            <button type="button" class="danger" data-detail-test-action="delete">删除</button>
+          </span>
+        </span>
       </header>
 
       <section class="content">
@@ -8651,7 +8663,7 @@ llm-d-modelservice:
                 <button type="button" class="active" data-detail-tab="overview"><span class="rail-ic" aria-hidden="true">✧</span>拓扑与配置</button>
                 <button type="button" data-detail-tab="roles"><span class="rail-ic" aria-hidden="true">▦</span>资源列表</button>
                 <button type="button" data-detail-tab="metrics"><span class="rail-ic" aria-hidden="true">◔</span>运行监控</button>
-                <button type="button" data-detail-tab="tests"><span class="rail-ic" aria-hidden="true">✓</span>测试任务</button>
+                <button type="button" data-detail-tab="tests"><span class="rail-ic" aria-hidden="true">✓</span>模型测试</button>
                 <button type="button" data-detail-tab="scaling"><span class="rail-ic" aria-hidden="true">⇅</span>扩缩容</button>
                 <button type="button" data-detail-tab="events"><span class="rail-ic" aria-hidden="true">≣</span>操作记录</button>
                 <button type="button" data-detail-tab="versions"><span class="rail-ic" aria-hidden="true">↺</span>历史版本</button>
@@ -8910,7 +8922,7 @@ llm-d-modelservice:
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>任务名称</th><th>测试范围</th><th>状态</th><th>创建时间</th><th>完成时间</th><th class="col-act"></th></tr></thead>
+                    <thead><tr><th>任务名称</th><th>目标服务</th><th>测试范围</th><th>状态</th><th>测试结果</th><th>创建时间</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailTestRows">
                       <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td class="mono"><span class="test-name-link">api-cli-deepseek-0824</span></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td>2026-08-24 09:53</td><td>2026-08-24 10:08</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                       <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td class="mono"><span class="test-name-link">deepseek-stream-longctx-0901</span></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>2026-09-01 10:12</td><td>-</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
@@ -9747,6 +9759,7 @@ llm-d-modelservice:
     const modelTestDetailSummary = document.querySelector("#modelTestDetailSummary");
     const modelTestDetailProgress = document.querySelector("#modelTestDetailProgress");
     const modelTestDetailReport = document.querySelector("#modelTestDetailReport");
+    const modelTestDetailActions = document.querySelector("#modelTestDetailActions");
     const downloadModelTestReport = document.querySelector("#downloadModelTestReport");
     const testDetailTabButtons = Array.from(document.querySelectorAll("[data-test-detail-tab]"));
     const testDetailPanes = Array.from(document.querySelectorAll("[data-test-detail-pane]"));
@@ -10587,6 +10600,15 @@ llm-d-modelservice:
 
     let activeDetailService = "deepseek-v4-flash-h800-prod";
 
+    function renderDetailTestRows(serviceId) {
+      if (!modelTestRows || !detailTestRows) return;
+      const rows = Array.from(modelTestRows.querySelectorAll("tr")).filter(row => row.children[1]?.textContent.trim() === serviceId);
+      detailTestRows.innerHTML = rows.map(row => row.outerHTML).join("");
+      if (!rows.length) {
+        detailTestRows.innerHTML = `<tr><td colspan="7" class="muted">暂无该模型服务的测试任务</td></tr>`;
+      }
+    }
+
     const defaults = {
       deepseek: {
         serviceType: "llm-d",
@@ -10799,7 +10821,7 @@ llm-d-modelservice:
         });
       }
       crumbLabel.textContent = viewLabels[id] || "模型服务";
-      if (downloadModelTestReport && id !== "model-test-detail") downloadModelTestReport.hidden = true;
+      if (modelTestDetailActions && id !== "model-test-detail") modelTestDetailActions.hidden = true;
       // 服务观测页展示「当前服务」的大盘：每次进入都按 activeDetailService 重绘表头，避免与详情页串味。
       if (id === "service-observability") renderObservabilityDashboard();
       const returnTarget = returnTargetFor(id);
@@ -11004,6 +11026,7 @@ llm-d-modelservice:
       if (switchServiceHint) {
         switchServiceHint.textContent = profile.title;
       }
+      renderDetailTestRows(activeDetailService);
 
       if (profile.layout === "colocated") {
         const hasTopology = Boolean(profile.topology);
@@ -11612,7 +11635,8 @@ llm-d-modelservice:
     }
 
     function testActions(status) {
-      return `<span class="row-actions test-row-actions"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu">${testStatusActionButton(status, "rerun", "重新执行")}<button type="button" data-copy-test>复制任务</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
+      const reportDisabled = status !== "已完成";
+      return `<span class="row-actions test-row-actions"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-test-report${reportDisabled ? " disabled title=\"任务完成后可下载测试报告\"" : ""}>下载报告</button>${testStatusActionButton(status, "rerun", "重新执行")}<button type="button" data-copy-test>复制任务</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
     }
 
     function testServiceLink(serviceId) {
@@ -11945,7 +11969,13 @@ llm-d-modelservice:
       const resultColor = taskResult === "通过" ? "green" : taskResult === "部分通过" ? "amber" : taskResult === "不通过" ? "red" : "";
       if (crumbLabel) crumbLabel.textContent = config.name ? `模型测试：${config.name}` : "测试详情";
       if (modelTestDetailTitle) modelTestDetailTitle.textContent = config.name || "测试详情";
-      if (downloadModelTestReport) downloadModelTestReport.hidden = config.status !== "已完成";
+      if (modelTestDetailActions) modelTestDetailActions.hidden = false;
+      if (downloadModelTestReport) {
+        downloadModelTestReport.disabled = config.status !== "已完成";
+        downloadModelTestReport.title = config.status === "已完成" ? "下载测试报告" : "任务完成后可下载测试报告";
+      }
+      const detailStatusMenu = modelTestDetailActions?.querySelector(".ops-submenu-menu");
+      if (detailStatusMenu) detailStatusMenu.innerHTML = `${testStatusActionButton(config.status, "pause", "暂停")}${testStatusActionButton(config.status, "start", "启动")}`;
       const reportTab = testDetailTabButtons.find(button => button.dataset.testDetailTab === "report");
       if (reportTab) {
         reportTab.disabled = config.status !== "已完成";
@@ -12074,6 +12104,12 @@ llm-d-modelservice:
       openTestDetail(row, "report");
     }
 
+    function downloadTestReport(row) {
+      if (!row || getTestConfigFromRow(row).status !== "已完成") return;
+      openTestReport(row);
+      downloadCurrentTestReport();
+    }
+
     function submitNewTestTask() {
       const name = (newTestName?.value || newTestName?.placeholder || "").trim();
       const serviceId = newTestService?.value || activeDetailService;
@@ -12087,11 +12123,9 @@ llm-d-modelservice:
       const caseText = isAcceptance ? datasets.join(",") : "sse_stream,json_object_case,function_calling,long_input_nonstream,long_output";
       const caseConfigs = isAcceptance ? selectedCaseConfigs() : {};
       const caseConfigAttr = escapeHtml(JSON.stringify(caseConfigs));
-      const detailRow = `
-                      <tr data-cases="${escapeHtml(caseText)}" data-case-configs="${caseConfigAttr}"><td class="mono"><span class="test-name-link">${escapeHtml(name)}</span></td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>${created}</td><td>-</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
       const listRow = `
                   <tr data-cases="${escapeHtml(caseText)}" data-case-configs="${caseConfigAttr}"><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>-</td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
-      if (detailTestRows && serviceId === activeDetailService) detailTestRows.insertAdjacentHTML("afterbegin", detailRow);
+      if (detailTestRows && serviceId === activeDetailService) detailTestRows.insertAdjacentHTML("afterbegin", listRow);
       if (modelTestRows) {
         modelTestRows.insertAdjacentHTML("afterbegin", listRow);
         const total = modelTestRows.closest(".view")?.querySelector(".pg-total");
@@ -14056,6 +14090,18 @@ llm-d-modelservice:
     }
 
     document.addEventListener("click", event => {
+      const detailAction = event.target.closest("#modelTestDetailActions [data-detail-test-action]");
+      const detailStatusAction = event.target.closest("#modelTestDetailActions [data-test-status-action]");
+      if (detailStatusAction && activeTestDetailRow) {
+        openTestStatusConfirm(activeTestDetailRow, detailStatusAction.dataset.testStatusAction);
+        return;
+      }
+      if (detailAction && activeTestDetailRow) {
+        if (detailAction.dataset.detailTestAction === "rerun") openTestStatusConfirm(activeTestDetailRow, "rerun");
+        if (detailAction.dataset.detailTestAction === "copy") openCopyTest(activeTestDetailRow);
+        if (detailAction.dataset.detailTestAction === "delete") openDeleteTest(activeTestDetailRow, activeTestDetailRow.closest("tbody"));
+        return;
+      }
       const scope = event.target.closest("#modelTestRows, #detailTestRows");
       if (!scope) return;
       const serviceButton = event.target.closest("[data-test-service]");
@@ -14084,7 +14130,7 @@ llm-d-modelservice:
         return;
       }
       if (event.target.closest("[data-open-test-report]")) {
-        openTestReport(row);
+        downloadTestReport(row);
         return;
       }
       if (event.target.closest("[data-delete-test]")) {
@@ -14131,7 +14177,7 @@ llm-d-modelservice:
     });
 
     if (downloadModelTestReport) {
-      downloadModelTestReport.addEventListener("click", downloadCurrentTestReport);
+      downloadModelTestReport.addEventListener("click", () => downloadTestReport(activeTestDetailRow));
     }
 
     document.addEventListener("click", event => {
