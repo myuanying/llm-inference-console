@@ -6307,6 +6307,13 @@
     .case-config-custom-thinking { display: block; min-width: 260px; }
     .case-config-custom-thinking input { width: min(100%, 360px); height: 28px; padding: 0 9px; border: 1px solid var(--border-soft); border-radius: 3px; background: var(--bg); color: var(--fg-1); font-size: 12px; }
     .case-config-custom-thinking input:focus { outline: none; border-color: var(--info); box-shadow: var(--focus-ring); }
+    .case-config-custom-thinking-list { display: grid; gap: 6px; min-width: 260px; }
+    .case-config-custom-thinking-row { display: flex; align-items: center; gap: 6px; }
+    .case-config-custom-thinking-row input { width: min(100%, 360px); flex: 1 1 auto; }
+    .case-config-text-remove { width: 24px; height: 28px; padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 18px; line-height: 28px; cursor: pointer; }
+    .case-config-text-remove:hover { color: var(--danger); }
+    .case-config-add-text { justify-self: start; padding: 0; border: 0; background: transparent; color: var(--accent); font-size: 12px; line-height: 20px; cursor: pointer; }
+    .case-config-add-text:hover { color: var(--accent-active); }
     .case-config-length-input { display: flex; width: 100%; min-width: 0; align-items: center; gap: 8px; }
     .case-config-length-input input { width: 100%; min-width: 0; flex: 1 1 auto; }
     .case-config-help {
@@ -11227,15 +11234,16 @@ llm-d-modelservice:
       const lengthHint = item.id === "long_output"
         ? "输出长度，多个长度用[,]隔开，如 32k,64k"
         : "输入长度，多个长度用[,]隔开，如 256k,512k";
-      const configuredCustomValue = String(selectedConfigs[item.id]?.find(value => String(value).startsWith("custom:")) || "").slice(7);
-      const customValue = single
-        ? configuredCustomValue
-        : lengthInput
-          ? configuredCustomValue || options.filter(option => selected.has(option.id)).map(option => option.label.replace(/K$/i, "")).join(",")
-          : "";
+      const configuredCustomValues = (selectedConfigs[item.id] || [])
+        .filter(value => String(value).startsWith("custom:"))
+        .map(value => String(value).slice(7));
+      const customValue = lengthInput
+        ? configuredCustomValues[0] || options.filter(option => selected.has(option.id)).map(option => option.label.replace(/K$/i, "")).join(",")
+        : "";
+      const customThinkingRows = (configuredCustomValues.length ? configuredCustomValues : [""]).map(value => `<span class="case-config-custom-thinking-row"><input type="text" value="${escapeHtml(value)}" placeholder="输入自定义 Thinking 控制参数" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><button type="button" class="case-config-text-remove" data-case-config-text-remove title="删除配置项" aria-label="删除配置项">×</button></span>`).join("");
       return `
         <span class="case-config-panel" data-case-config-for="${escapeHtml(item.id)}" data-case-config-panel="${escapeHtml(item.id)}" hidden>
-            ${single ? `<span class="case-config-custom-thinking"><input type="text" value="${escapeHtml(customValue)}" placeholder="输入自定义 Thinking 控制参数" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"></span>` : lengthInput ? `<span class="case-config-custom-thinking case-config-length-input"><input type="text" value="${escapeHtml(customValue)}" placeholder="${escapeHtml(lengthHint)}" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><span class="case-config-help" tabindex="0" data-tooltip="${escapeHtml(lengthHint)}" aria-label="长度输入说明">?</span></span>` : `<span class="case-config-options">
+            ${single ? `<span class="case-config-custom-thinking-list">${customThinkingRows}<button type="button" class="case-config-add-text" data-case-config-add-text>+ 添加</button></span>` : lengthInput ? `<span class="case-config-custom-thinking case-config-length-input"><input type="text" value="${escapeHtml(customValue)}" placeholder="${escapeHtml(lengthHint)}" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><span class="case-config-help" tabindex="0" data-tooltip="${escapeHtml(lengthHint)}" aria-label="长度输入说明">?</span></span>` : `<span class="case-config-options">
               ${options.map(option => `<span class="case-config-option${String(option.id).startsWith("custom:") ? " is-custom" : ""}"><input type="checkbox" name="${inputName}" value="${escapeHtml(option.id)}" data-case-config="${escapeHtml(item.id)}" data-case-config-name="${inputName}"${selected.has(option.id) ? " checked" : ""}><span>${escapeHtml(option.label)}</span>${String(option.id).startsWith("custom:") ? `<button type="button" class="case-config-remove" data-case-config-remove title="删除自定义长度" aria-label="删除自定义长度">×</button>` : ""}</span>`).join("")}
             </span>`}
             ${single || lengthInput ? "" : `<span class="case-config-custom"><button type="button" data-case-config-start-add>添加长度</button><span class="case-config-custom-editor" hidden><input type="number" min="1" step="1" placeholder="输入长度" data-case-config-custom-input><span class="case-config-unit">K</span><button type="button" data-case-config-add>添加</button></span></span>`}
@@ -11527,7 +11535,10 @@ llm-d-modelservice:
       }, {});
       scope.querySelectorAll(`input[data-case-config-name='${inputName}'][data-case-config-text]`).forEach(input => {
         const value = input.value.trim();
-        if (value) configs[input.dataset.caseConfig] = [`custom:${value}`];
+        if (value) {
+          if (!configs[input.dataset.caseConfig]) configs[input.dataset.caseConfig] = [];
+          configs[input.dataset.caseConfig].push(`custom:${value}`);
+        }
       });
       return configs;
     }
@@ -11546,13 +11557,22 @@ llm-d-modelservice:
       scope.querySelectorAll(`input[data-case-config-name='${inputName}'][data-case-config]`).forEach(input => {
         const configured = configs[input.dataset.caseConfig];
         const item = functionalCaseCatalog.find(candidate => candidate.id === input.dataset.caseConfig);
-        if (input.matches("[data-case-config-text]")) {
-          input.value = Array.isArray(configured) ? String(configured.find(value => String(value).startsWith("custom:")) || "").slice(7) : "";
-          return;
-        }
+        if (input.matches("[data-case-config-text]")) return;
         input.checked = Array.isArray(configured)
           ? configured.includes(input.value)
           : Boolean(item?.configOptions?.find(option => option.id === input.value)?.selected);
+      });
+      scope.querySelectorAll(`[data-case-config-panel][data-case-config-for]`).forEach(panel => {
+        const configured = configs[panel.dataset.caseConfigFor];
+        const values = Array.isArray(configured) ? configured.filter(value => String(value).startsWith("custom:")).map(value => String(value).slice(7)) : [];
+        let inputs = Array.from(panel.querySelectorAll("input[data-case-config-text]"));
+        while (values.length > inputs.length && inputs[0]) {
+          const row = inputs[0].closest(".case-config-custom-thinking-row");
+          if (!row) break;
+          row.parentElement.insertBefore(row.cloneNode(true), panel.querySelector("[data-case-config-add-text]"));
+          inputs = Array.from(panel.querySelectorAll("input[data-case-config-text]"));
+        }
+        inputs.forEach((input, index) => { input.value = values[index] || ""; });
       });
       syncCaseConfigVisibility(scope);
     }
@@ -13991,6 +14011,30 @@ llm-d-modelservice:
       const removeConfig = event.target.closest("[data-case-config-remove]");
       if (removeConfig) {
         removeConfig.closest(".case-config-option")?.remove();
+        return;
+      }
+      const removeTextConfig = event.target.closest("[data-case-config-text-remove]");
+      if (removeTextConfig) {
+        const list = removeTextConfig.closest(".case-config-custom-thinking-list");
+        const rows = list?.querySelectorAll(".case-config-custom-thinking-row");
+        if (rows?.length > 1) removeTextConfig.closest(".case-config-custom-thinking-row")?.remove();
+        else {
+          const input = removeTextConfig.closest(".case-config-custom-thinking-row")?.querySelector("input");
+          if (input) input.value = "";
+        }
+        return;
+      }
+      const addTextConfig = event.target.closest("[data-case-config-add-text]");
+      if (addTextConfig) {
+        const list = addTextConfig.closest(".case-config-custom-thinking-list");
+        const source = list?.querySelector(".case-config-custom-thinking-row");
+        if (source) {
+          const row = source.cloneNode(true);
+          row.querySelector("input")?.setAttribute("value", "");
+          row.querySelector("input").value = "";
+          list.insertBefore(row, addTextConfig);
+          row.querySelector("input")?.focus();
+        }
         return;
       }
       const addConfig = event.target.closest("[data-case-config-add]");
