@@ -11368,7 +11368,7 @@ llm-d-modelservice:
           const items = functionalCaseCatalog.filter(item => item.category === category);
           const checked = category === "basic";
           return `
-            <details class="case-group${category === "optional" ? " case-group--optional" : ""}">
+            <details class="case-group${category === "optional" ? " case-group--optional" : ""}"${category === "basic" ? " open" : ""}>
               <summary><span>${title}</span><small data-case-count="${category}">已选 0/${items.length}</small></summary>
               <div class="dataset-grid">
                 ${groupedDatasetOptionsHtml(items, (item, fullWidth) => datasetCaseHtml(item, checked, fullWidth))}
@@ -11508,8 +11508,14 @@ llm-d-modelservice:
       applyCaseConfigs(options.caseConfigs || {}, "acceptanceCaseConfig");
       document.querySelectorAll("#acceptanceDatasetField details").forEach(group => {
         const hasChecked = Boolean(group.querySelector("input[name='acceptanceDataset']:checked"));
-        if (hasChecked && copiedCases) group.setAttribute("open", "");
-        else group.removeAttribute("open");
+        if (copiedCases) {
+          if (hasChecked) group.setAttribute("open", "");
+          else group.removeAttribute("open");
+        } else if (group.querySelector("input[data-case-category='basic']")) {
+          group.setAttribute("open", "");
+        } else {
+          group.removeAttribute("open");
+        }
       });
       syncNewTestType();
       syncFunctionalCaseCounts();
