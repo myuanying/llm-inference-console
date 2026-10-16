@@ -12606,10 +12606,11 @@ ${currentYamlPreview.innerHTML}
         const pauseDisabled = pauseUpdateDisabledAttr(item);
         const externalTag = item.external ? `<span class="tag external-access-tag">外部接入</span>` : "";
         const syncStatus = renderSyncStatus(item);
+        const roleMetricLabel = item.mode === "PD 一体" ? "可用 / 总数" : null;
         const roleMetrics = (item.scaleRoles || []).slice(0, 2).map(role => `
           <div class="svc-metric">
             <div class="svc-metric-v"><strong>${escapeHtml(role.current)}</strong><span>/ ${escapeHtml(role.target)}</span></div>
-            <span class="svc-metric-l">${escapeHtml(role.name)} 可用 / 总数</span>
+            <span class="svc-metric-l">${escapeHtml(roleMetricLabel || `${role.name} 可用 / 总数`)}</span>
           </div>`).join("");
         const metric = `<div class="svc-metric svc-metric--total"><div class="svc-metric-v"><strong>${escapeHtml(gpu)}</strong><span>/ ${escapeHtml(gpuSummary || "GPU")}</span></div><span class="svc-metric-l">GPU 数 / 型号</span></div>`;
         const allIssueTags = [...(item.auxiliaryTags || []), ...(item.issueTags || [])];
