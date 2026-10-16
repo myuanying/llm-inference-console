@@ -1669,6 +1669,11 @@
       pointer-events: none;
     }
 
+    .parallel-item:has(input[type="checkbox"]:disabled) {
+      cursor: not-allowed;
+      opacity: 0.72;
+    }
+
     .parallel-item input[type="checkbox"] + span,
     .parallel-item input[type="checkbox"] + input,
     .parallel-item input[type="checkbox"] + .parallel-value {
@@ -5257,6 +5262,8 @@
     .tb .search { flex: 1 1 200px; width: auto; min-width: 200px; max-width: 450px; }
     .tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
     .tb-right .aicon { margin-right: 2px; }
+    .services-toolbar { flex-wrap: wrap; }
+    .services-toolbar .search { min-width: 180px; }
     .aicon { width: 30px; height: 30px; display: inline-grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--fg-2); font-size: 18px; line-height: 1; padding: 0; cursor: pointer; transition: background-color var(--motion-fast); }
     .aicon:hover { background: var(--border); }
     .aicon:active { background: var(--fill-pressed); }
@@ -8275,12 +8282,24 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
 
           <!-- layout: 画板 集群列表 ⟨Toolbar / 01_Standard / 02_toolbar@search-w-2buttons⟩ -->
           <!-- map: <dao-toolbar> 搜索 + 刷新动作图标 + 次按钮 + 主按钮 · src: dao-style/src/components/toolbar -->
-          <div class="tb" data-dao="toolbar" data-od-id="services-toolbar">
-            <label class="tb-field"><span class="tb-label">状态</span>
-              <select class="mini-select sel" id="serviceStatusFilter" aria-label="状态"><option value="">全部状态</option><option>可用</option><option>不可用</option><option>未知</option><option>部署中</option><option>更新中</option><option>删除中</option><option>资源异常</option><option>性能异常</option><option>Outofsync</option></select>
+          <div class="tb services-toolbar" data-dao="toolbar" data-od-id="services-toolbar">
+            <label class="tb-field"><span class="tb-label">集群</span>
+              <select class="mini-select sel" id="serviceClusterFilter" aria-label="集群"><option value="">全部</option><option>prod-gpu-beijing-01</option><option>delivery-h800-lab</option></select>
+            </label>
+            <label class="tb-field"><span class="tb-label">命名空间</span>
+              <select class="mini-select sel" id="serviceNamespaceFilter" aria-label="命名空间"><option value="">全部</option><option>inferx-prod</option><option>model-serving</option></select>
+            </label>
+            <label class="tb-field"><span class="tb-label">可用状态</span>
+              <select class="mini-select sel" id="serviceAvailabilityFilter" aria-label="可用状态"><option value="">全部</option><option>可用</option><option>不可用</option><option>未知</option></select>
+            </label>
+            <label class="tb-field"><span class="tb-label">资源健康状态</span>
+              <select class="mini-select sel" id="serviceResourceStatusFilter" aria-label="资源健康状态"><option value="">全部</option><option>运行中</option><option>更新中</option><option>运行异常</option><option>已暂停</option><option>资源缺失</option><option>状态未知</option></select>
+            </label>
+            <label class="tb-field"><span class="tb-label">ArgoCD 同步状态</span>
+              <select class="mini-select sel" id="serviceSyncFilter" aria-label="ArgoCD 同步状态"><option value="">全部</option><option>Synced</option><option>OutOfSync</option><option>Unknown</option></select>
             </label>
             <label class="tb-field"><span class="tb-label">推理模式</span>
-              <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部推理模式</option><option>PD 分离</option><option>PD 一体</option></select>
+              <select class="mini-select sel" id="serviceModeFilter" aria-label="推理模式"><option value="">全部</option><option>PD 分离</option><option>PD 一体</option></select>
             </label>
             <input class="search" id="serviceSearch" type="search" placeholder="输入服务名称搜索" aria-label="搜索模型服务">
             <div class="tb-right">
@@ -10935,7 +10954,7 @@ llm-d-modelservice:
         field("部署方式", escapeHtml(deploymentMethod)),
         field("可用状态", availabilityStatus),
         field("ArgoCD 同步状态", `<span class="${tagClass(item.sync?.[1])}">${escapeHtml(item.sync?.[0] || "-")}</span>`),
-        field("资源运行状态", resourceStatus)
+        field("资源健康状态", resourceStatus)
       ].join("");
     }
 
@@ -12103,7 +12122,7 @@ llm-d-modelservice:
         </div>
         <section class="report-section">
           <h3>健康检查门禁</h3>
-          <table class="report-table report-gate"><thead><tr><th>测试项</th><th>测试内容</th><th>测试结果</th><th>状态说明</th></tr></thead><tbody><tr><td><strong>健康检查</strong><br><span class="mono">health_check</span></td><td>${escapeHtml(requiredFunctionalCase.intro)}</td><td>${escapeHtml(reportStatus.health)}</td><td>${failed ? reportStatus.healthNote : `服务可达、鉴权有效、模型 ${escapeHtml(requestModelName(serviceById(config.service)))} 可请求。`}</td></tr></tbody></table>
+          <table class="report-table report-gate"><thead><tr><th>测试项</th><th>测试内容</th><th>测试结果</th><th>说明</th></tr></thead><tbody><tr><td><strong>健康检查</strong><br><span class="mono">health_check</span></td><td>${escapeHtml(requiredFunctionalCase.intro)}</td><td>${reportResultHtml(reportStatus.health)}</td><td>${failed ? reportStatus.healthNote : `服务可达、鉴权有效、模型 ${escapeHtml(requestModelName(serviceById(config.service)))} 可请求。`}</td></tr></tbody></table>
         </section>
         <section class="report-section">
           <h3>基本功能</h3>
@@ -12457,11 +12476,28 @@ ${currentYamlPreview.innerHTML}
     }
 
     const stateClassByColor = { green: "state--ok", amber: "state--warn", red: "state--err", "": "state--off" };
+    const resourceHealthLabels = {
+      Running: "运行中",
+      Progressing: "更新中",
+      Degraded: "运行异常",
+      Suspended: "已暂停",
+      Missing: "资源缺失",
+      Unknown: "状态未知"
+    };
+
+    function resourceHealthLabel(item) {
+      return resourceHealthLabels[item?.status?.[0]] || "状态未知";
+    }
+
     function serviceFilterState() {
-      const status = document.querySelector("#serviceStatusFilter")?.value || "";
+      const availability = document.querySelector("#serviceAvailabilityFilter")?.value || "";
+      const resourceStatus = document.querySelector("#serviceResourceStatusFilter")?.value || "";
+      const sync = document.querySelector("#serviceSyncFilter")?.value || "";
+      const cluster = document.querySelector("#serviceClusterFilter")?.value || "";
+      const namespace = document.querySelector("#serviceNamespaceFilter")?.value || "";
       const mode = document.querySelector("#serviceModeFilter")?.value || "";
       const query = (document.querySelector("#serviceSearch")?.value || "").trim().toLowerCase();
-      return { status, mode, query };
+      return { availability, resourceStatus, sync, cluster, namespace, mode, query };
     }
 
     function copyEndpoint(serviceId) {
@@ -12540,9 +12576,13 @@ ${currentYamlPreview.innerHTML}
 
     function renderServiceRows() {
       if (!serviceRows) return;
-      const { status, mode, query } = serviceFilterState();
+      const { availability, resourceStatus, sync, cluster, namespace, mode, query } = serviceFilterState();
       const items = serviceRowsData.filter(item =>
-        (!status || item.serviceState?.[0] === status || (item.issueTags || []).includes(status) || (item.auxiliaryTags || []).some(tag => tag.label === status)) &&
+        (!availability || item.serviceState?.[0] === availability) &&
+        (!resourceStatus || resourceHealthLabel(item) === resourceStatus) &&
+        (!sync || item.sync?.[0] === sync) &&
+        (!cluster || item.cluster === cluster) &&
+        (!namespace || item.namespace === namespace) &&
         (!mode || item.mode === mode) &&
         (!query || item.id.toLowerCase().includes(query) || item.model.toLowerCase().includes(query) || (item.alias || "").toLowerCase().includes(query))
       );
@@ -12619,7 +12659,7 @@ ${currentYamlPreview.innerHTML}
                 <div><dt>命名空间</dt><dd class="mono">${escapeHtml(item.namespace)}</dd></div>
                 <div><dt>推理模式</dt><dd><span class="${tagClass(item.modeColor)}">${escapeHtml(item.mode)}</span> <span class="${tagClass(item.frameworkColor)}">${escapeHtml(item.framework)}</span></dd></div>
                 <div><dt>创建时间</dt><dd class="mono">${escapeHtml(item.createdAt || "-")}</dd></div>
-                <div><dt>资源运行状态</dt><dd>${resourceStatus}</dd></div>
+                <div><dt>资源健康状态</dt><dd>${resourceStatus}</dd></div>
                 <div><dt>ArgoCD 同步状态</dt><dd>${syncStatus}</dd></div>
               </dl>
               <div class="svc-metrics">
@@ -12641,7 +12681,10 @@ ${currentYamlPreview.innerHTML}
       const jumpButton = event.target.closest("[data-detail-jump]");
       if (jumpButton) {
         const row = jumpButton.closest("[data-service-row]");
-        if (row) renderDetail(row.dataset.serviceRow);
+        if (row) {
+          openNewTest(row.dataset.serviceRow);
+          return;
+        }
         showView("detail");
         setDetailTab(jumpButton.dataset.detailJump);
         return;
@@ -12668,10 +12711,10 @@ ${currentYamlPreview.innerHTML}
       serviceRefreshTimer = setTimeout(renderServiceRows, 600);
     });
     document.addEventListener("input", event => {
-      if (event.target.closest("#serviceSearch, #serviceStatusFilter, #serviceModeFilter")) renderServiceRows();
+      if (event.target.closest("#serviceSearch, #serviceAvailabilityFilter, #serviceResourceStatusFilter, #serviceSyncFilter, #serviceClusterFilter, #serviceNamespaceFilter, #serviceModeFilter")) renderServiceRows();
     });
     document.addEventListener("change", event => {
-      if (event.target.closest("#serviceStatusFilter, #serviceModeFilter")) renderServiceRows();
+      if (event.target.closest("#serviceAvailabilityFilter, #serviceResourceStatusFilter, #serviceSyncFilter, #serviceClusterFilter, #serviceNamespaceFilter, #serviceModeFilter")) renderServiceRows();
     });
 
     // 服务观测页只展示「当前服务」的 Grafana 大盘；表头只留服务名 + 服务状态，状态取自 serviceRowsData。
@@ -14618,7 +14661,8 @@ llm-d-modelservice:
       button.addEventListener("click", () => {
         const row = button.closest("[data-service-row]");
         if (row) {
-          renderDetail(row.dataset.serviceRow);
+          openNewTest(row.dataset.serviceRow);
+          return;
         }
         showView("detail");
         setDetailTab(button.dataset.detailJump);
@@ -14659,6 +14703,7 @@ llm-d-modelservice:
       const strategy = toggle.closest("[data-parallel-strategy]");
       const input = strategy?.querySelector(`[data-parallel-input="${toggle.dataset.parallelToggle}"]`);
       if (input) input.hidden = !toggle.checked;
+      syncParallelDependencies(strategy);
       updateParallelTotal(strategy);
     });
 
@@ -14682,6 +14727,20 @@ llm-d-modelservice:
       return Number.isFinite(value) && value > 0 ? value : 1;
     }
 
+    function syncParallelDependencies(strategy) {
+      if (!strategy) return;
+      const epToggle = strategy.querySelector('[data-parallel-toggle="ep"]');
+      const epEnabled = Boolean(epToggle?.checked);
+      ["tp", "dp"].forEach(key => {
+        const toggle = strategy.querySelector(`[data-parallel-toggle="${key}"]`);
+        const input = strategy.querySelector(`[data-parallel-input="${key}"]`);
+        if (!toggle) return;
+        if (epEnabled) toggle.checked = true;
+        toggle.disabled = epEnabled;
+        if (input) input.hidden = !toggle.checked;
+      });
+    }
+
     function updateParallelTotal(strategy) {
       const total = strategy?.querySelector("[data-parallel-total]");
       if (!strategy || !total) return;
@@ -14691,7 +14750,10 @@ llm-d-modelservice:
       if (calc) calc.hidden = !epToggle?.checked;
     }
 
-    document.querySelectorAll("[data-parallel-strategy]").forEach(updateParallelTotal);
+    document.querySelectorAll("[data-parallel-strategy]").forEach(strategy => {
+      syncParallelDependencies(strategy);
+      updateParallelTotal(strategy);
+    });
 
     // 高级配置折叠行：行头按钮切换展开 / 收起，行头右侧状态文字反映面板内开关状态
     function syncAdvAccState(acc) {
