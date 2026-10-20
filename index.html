@@ -5481,11 +5481,27 @@
     .page-head-main .eyebrow { margin: 0 0 2px; color: var(--meta); font-size: 12px; line-height: 16px; }
     .page-back { width: 30px; height: 30px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-size: 28px; line-height: 28px; }
     .page-back:hover { background: var(--fill-hover); color: var(--fg); }
-    .test-detail-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); box-shadow: var(--elev-raised); }
+    .test-detail-card,
+    .test-result-card { margin-bottom: 20px; padding: 0; }
+    .test-detail-card h2,
+    .test-result-card h2 { margin: 0 0 12px; color: var(--fg-2); font-size: 18px; line-height: 26px; font-weight: 700; }
+    .test-detail-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); box-shadow: var(--elev-raised); }
     .test-detail-summary > div { display: flex; min-width: 0; padding: 14px 16px; flex-direction: column-reverse; gap: 4px; background: var(--surface); }
     .test-detail-summary span { display: block; margin: 0; color: var(--meta); font-size: 12px; line-height: 16px; }
     .test-detail-summary strong { display: block; color: var(--fg-2); font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
     .test-detail-summary strong .tag { display: inline-flex; margin: 0; }
+    .test-result-surface { padding: 0 20px 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: var(--elev-raised); }
+    .test-result-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 0 -20px; }
+    .test-result-meta > div { display: flex; min-width: 0; padding: 14px 20px; flex-direction: column-reverse; gap: 4px; }
+    .test-result-meta span { display: block; color: var(--meta); font-size: 12px; line-height: 16px; }
+    .test-result-meta strong { display: block; min-height: 20px; color: var(--fg-2); font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
+    .test-result-meta strong .tag { display: inline-flex; margin: 0; }
+    .test-result-card .report-summary { margin-top: 14px; }
+    .test-result-card .report-summary p { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+    .test-result-card .report-summary .result-badge { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    #modelTestDetailProgress { margin-top: 20px; }
+    .test-result-card .test-detail-content .test-case-group { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    .test-result-card .test-detail-content .test-case-group + .test-case-group { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-soft); }
     .test-detail-tabs { display: flex; gap: 36px; padding: 0 4px; border-bottom: 1px solid var(--border-soft); }
     .test-detail-tabs button { min-height: 42px; padding: 0 4px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); font-size: 14px; font-weight: 700; }
     .test-detail-tabs button:hover { color: var(--fg); }
@@ -5512,6 +5528,7 @@
 
     @media (max-width: 900px) {
       .test-detail-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .test-result-meta { grid-template-columns: 1fr; }
       .test-detail-content > dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 560px) {
@@ -7292,7 +7309,8 @@ resources:
                         <option>prod-gpu-beijing-01</option>
                         <option>delivery-h800-lab</option>
                         <option>ascend-910b-site-a</option>
-                        <option data-preset-only-disabled="" disabled="">muxi-gpu-shanghai-01（GPU型号不匹配）</option>
+                        <option>muxi-gpu-shanghai-01（GPU型号不匹配）</option>
+                        <option disabled="">ascend-910b-site-b（GPU类型不匹配）</option>
                       </select>
                     </label>
                     <label class="field" data-structured-field>
@@ -7436,7 +7454,7 @@ resources:
                     </label>
                     <label class="field" data-resource-field="gpu-type">
                       <span class="label">GPU型号</span>
-                      <select id="nodePoolSelect">
+                      <select id="nodePoolSelect" data-template-unlocked="">
                         <option value="">未指定</option>
                         <option>NVIDIA H800</option>
                         <option>NVIDIA H20</option>
@@ -8441,16 +8459,16 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
         </section>
 
         <section id="model-test-detail" class="view test-detail-page" data-od-id="view-model-test-detail">
-          <section class="test-detail-summary" aria-label="测试基本信息" id="modelTestDetailSummary"></section>
-          <div class="test-detail-tabs" role="tablist" aria-label="测试详情页签">
-            <button type="button" class="active" role="tab" aria-selected="true" data-test-detail-tab="progress">执行进度</button>
-            <button type="button" role="tab" aria-selected="false" data-test-detail-tab="report">测试报告</button>
-          </div>
-          <section class="test-detail-pane active" id="test-detail-progress" role="tabpanel" data-test-detail-pane="progress">
-            <div id="modelTestDetailProgress" class="test-detail-content"></div>
+          <section class="test-detail-card" aria-label="测试基本信息">
+            <h2>基本信息</h2>
+            <div class="test-detail-summary" id="modelTestDetailSummary"></div>
           </section>
-          <section class="test-detail-pane" id="test-detail-report" role="tabpanel" data-test-detail-pane="report" hidden>
-            <div id="modelTestDetailReport" class="test-detail-content report-preview"></div>
+          <section class="test-result-card" aria-label="测试结果">
+            <h2>测试结果</h2>
+            <div class="test-result-surface">
+              <div id="modelTestResultSummary"></div>
+              <div id="modelTestDetailProgress" class="test-detail-content"></div>
+            </div>
           </section>
         </section>
 
@@ -9783,6 +9801,7 @@ llm-d-modelservice:
     const newTestModal = document.querySelector("#new-test");
     const modelTestDetailTitle = document.querySelector("#modelTestDetailTitle");
     const modelTestDetailSummary = document.querySelector("#modelTestDetailSummary");
+    const modelTestResultSummary = document.querySelector("#modelTestResultSummary");
     const modelTestDetailProgress = document.querySelector("#modelTestDetailProgress");
     const modelTestDetailReport = document.querySelector("#modelTestDetailReport");
     const modelTestDetailActions = document.querySelector("#modelTestDetailActions");
@@ -11886,6 +11905,8 @@ llm-d-modelservice:
       const optionalCases = selectedCases.filter(item => item.category === "optional");
       const healthFailed = isErrorStatus(config.status);
       const taskNotPassed = config.result === "未通过" || config.result === "不通过" || /validators/.test(config.name);
+      const progressSample = config.name === "function-dynamo-qwen3-0901";
+      const progressSamplePlan = ["已完成", "已完成", "已完成", "执行中", "未开始", "未开始"];
       const resultClass = result => result === "通过" ? "tag green" : (result === "未通过" || result === "不通过") ? "tag red" : result === "告警" ? "tag amber" : result === "跳过" || result === "未执行" ? "tag" : "tag";
       const resultBadge = result => {
         const icon = result === "通过" ? "✓" : result === "告警" || result === "跳过" ? "⚠" : result === "不通过" || result === "失败" ? "×" : "";
@@ -11893,6 +11914,11 @@ llm-d-modelservice:
         return result === "-" ? "-" : `<span class="result-badge ${tone}">${icon ? `<span class="result-badge-icon" aria-hidden="true">${icon}</span>` : ""}${escapeHtml(displayResultLabel(result))}</span>`;
       };
       const rowExecutionStatus = item => {
+        if (progressSample) {
+          if (item.id === "health_check") return "已完成";
+          const basicIndex = basicCases.indexOf(item);
+          return basicIndex >= 0 ? (progressSamplePlan[basicIndex] || "未开始") : "未开始";
+        }
         if (healthFailed && item.id === "health_check") return "错误";
         if (healthFailed) return "未执行";
         if (taskNotPassed && item.id === "health_check") return "已完成";
@@ -11911,10 +11937,16 @@ llm-d-modelservice:
         "执行中": "测试项正在执行。",
         "暂停": "测试项已暂停，等待继续执行。",
         "错误": "测试项执行时发生错误。",
+        "未开始": "测试项尚未开始执行。",
         "未执行": "因健康检查未通过或前置条件不满足，未执行。",
         "-": "暂无执行记录。"
       }[status] || "暂无执行记录。");
       const caseResult = (item, option, optionIndex) => {
+        if (progressSample) {
+          if (item.id === "health_check") return "通过";
+          const basicIndex = basicCases.indexOf(item);
+          return basicIndex >= 0 && basicIndex < 3 ? mockConfiguredCaseResult(item, option, optionIndex) : "-";
+        }
         if (config.status === "进行中" || config.status === "暂停") return "-";
         if (healthFailed && item.id === "health_check") return "-";
         if (healthFailed) return "-";
@@ -11924,6 +11956,12 @@ llm-d-modelservice:
         if (item.id === "thinking_control") return "跳过";
         return mockConfiguredCaseResult(item, option, optionIndex);
       };
+      const reportNotes = new Map();
+      selectedCases.forEach(item => {
+        reportCaseRows([item], healthFailed || taskNotPassed, caseConfigs).forEach((reportRow, index) => {
+          reportNotes.set(`${item.id}:${index}`, reportRow[4]);
+        });
+      });
       const detailEntries = cases => cases.flatMap(item => {
         const options = selectedCaseConfigOptions(item, caseConfigs);
         const executionStatus = rowExecutionStatus(item);
@@ -11933,11 +11971,11 @@ llm-d-modelservice:
           const note = result === "-"
             ? configOptionsNote(options, executionNote(executionStatus))
             : `${configOptionsExecutionNote(item, options)}${result === "告警" ? "当前配置结果为部分通过。" : ""}`;
-          return [{ item, options, executionStatus, result, note, content: configOptionsContent(item, options) }];
+          return [{ item, options, executionStatus, result, note: reportNotes.get(`${item.id}:0`) || note, content: configOptionsContent(item, options) }];
         }
         return options.map((option, optionIndex) => {
           const result = caseResult(item, option, optionIndex);
-          return { item, options: [option], executionStatus, result, note: configOptionNote(item, option, executionNote(executionStatus), result), content: configOptionContent(item, option) };
+          return { item, options: [option], executionStatus, result, note: reportNotes.get(`${item.id}:${optionIndex}`) || configOptionNote(item, option, executionNote(executionStatus), result), content: configOptionContent(item, option) };
         });
       });
       const aggregateTitles = { context_length: "上下文与长度", vision: "图片输入" };
@@ -11970,7 +12008,7 @@ llm-d-modelservice:
           <h4>${escapeHtml(title)} <span>${cases.length} 项</span></h4>
           <div class="report-table-wrap">
             <table class="report-table test-detail-table">
-              <thead><tr><th>测试项</th><th>测试内容</th><th>执行状态</th><th>测试结果</th><th>执行情况说明</th></tr></thead>
+              <thead><tr><th>测试项</th><th>测试内容</th><th>执行状态</th><th>测试结果</th><th>说明</th></tr></thead>
               <tbody>${renderCaseRows(cases)}</tbody>
             </table>
           </div>
@@ -12004,14 +12042,93 @@ llm-d-modelservice:
 
     let activeTestDetailRow = null;
 
+    function renderTestResultSummary(row, target = modelTestResultSummary) {
+      if (!target) return;
+      const config = getTestConfigFromRow(row);
+      const selectedCases = orderCasesLikeNewTest(casesFromLabels(config.cases.split(",")));
+      const basicCases = selectedCases.filter(item => item.category === "basic");
+      const optionalCases = selectedCases.filter(item => item.category === "optional");
+      const caseConfigs = config.caseConfigs || {};
+      const failed = isErrorStatus(config.status) || config.result === "未通过" || config.result === "不通过" || /validators/.test(config.name);
+      const progressSample = config.name === "function-dynamo-qwen3-0901";
+      const progressSamplePlan = ["已完成", "已完成", "已完成", "执行中", "未开始", "未开始"];
+      const allRows = [
+        ...reportCaseRows(basicCases, failed, caseConfigs),
+        ...reportCaseRows(optionalCases, failed, caseConfigs)
+      ];
+      const passCount = allRows.filter(item => item[3] === "✅ 通过").length;
+      const failCount = allRows.filter(item => item[3].includes("未通过") || item[3].includes("失败")).length;
+      const warnCount = allRows.filter(item => item[3].includes("告警") && item[5]?.aggregation !== "alternative").length;
+      const skipCount = allRows.filter(item => item[3].includes("跳过")).length;
+      const notRunCount = allRows.filter(item => item[3].includes("未执行")).length;
+      const completed = config.status === "已完成";
+      const executionLabel = config.status === "进行中" ? "执行中" : config.status === "暂停" ? "暂停" : config.status === "错误" ? "未执行" : "未执行";
+      const reportStatus = completed
+        ? failed || failCount > 0
+          ? { label: "不通过", tag: "tag red", health: "不通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
+          : (warnCount + skipCount + notRunCount > 0 || passCount < allRows.length)
+            ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
+            : { label: "通过", tag: "tag green", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
+        : { label: config.result && config.result !== "-" ? config.result : "-", tag: "tag", health: progressSample ? "通过" : config.status === "错误" ? "错误" : executionLabel, healthClass: progressSample ? "ok-text" : config.status === "错误" ? "danger-text" : "muted", healthNote: progressSample ? "服务可达、鉴权有效、模型可请求。" : config.status === "错误" ? "健康检查执行失败，其余测试项未执行。" : `测试任务${executionLabel}。` };
+      const summaryResult = (label, count) => {
+        const tone = label === "通过" ? "green" : label === "不通过" || label === "失败" ? "red" : "amber";
+        const icon = label === "通过" ? "✓" : label === "不通过" || label === "失败" ? "×" : "⚠";
+        return `<span class="result-badge ${tone}"><span class="result-badge-icon" aria-hidden="true">${icon}</span>${label}：${count}</span>`;
+      };
+      const summaryPart = (label, count) => ["通过", "告警", "不通过", "失败", "跳过"].includes(label)
+        ? summaryResult(label, count)
+        : `${label}：${count}`;
+      const statusSummary = rows => {
+        const items = [
+          ["通过", rows.filter(item => item[3] === "✅ 通过").length],
+          ["不通过", rows.filter(item => item[3].includes("未通过") || item[3].includes("失败")).length],
+          ["告警", rows.filter(item => item[3].includes("告警")).length],
+          ["跳过", rows.filter(item => item[3].includes("跳过")).length],
+          ["未执行", rows.filter(item => item[3].includes("未执行")).length]
+        ].filter(([, count]) => count > 0);
+        return items.length ? items.map(([label, count]) => summaryPart(label, count)).join("　") : "未选择";
+      };
+      const progressSampleSummary = cases => {
+        const summary = [];
+        const basicStatuses = cases.map((item, index) => progressSamplePlan[index] || "未开始");
+        const resultCounts = new Map();
+        basicStatuses.forEach((status, index) => {
+          if (status === "已完成") {
+            const item = cases[index];
+            const option = selectedCaseConfigOptions(item, caseConfigs)[0];
+            const result = mockConfiguredCaseResult(item, option, 0);
+            resultCounts.set(result, (resultCounts.get(result) || 0) + 1);
+          } else {
+            summary.push([status, 1]);
+          }
+        });
+        resultCounts.forEach((count, result) => summary.unshift([result, count]));
+        const ordered = ["通过", "告警", "不通过", "执行中", "未开始"];
+        return ordered.filter(label => summary.some(([name]) => name === label)).map(label => summaryPart(label, summary.filter(([name]) => name === label).reduce((total, [, count]) => total + count, 0))).join("　");
+      };
+      const categorySummary = cases => progressSample
+        ? (cases === basicCases ? progressSampleSummary(cases) : `未开始：${cases.length}`)
+        : completed
+          ? statusSummary(reportCaseRows(cases, failed, caseConfigs))
+          : `${executionLabel}：${cases.length}`;
+      target.innerHTML = `
+        <div class="test-result-meta">
+          <div><strong><span class="tag ${testStatusMeta[config.status] || ""}">${escapeHtml(config.status)}</span></strong><span>状态</span></div>
+          <div><strong><span class="tag ${reportStatus.tag.replace("tag ", "")}">${reportStatus.label}</span></strong><span>测试结果</span></div>
+          <div><strong>${escapeHtml(completed ? formatReportTime() : "-")}</strong><span>报告生成时间</span></div>
+        </div>
+        <div class="report-summary">
+          <div><span>健康检查</span><strong class="${reportStatus.healthClass}">${reportStatus.health}</strong><p>${reportStatus.healthNote}</p></div>
+          <div><span>基本功能</span><strong>${basicCases.length} 项</strong><p>${categorySummary(basicCases)}</p></div>
+          <div><span>高级功能</span><strong>${optionalCases.length} 项</strong><p>${categorySummary(optionalCases)}</p></div>
+        </div>`;
+    }
+
     function openTestDetail(row, tab = "progress") {
       if (!row || !modelTestDetailProgress || !modelTestDetailSummary) return;
       activeTestDetailRow = row;
       const config = getTestConfigFromRow(row);
       const service = serviceById(config.service);
-      const taskResult = config.result || (config.status === "已完成" ? completedTestResult(config) : "-");
-      const statusColor = testStatusMeta[config.status] || "";
-      const resultColor = taskResult === "通过" ? "green" : taskResult === "部分通过" ? "amber" : taskResult === "不通过" ? "red" : "";
       if (crumbLabel) crumbLabel.textContent = config.name ? `模型测试：${config.name}` : "测试详情";
       if (modelTestDetailTitle) modelTestDetailTitle.textContent = config.name || "测试详情";
       if (modelTestDetailActions) modelTestDetailActions.hidden = false;
@@ -12021,20 +12138,14 @@ llm-d-modelservice:
       }
       const detailStatusMenu = modelTestDetailActions?.querySelector(".ops-submenu-menu");
       if (detailStatusMenu) detailStatusMenu.innerHTML = `${testStatusActionButton(config.status, "pause", "暂停")}${testStatusActionButton(config.status, "start", "启动")}`;
-      const reportTab = testDetailTabButtons.find(button => button.dataset.testDetailTab === "report");
-      if (reportTab) {
-        reportTab.disabled = config.status !== "已完成";
-        reportTab.title = reportTab.disabled ? "任务完成后可查看测试报告" : "查看测试报告";
-      }
       modelTestDetailSummary.innerHTML = `
         <div><span>测试名称</span><strong>${escapeHtml(config.name)}</strong></div>
         <div><span>目标服务</span><strong class="mono">${escapeHtml(config.service)}</strong></div>
         <div><span>请求模型名</span><strong class="mono">${escapeHtml(requestModelName(service))}</strong></div>
         <div><span>服务端点</span><strong class="mono">${escapeHtml(service?.endpoint || `${config.service}-istio.inferx-prod.svc`)}</strong></div>
         <div><span>测试范围</span><strong>${escapeHtml(config.type)}</strong></div>
-        <div><span>状态</span><strong>${statusColor ? `<span class="tag ${statusColor}">${escapeHtml(config.status)}</span>` : `<span class="tag">${escapeHtml(config.status)}</span>`}</strong></div>
-        <div><span>测试结果</span><strong>${resultColor ? `<span class="tag ${resultColor}">${escapeHtml(taskResult)}</span>` : escapeHtml(taskResult)}</strong></div>
         <div><span>创建时间</span><strong>${escapeHtml(config.created)}</strong></div>`;
+      renderTestResultSummary(row);
       renderTestConfigContent(row, modelTestDetailProgress);
       setTestDetailTab(tab);
       showView("model-test-detail");
@@ -12077,7 +12188,7 @@ llm-d-modelservice:
       const reportStatus = failed || failCount > 0
         ? { label: "不通过", tag: "tag red", health: "不通过", healthClass: "danger-text", healthNote: "健康检查不通过，服务不可达或鉴权失败。" }
         : (warnCount + skipCount + notRunCount > 0 || passCount < allRows.length)
-          ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求，但部分配置未覆盖或暂不支持。" }
+          ? { label: "部分通过", tag: "tag amber", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" }
           : { label: "通过", tag: "tag green", health: "通过", healthClass: "ok-text", healthNote: "服务可达、鉴权有效、模型可请求。" };
       const reportResultHtml = status => {
         if (status === "未执行") return "-";
@@ -12151,7 +12262,8 @@ llm-d-modelservice:
 
     function downloadTestReport(row) {
       if (!row || getTestConfigFromRow(row).status !== "已完成") return;
-      openTestReport(row);
+      activeTestDetailRow = row;
+      renderTestReportContent(row, currentYamlPreview);
       downloadCurrentTestReport();
     }
 
@@ -12458,6 +12570,20 @@ llm-d-modelservice:
     .report-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .report-meta-grid div, .report-summary div { border: 1px solid #dfe5ec; border-radius: 4px; padding: 12px; }
     .report-section { margin-top: 20px; }
+    .report-section h3 { margin: 0 0 8px; font-size: 15px; line-height: 22px; }
+    .report-table-wrap { overflow: hidden; border: 1px solid #dfe5ec; border-radius: 4px; }
+    .report-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 18px; }
+    .report-table th, .report-table td { padding: 9px 10px; border-bottom: 1px solid #dfe5ec; text-align: left; vertical-align: top; }
+    .report-table th { background: #f5f7fa; color: #5f6875; font-weight: 700; }
+    .report-table tr:last-child td { border-bottom: 0; }
+    .result-badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; white-space: nowrap; }
+    .result-badge.green, .ok-text { color: #0f8f47; }
+    .result-badge.amber, .warn-text { color: #a06900; }
+    .result-badge.red, .danger-text { color: #c73636; }
+    .result-badge.muted { color: #6f7785; }
+    .result-badge-icon { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; font-size: 11px; line-height: 15px; font-weight: 800; }
+    .result-badge.green .result-badge-icon { background: #18a957; color: #fff; }
+    .result-badge.red .result-badge-icon { background: #d64545; color: #fff; }
   </style>
 </head>
 <body>
@@ -14469,9 +14595,6 @@ llm-d-modelservice:
       });
       document.querySelectorAll("[data-edit-from-template]").forEach(button => {
         button.hidden = !locked;
-      });
-      deployClusterSelect?.querySelectorAll("[data-preset-only-disabled]").forEach(option => {
-        option.hidden = !locked;
       });
       syncServiceConfigScopeLock();
       syncRoleInstanceLock();
