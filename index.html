@@ -5262,6 +5262,7 @@
     .tb .search { flex: 1 1 200px; width: auto; min-width: 200px; max-width: 450px; }
     .tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
     .tb-right .aicon { margin-right: 2px; }
+    .model-tests-toolbar { flex-wrap: wrap; }
     .services-toolbar { flex-wrap: wrap; }
     .services-toolbar .search { min-width: 180px; }
     .aicon { width: 30px; height: 30px; display: inline-grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--fg-2); font-size: 18px; line-height: 1; padding: 0; cursor: pointer; transition: background-color var(--motion-fast); }
@@ -7437,9 +7438,9 @@ resources:
                       <span class="label"><span class="required">*</span> 镜像</span>
                       <span class="combo-row">
                         <select id="imagePresetSelect" data-template-unlocked="">
-                          <option value="docker.m.daocloud.io/vllm/vllm-openai:nightly">vLLM OpenAI nightly</option>
-                          <option value="docker.m.daocloud.io/vllm/vllm-openai:v0.8.5">vLLM OpenAI v0.8.5</option>
-                          <option value="ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17.iaas.dev.202608251235">SGLang v0.5.17</option>
+                          <option value="docker.m.daocloud.io/vllm/vllm-openai:nightly">vllm-openai:nightly</option>
+                          <option value="docker.m.daocloud.io/vllm/vllm-openai:v0.8.5">vllm-openai:v0.8.5</option>
+                          <option value="ai-containers-cn-beijing.cr.volces.com/deeplearning/sglang:v0.5.17">sglang:v0.5.17</option>
                           <option value="custom">自定义镜像</option>
                         </select>
                         <input id="imageInput" value="docker.m.daocloud.io/vllm/vllm-openai:nightly" data-template-unlocked="">
@@ -8420,12 +8421,16 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             </div>
             <div class="concept-body" id="concept-model-tests-body" hidden="">模型测试面向已部署模型服务发起测试任务，对模型调用功能、性能等进行测试验收。</div>
           </div>
-          <div class="tb" data-dao="toolbar">
+          <div class="tb model-tests-toolbar" data-dao="toolbar">
+            <label class="tb-field"><span class="tb-label">集群</span>
+              <select class="mini-select sel" id="modelTestClusterFilter" aria-label="集群"><option value="">全部</option><option>prod-gpu-beijing-01</option><option>delivery-h800-lab</option></select></label>
+            <label class="tb-field"><span class="tb-label">命名空间</span>
+              <select class="mini-select sel" id="modelTestNamespaceFilter" aria-label="命名空间"><option value="">全部</option><option>inferx-prod</option><option>model-serving</option></select></label>
             <label class="tb-field"><span class="tb-label">测试范围</span>
-              <select class="mini-select sel" aria-label="测试范围"><option>全部测试范围</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label>
+              <select class="mini-select sel" id="modelTestScopeFilter" aria-label="测试范围"><option value="">全部</option><option>功能测试</option><option>性能测试</option><option>精度测试</option></select></label>
             <label class="tb-field"><span class="tb-label">状态</span>
-              <select class="mini-select sel" aria-label="状态"><option>全部状态</option><option>进行中</option><option>暂停</option><option>已完成</option><option>错误</option></select></label>
-            <input class="search" type="search" placeholder="输入任务名称搜索" aria-label="搜索任务">
+              <select class="mini-select sel" id="modelTestStatusFilter" aria-label="状态"><option value="">全部</option><option>进行中</option><option>暂停</option><option>已完成</option><option>错误</option></select></label>
+            <input class="search" id="modelTestSearch" type="search" placeholder="输入任务名称搜索" aria-label="搜索任务">
             <div class="tb-right">
               <button class="btn primary" data-dao="button" data-props="type=primary" data-od-id="cta-new-test" data-open-new-test="">新建测试</button>
             </div>
@@ -8433,13 +8438,13 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
           <div class="list-block" data-dao="table">
             <div class="table-scroll">
               <table>
-                <thead><tr><th>任务名称</th><th>目标服务</th><th>测试范围</th><th>状态</th><th>测试结果</th><th>创建时间</th><th class="col-act">操作</th></tr></thead>
+                <thead><tr><th>任务名称</th><th>目标服务</th><th>集群</th><th>命名空间</th><th>测试范围</th><th>状态</th><th>测试结果</th><th>创建时间</th><th class="col-act">操作</th></tr></thead>
                 <tbody id="modelTestRows">
-                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag amber">部分通过</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>-</td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control" data-detail-cases="health_check,messages_structure,message_elements,sse_stream"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag red">不通过</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="health_check,messages_structure,message_elements,sse_stream" data-detail-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">external-router-error-0902</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag red">错误</span></td><td>-</td><td>2026-09-02 11:20:18</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
-                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>功能测试</td><td><span class="tag">暂停</span></td><td>-</td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,max_tokens_user,stop_sequence,system_prompt,no_default_system_prompt,thinking_control_vllm,context_cache,thinking_control,input_length_cloud,long_input_nonstream"><td><span class="test-name-link">api-cli-deepseek-0824</span></td><td><button type="button" class="service-inline-link mono" data-test-service="deepseek-v4-flash-h800-prod">deepseek-v4-flash-h800-prod</button></td><td>prod-gpu-beijing-01</td><td>inferx-prod</td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag amber">部分通过</span></td><td>2026-08-24 09:53:56</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="messages_structure,message_elements,sse_stream,stream_usage,json_object_case,function_calling,context_cache,input_length_cloud,long_input_nonstream,long_output"><td><span class="test-name-link">function-dynamo-qwen3-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="dynamo-qwen3-colocated-prod">dynamo-qwen3-colocated-prod</button></td><td>prod-gpu-beijing-01</td><td>inferx-prod</td><td>功能测试</td><td><span class="tag amber">进行中</span></td><td>-</td><td>2026-09-01 10:12:31</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="" disabled="" title="任务完成后可查看测试报告">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control" data-detail-cases="health_check,messages_structure,message_elements,sse_stream"><td><span class="test-name-link">knoway-qwen-validators-0831</span></td><td><button type="button" class="service-inline-link mono" data-test-service="qwen3-235b-prod">qwen3-235b-prod</button></td><td>prod-gpu-beijing-01</td><td>inferx-prod</td><td>功能测试</td><td><span class="tag green">已完成</span></td><td><span class="tag red">不通过</span></td><td>2026-08-31 15:44:57</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="health_check,messages_structure,message_elements,sse_stream" data-detail-cases="auth_security,messages_structure,message_elements,stop_sequence,thinking_control_vllm,thinking_control"><td><span class="test-name-link">external-router-error-0902</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>prod-gpu-beijing-01</td><td>inferx-prod</td><td>功能测试</td><td><span class="tag red">错误</span></td><td>-</td><td>2026-09-02 11:20:18</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
+                  <tr data-cases="auth_security,messages_structure,message_elements,json_object_case,sse_stream,stream_usage,function_calling,multi_turn,encoding_special,system_prompt,no_default_system_prompt"><td><span class="test-name-link">external-router-openai-0901</span></td><td><button type="button" class="service-inline-link mono" data-test-service="external-qwen3-router-prod">external-qwen3-router-prod</button></td><td>prod-gpu-beijing-01</td><td>inferx-prod</td><td>功能测试</td><td><span class="tag">暂停</span></td><td>-</td><td>2026-09-01 14:30:00</td><td class="col-act"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-view-test-config="">测试详情</button><button type="button" data-open-test-report="">测试报告</button><button type="button" class="danger" data-delete-test="">删除</button></span></span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -10650,7 +10655,7 @@ llm-d-modelservice:
       const rows = Array.from(modelTestRows.querySelectorAll("tr")).filter(row => row.children[1]?.textContent.trim() === serviceId);
       detailTestRows.innerHTML = rows.map(row => row.outerHTML).join("");
       if (!rows.length) {
-        detailTestRows.innerHTML = `<tr><td colspan="7" class="muted">暂无该模型服务的测试任务</td></tr>`;
+        detailTestRows.innerHTML = `<tr><td colspan="9" class="muted">暂无该模型服务的测试任务</td></tr>`;
       }
     }
 
@@ -11710,13 +11715,14 @@ llm-d-modelservice:
     function getTestConfigFromRow(row) {
       const cells = Array.from(row?.children || []);
       const isDetailRow = cells.length === 6 && !cells[1]?.querySelector("[data-test-service]") && !cells[5]?.textContent.includes("目标服务");
-      const createdIndex = isDetailRow ? 3 : (cells.length >= 7 ? 5 : 4);
+      const mainRow = Boolean(row?.querySelector("[data-test-service]"));
+      const createdIndex = isDetailRow ? 3 : (mainRow ? 7 : (cells.length >= 7 ? 5 : 4));
       return {
         name: cells[0]?.textContent.trim() || "",
-        service: isDetailRow ? activeDetailService : (cells[1]?.textContent.trim() || activeDetailService),
-        type: isDetailRow ? (cells[1]?.textContent.trim() || "") : (cells[2]?.textContent.trim() || ""),
-        status: isDetailRow ? (cells[2]?.textContent.trim() || "") : (cells[3]?.textContent.trim() || ""),
-        result: isDetailRow ? "" : (cells[4]?.textContent.trim() || ""),
+        service: isDetailRow ? activeDetailService : (row?.querySelector("[data-test-service]")?.dataset.testService || cells[1]?.textContent.trim() || activeDetailService),
+        type: isDetailRow ? (cells[1]?.textContent.trim() || "") : (cells[4]?.textContent.trim() || cells[2]?.textContent.trim() || ""),
+        status: isDetailRow ? (cells[2]?.textContent.trim() || "") : (cells[5]?.textContent.trim() || cells[3]?.textContent.trim() || ""),
+        result: isDetailRow ? "" : (cells[6]?.textContent.trim() || cells[4]?.textContent.trim() || ""),
         created: cells[createdIndex]?.textContent.trim() || "",
         cases: row?.dataset.detailCases || row?.dataset.cases || functionalCaseCatalog.filter(item => item.category === "basic").map(item => item.id).join(","),
         caseConfigs: parseCaseConfigs(row?.dataset.caseConfigs)
@@ -11727,7 +11733,7 @@ llm-d-modelservice:
       if (!row) return null;
       const cells = Array.from(row.children || []);
       const isDetailRow = cells.length === 6 && !cells[1]?.querySelector("[data-test-service]");
-      return cells[isDetailRow ? 2 : 3] || null;
+      return cells[isDetailRow ? 2 : (row.querySelector("[data-test-service]") ? 5 : 3)] || null;
     }
 
     function testTaskName(row) {
@@ -11746,7 +11752,8 @@ llm-d-modelservice:
 
     function testResultCell(row) {
       const cells = Array.from(row?.children || []);
-      return cells.length >= 7 ? cells[4] : null;
+      if (cells.length < 7) return null;
+      return row.querySelector("[data-test-service]") ? cells[6] : cells[4];
     }
 
     function setTestRowResult(row, result) {
@@ -11758,7 +11765,9 @@ llm-d-modelservice:
 
     function setTestRowCreatedTime(row) {
       const cells = Array.from(row?.children || []);
-      if (cells.length >= 7) {
+      if (row?.querySelector("[data-test-service]")) {
+        cells[7].textContent = currentMinuteText(true);
+      } else if (cells.length >= 7) {
         cells[5].textContent = currentMinuteText(true);
       } else if (cells.length === 6) {
         cells[3].textContent = currentMinuteText(false);
@@ -11832,6 +11841,63 @@ llm-d-modelservice:
     }
 
     hydrateTestActionMenus();
+
+    function syncModelTestServiceMeta() {
+      const valuesFor = key => [...new Set(serviceRowsData.map(service => service?.[key]).filter(Boolean))];
+      const syncFilterOptions = (selector, values) => {
+        const select = document.querySelector(selector);
+        if (!select) return;
+        const current = select.value;
+        select.innerHTML = `<option value="">全部</option>${values.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")}`;
+        select.value = values.includes(current) ? current : "";
+      };
+      syncFilterOptions("#modelTestClusterFilter", valuesFor("cluster"));
+      syncFilterOptions("#modelTestNamespaceFilter", valuesFor("namespace"));
+      modelTestRows?.querySelectorAll("tr").forEach(row => {
+        const serviceId = row.querySelector("[data-test-service]")?.dataset.testService || "";
+        const service = serviceById(serviceId);
+        const cells = Array.from(row.children || []);
+        if (service && cells.length >= 9) {
+          cells[2].textContent = service.cluster || "-";
+          cells[3].textContent = service.namespace || "-";
+        }
+      });
+    }
+
+    syncModelTestServiceMeta();
+
+    function applyModelTestFilters() {
+      if (!modelTestRows) return;
+      const cluster = document.querySelector("#modelTestClusterFilter")?.value || "";
+      const namespace = document.querySelector("#modelTestNamespaceFilter")?.value || "";
+      const scope = document.querySelector("#modelTestScopeFilter")?.value || "";
+      const status = document.querySelector("#modelTestStatusFilter")?.value || "";
+      const search = (document.querySelector("#modelTestSearch")?.value || "").trim().toLowerCase();
+      let visibleCount = 0;
+      modelTestRows.querySelectorAll("tr").forEach(row => {
+        const service = serviceById(row.querySelector("[data-test-service]")?.dataset.testService || "");
+        const cells = Array.from(row.children || []);
+        const rowScope = cells[4]?.textContent.trim() || "";
+        const rowStatus = testStatusCell(row)?.textContent.trim() || "";
+        const rowName = cells[0]?.textContent.trim().toLowerCase() || "";
+        const visible = (!cluster || service?.cluster === cluster)
+          && (!namespace || service?.namespace === namespace)
+          && (!scope || rowScope === scope)
+          && (!status || rowStatus === status)
+          && (!search || rowName.includes(search));
+        row.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+      const total = modelTestRows.closest(".view")?.querySelector(".pg-total");
+      if (total) total.textContent = `总共 ${visibleCount} 条`;
+    }
+
+    ["#modelTestClusterFilter", "#modelTestNamespaceFilter", "#modelTestScopeFilter", "#modelTestStatusFilter"]
+      .map(selector => document.querySelector(selector))
+      .filter(Boolean)
+      .forEach(control => control.addEventListener("change", applyModelTestFilters));
+    document.querySelector("#modelTestSearch")?.addEventListener("input", applyModelTestFilters);
+    applyModelTestFilters();
 
     function selectedCaseConfigOptions(item, caseConfigs = {}) {
       if (!item.configOptions?.length) return [null];
@@ -12280,13 +12346,15 @@ llm-d-modelservice:
       const caseText = isAcceptance ? datasets.join(",") : "sse_stream,json_object_case,function_calling,long_input_nonstream,long_output";
       const caseConfigs = isAcceptance ? selectedCaseConfigs() : {};
       const caseConfigAttr = escapeHtml(JSON.stringify(caseConfigs));
+      const service = serviceById(serviceId);
       const listRow = `
-                  <tr data-cases="${escapeHtml(caseText)}" data-case-configs="${caseConfigAttr}"><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>-</td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
+                  <tr data-cases="${escapeHtml(caseText)}" data-case-configs="${caseConfigAttr}"><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${escapeHtml(service?.cluster || "-")}</td><td>${escapeHtml(service?.namespace || "-")}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>-</td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
       if (detailTestRows && serviceId === activeDetailService) detailTestRows.insertAdjacentHTML("afterbegin", listRow);
       if (modelTestRows) {
         modelTestRows.insertAdjacentHTML("afterbegin", listRow);
         const total = modelTestRows.closest(".view")?.querySelector(".pg-total");
         if (total) total.textContent = `总共 ${modelTestRows.children.length} 条`;
+        applyModelTestFilters();
       }
       showView(returnTargetFor("new-test") || "model-tests");
     }
