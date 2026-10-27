@@ -2204,10 +2204,44 @@
     #sync-restore.active { padding-bottom: 88px; }
     #sync-restore .sync-restore-shell { min-height: calc(100vh - 170px); }
     #sync-restore .panel-body { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
-    #sync-restore .sync-restore-grid { min-height: 0; }
-    #sync-restore .yaml-diff-code {
-      max-height: calc(100vh - 294px);
-      min-height: 420px;
+    #sync-restore .panel-body { align-content: start; }
+    .sync-resource-list { display: grid; gap: 16px; }
+    .sync-resource-card {
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+    .sync-resource-card[open] { box-shadow: var(--elev-card); }
+    .sync-resource-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 52px;
+      padding: 0 18px;
+      color: var(--fg);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+    }
+    .sync-resource-head::-webkit-details-marker { display: none; }
+    .sync-resource-head::before { content: ""; width: 5px; height: 5px; margin-right: -8px; border-radius: 50%; background: var(--primary); }
+    .sync-resource-toggle { color: var(--muted); font-size: 18px; transform: rotate(180deg); transition: transform .16s ease; }
+    .sync-resource-card:not([open]) .sync-resource-toggle { transform: rotate(0deg); }
+    .sync-resource-title { margin-right: auto; text-align: left; }
+    .sync-resource-body {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 18px 18px;
+    }
+    .sync-resource-yaml { min-width: 0; }
+    .sync-resource-yaml .yaml-diff-code {
+      max-height: 520px;
+      min-height: 260px;
+      margin: 0;
     }
 
     .diff-added { color: var(--success); }
@@ -6753,6 +6787,14 @@
       min-height: 300px !important;
       max-width: none !important;
     }
+    .service-picker.is-disabled .service-picker-trigger,
+    .service-picker-trigger:disabled {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--fg-input-disabled);
+      cursor: not-allowed;
+      opacity: .72;
+    }
     .template-detail-yaml-tabs {
       margin-bottom: 14px;
     }
@@ -6780,6 +6822,7 @@
       .template-card-grid { grid-template-columns: 1fr; }
       .template-import-yaml { height: 360px !important; }
       .yaml-custom-grid { grid-template-columns: 1fr; }
+      .sync-resource-body { grid-template-columns: 1fr; }
     }
 
     /* 详情目录与外层导航使用同一套状态色。 */
@@ -7137,6 +7180,7 @@
           <span class="ops-menu" role="menu">
             <button type="button" id="downloadModelTestReport" disabled>下载报告</button>
             <button type="button" data-detail-test-action="rerun">重新执行</button>
+            <button type="button" data-detail-test-action="edit-config">编辑配置</button>
             <button type="button" data-detail-test-action="copy">复制任务</button>
             <span class="ops-submenu">
               <button type="button" class="ops-submenu-trigger" aria-haspopup="menu">修改状态</button>
@@ -8002,20 +8046,10 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             <div class="panel-head">
               <div>
                 <h2>YAML 对比</h2>
-                <p class="hint" id="syncRestoreMeta">左侧为集群当前 YAML，右侧为期望状态；确认后按目标 YAML 恢复。</p>
               </div>
             </div>
             <div class="panel-body">
-              <div class="yaml-diff-grid sync-restore-grid">
-                <div>
-                  <p class="yaml-diff-title">当前 YAML</p>
-                  <pre class="code yaml-diff-code" id="syncCurrentYaml" aria-readonly="true"></pre>
-                </div>
-                <div>
-                  <p class="yaml-diff-title">目标 YAML</p>
-                  <pre class="code yaml-diff-code" id="syncTargetYaml" aria-readonly="true"></pre>
-                </div>
-              </div>
+              <div class="sync-resource-list" id="syncRestoreResources"></div>
               <div class="update-result" id="syncRestoreResult" hidden=""></div>
             </div>
           </div>
@@ -8501,6 +8535,14 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
             <aside class="tl-side" id="templateLibraryFilterSide" aria-label="筛选条件">
               <button type="button" class="btn tl-clear" id="templateLibraryClear" data-dao="button" data-props="type=secondary">清空筛选项</button>
               <div class="tl-group" data-tl-group="">
+                <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">模板类型<span class="tl-caret" aria-hidden="true">⌄</span></button>
+                <select class="hidden-control" id="templateLibraryTypeFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="builtin">内置模板</option><option value="custom">自定义模板</option></select>
+                <div class="filter-chip-list" data-template-library-filter="templateLibraryTypeFilter" role="group" aria-label="模板类型">
+                  <button type="button" class="filter-chip" data-filter-value="builtin">内置模板</button>
+                  <button type="button" class="filter-chip" data-filter-value="custom">自定义模板</button>
+                </div>
+              </div>
+              <div class="tl-group" data-tl-group="">
                 <button type="button" class="tl-group-title" data-tl-fold="" aria-expanded="true">GPU 类型<span class="tl-caret" aria-hidden="true">⌄</span></button>
                 <select class="hidden-control" id="templateLibraryGpuFilter" aria-hidden="true" tabindex="-1"><option value="">全部</option><option value="nvidia">英伟达 GPU</option><option value="huawei">华为 GPU</option><option value="muxi">沐曦 GPU</option></select>
                 <div class="filter-chip-list" data-template-library-filter="templateLibraryGpuFilter" role="group" aria-label="GPU 类型">
@@ -8541,15 +8583,15 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
 
         <section id="template-import" class="view" data-od-id="view-template-import">
           <div class="template-import-shell">
-            <div class="panel">
+            <div class="panel" id="templateImportBasicPanel" hidden>
               <div class="panel-head">
-                <h2>基本信息</h2>
+                <h2>模板信息</h2>
               </div>
               <div class="panel-body">
                 <div class="form-grid template-import-basic-grid">
                   <label class="field">
                     <span class="label"><span class="required">*</span> 模板名称</span>
-                    <input id="importTemplateName" placeholder="DeepSeek-V4-Flash-H800">
+                    <input id="importTemplateName" placeholder="默认使用YAML文件中的模板名称">
                   </label>
                   <label class="field wide">
                     <span class="label">描述信息</span>
@@ -8566,7 +8608,7 @@ llm-d-gateway --service-name ${SERVICE_NAME} --port 8080</textarea>
               </div>
             </div>
 
-            <div class="panel">
+            <div class="panel" id="templateImportYamlPanel">
               <div class="panel-head">
                 <h2>配置信息</h2>
               </div>
@@ -8588,7 +8630,9 @@ llm-d-modelservice:
             <div class="deploy-bottom-bar template-import-actions">
               <span class="hint" id="templateImportStatus"></span>
               <button class="btn" type="button" data-page-back="" data-view="template-library">取消</button>
-              <button class="btn primary" type="button" id="submitTemplateImport">导入模板</button>
+              <button class="btn" type="button" id="templateImportPrevious" hidden>上一步</button>
+              <button class="btn primary" type="button" id="templateImportNext">下一步</button>
+              <button class="btn primary" type="button" id="submitTemplateImport" hidden>导入模板</button>
             </div>
           </div>
         </section>
@@ -9401,16 +9445,6 @@ llm-d-modelservice:
                   <small>重新执行全部测试项，并覆盖上次执行的全部结果。</small>
                 </span>
               </label>
-              <label class="retry-mode-option">
-                <input type="radio" name="testRetryMode" value="reconfigure">
-                <span>
-                  <strong>重新配置测试项</strong>
-                  <small>基于当前任务配置重新选择测试项，确认后覆盖当前测试项并重新执行。</small>
-                </span>
-              </label>
-              <div class="retry-case-config" id="testRetryCaseConfig" hidden="">
-                <div class="case-group-stack" aria-label="重新配置测试项"></div>
-              </div>
             </div>
             <div class="footer-actions">
               <button class="btn" type="button" data-close-modal="">取消</button>
@@ -9632,9 +9666,16 @@ llm-d-modelservice:
     const templateLibraryModeFilter = document.querySelector("#templateLibraryModeFilter");
     const templateLibraryStatusFilter = document.querySelector("#templateLibraryStatusFilter");
     const templateLibraryGrid = document.querySelector("#templateLibraryGrid");
+    const templateLibraryTypeFilter = document.querySelector("#templateLibraryTypeFilter");
     const submitTemplateImport = document.querySelector("#submitTemplateImport");
+    const templateImportNext = document.querySelector("#templateImportNext");
+    const templateImportPrevious = document.querySelector("#templateImportPrevious");
+    const templateImportBasicPanel = document.querySelector("#templateImportBasicPanel");
+    const templateImportYamlPanel = document.querySelector("#templateImportYamlPanel");
     const templateImportStatus = document.querySelector("#templateImportStatus");
+    const importTemplateName = document.querySelector("#importTemplateName");
     const importTemplateDescription = document.querySelector("#importTemplateDescription");
+    const importTemplateYaml = document.querySelector("#importTemplateYaml");
     const templateDetailTitle = document.querySelector("#templateDetailTitle");
     const templateDetailName = document.querySelector("#templateDetailName");
     const templateDetailDescription = document.querySelector("#templateDetailDescription");
@@ -9810,6 +9851,7 @@ llm-d-modelservice:
     const modelTestDetailProgress = document.querySelector("#modelTestDetailProgress");
     const modelTestDetailReport = document.querySelector("#modelTestDetailReport");
     const modelTestDetailActions = document.querySelector("#modelTestDetailActions");
+    const newTestTitle = document.querySelector("#newTestTitle");
     const downloadModelTestReport = document.querySelector("#downloadModelTestReport");
     const testDetailTabButtons = Array.from(document.querySelectorAll("[data-test-detail-tab]"));
     const testDetailPanes = Array.from(document.querySelectorAll("[data-test-detail-pane]"));
@@ -9840,8 +9882,7 @@ llm-d-modelservice:
     const exportTemplateResult = document.querySelector("#exportTemplateResult");
     const submitExportTemplate = document.querySelector("#submitExportTemplate");
     const syncRestoreMeta = document.querySelector("#syncRestoreMeta");
-    const syncCurrentYaml = document.querySelector("#syncCurrentYaml");
-    const syncTargetYaml = document.querySelector("#syncTargetYaml");
+    const syncRestoreResources = document.querySelector("#syncRestoreResources");
     const syncRestoreResult = document.querySelector("#syncRestoreResult");
     const confirmSyncRestore = document.querySelector("#confirmSyncRestore");
     const pauseUpdateModal = document.querySelector("#pauseUpdateModal");
@@ -10844,6 +10885,7 @@ llm-d-modelservice:
     function showView(id) {
       const previousView = views.find(view => view.classList.contains("active"))?.id || "";
       views.forEach(view => view.classList.toggle("active", view.id === id));
+      if (id === "template-import") setTemplateImportStep("yaml");
       shell.classList.toggle("immersive-detail", id === "detail");
       if (id === "detail" && detailScroll) detailScroll.scrollTop = 0;
       const navTarget = id === "deploy" || id === "detail" || id === "edit-yaml" || id === "sync-restore"
@@ -11534,8 +11576,16 @@ llm-d-modelservice:
     function openNewTest(serviceId = activeDetailService, options = {}) {
       if (!newTestModal) return;
       const service = serviceById(serviceId);
+      editingTestRow = options.editRow || null;
+      if (newTestTitle) newTestTitle.textContent = editingTestRow ? "编辑测试配置" : "新建测试";
+      if (submitNewTest) submitNewTest.textContent = editingTestRow ? "保存并执行" : "创建测试";
       const shortId = service?.id?.split("-")[0] || "model";
       populateNewTestServices(service?.id);
+      if (newTestName) newTestName.disabled = Boolean(editingTestRow);
+      if (newTestService) newTestService.disabled = Boolean(editingTestRow);
+      newTestServicePicker?.classList.toggle("is-disabled", Boolean(editingTestRow));
+      const servicePickerTrigger = newTestServicePicker?.querySelector(".service-picker-trigger");
+      if (servicePickerTrigger) servicePickerTrigger.disabled = Boolean(editingTestRow);
       const copiedType = options.type && !String(options.type).includes("功能") ? "performance" : "acceptance";
       if (newTestType) newTestType.value = copiedType;
       if (newTestName) {
@@ -11563,6 +11613,7 @@ llm-d-modelservice:
       syncNewTestType();
       syncFunctionalCaseCounts();
       showView("new-test");
+      if (crumbLabel) crumbLabel.textContent = editingTestRow ? "编辑配置" : "新建测试";
     }
 
     function currentMinuteText(withSeconds = false) {
@@ -11675,11 +11726,12 @@ llm-d-modelservice:
     const testStatusActionMeta = {
       pause: { label: "暂停", nextStatus: "暂停", title: "暂停测试", message: "暂停后，该测试任务将停止继续执行，后续可通过「启动」恢复执行。" },
       start: { label: "启动", nextStatus: "进行中", title: "启动测试", message: "启动后，该测试任务将从暂停状态恢复为进行中。" },
-      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。未通过任务重试仅重新执行上次结果未通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果；重新配置测试项会覆盖当前测试项后重新执行。" }
+      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。未通过任务重试仅重新执行上次结果未通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果。" }
     };
 
     let pendingTestStatusRow = null;
     let pendingTestStatusAction = "";
+    let editingTestRow = null;
 
     function testStatusClass(status) {
       const color = testStatusMeta[status] || "";
@@ -11690,6 +11742,12 @@ llm-d-modelservice:
       const enabled = Boolean(testStatusActionRules[status]?.[action]);
       const title = enabled ? "" : `当前状态为${status}，不可${label}`;
       return `<button type="button" data-test-status-action="${action}"${enabled ? "" : ` disabled title="${escapeHtml(title)}"`}>${label}</button>`;
+    }
+
+    function testEditConfigButton(status) {
+      const enabled = status !== "进行中";
+      const title = enabled ? "" : "当前状态为进行中，不可编辑配置";
+      return `<button type="button" data-edit-test-config${enabled ? "" : ` disabled title="${escapeHtml(title)}"`}>编辑配置</button>`;
     }
 
     function testStatusMenu(status) {
@@ -11705,7 +11763,7 @@ llm-d-modelservice:
 
     function testActions(status) {
       const reportDisabled = status !== "已完成";
-      return `<span class="row-actions test-row-actions"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-test-report${reportDisabled ? " disabled title=\"任务完成后可下载测试报告\"" : ""}>下载报告</button>${testStatusActionButton(status, "rerun", "重新执行")}<button type="button" data-copy-test>复制任务</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
+      return `<span class="row-actions test-row-actions"><span class="ops"><button class="btn text ops-trigger" type="button" aria-label="更多操作" aria-haspopup="menu">⋮</button><span class="ops-menu" role="menu"><button type="button" data-open-test-report${reportDisabled ? " disabled title=\"任务完成后可下载测试报告\"" : ""}>下载报告</button>${testStatusActionButton(status, "rerun", "重新执行")}${testEditConfigButton(status)}<button type="button" data-copy-test>复制任务</button>${testStatusMenu(status)}<button type="button" class="danger" data-delete-test>删除</button></span></span></span>`;
     }
 
     function testServiceLink(serviceId) {
@@ -11830,6 +11888,17 @@ llm-d-modelservice:
         type: config.type,
         caseIds: config.cases.split(","),
         caseConfigs: config.caseConfigs
+      });
+    }
+
+    function openEditTestConfig(row) {
+      const config = getTestConfigFromRow(row);
+      openNewTest(config.service, {
+        name: config.name,
+        type: config.type,
+        caseIds: config.cases.split(","),
+        caseConfigs: config.caseConfigs,
+        editRow: row
       });
     }
 
@@ -12204,6 +12273,12 @@ llm-d-modelservice:
       }
       const detailStatusMenu = modelTestDetailActions?.querySelector(".ops-submenu-menu");
       if (detailStatusMenu) detailStatusMenu.innerHTML = `${testStatusActionButton(config.status, "pause", "暂停")}${testStatusActionButton(config.status, "start", "启动")}`;
+      const detailEditConfig = modelTestDetailActions?.querySelector("[data-detail-test-action='edit-config']");
+      if (detailEditConfig) {
+        const enabled = config.status !== "进行中";
+        detailEditConfig.disabled = !enabled;
+        detailEditConfig.title = enabled ? "" : "当前状态为进行中，不可编辑配置";
+      }
       modelTestDetailSummary.innerHTML = `
         <div><span>测试名称</span><strong>${escapeHtml(config.name)}</strong></div>
         <div><span>目标服务</span><strong class="mono">${escapeHtml(config.service)}</strong></div>
@@ -12347,6 +12422,25 @@ llm-d-modelservice:
       const caseConfigs = isAcceptance ? selectedCaseConfigs() : {};
       const caseConfigAttr = escapeHtml(JSON.stringify(caseConfigs));
       const service = serviceById(serviceId);
+      if (editingTestRow) {
+        const cells = Array.from(editingTestRow.children || []);
+        const nameCell = cells[0]?.querySelector(".test-name-link");
+        if (nameCell) nameCell.textContent = name;
+        if (cells[1]) cells[1].innerHTML = testServiceLink(serviceId);
+        if (cells[2]) cells[2].textContent = service?.cluster || "-";
+        if (cells[3]) cells[3].textContent = service?.namespace || "-";
+        if (cells[4]) cells[4].textContent = typeLabel;
+        editingTestRow.dataset.cases = caseText;
+        editingTestRow.dataset.caseConfigs = JSON.stringify(caseConfigs);
+        setTestRowStatus(editingTestRow, "进行中");
+        setTestRowResult(editingTestRow, "-");
+        setTestRowCreatedTime(editingTestRow);
+        editingTestRow = null;
+        if (newTestTitle) newTestTitle.textContent = "新建测试";
+        if (submitNewTest) submitNewTest.textContent = "创建测试";
+        showView(returnTargetFor("new-test") || "model-tests");
+        return;
+      }
       const listRow = `
                   <tr data-cases="${escapeHtml(caseText)}" data-case-configs="${caseConfigAttr}"><td><span class="test-name-link">${escapeHtml(name)}</span></td><td>${testServiceLink(serviceId)}</td><td>${escapeHtml(service?.cluster || "-")}</td><td>${escapeHtml(service?.namespace || "-")}</td><td>${typeLabel}</td><td><span class="tag amber">${statusLabel}</span></td><td>-</td><td>${created}:00</td><td class="col-act">${testActions(statusLabel)}</td></tr>`;
       if (detailTestRows && serviceId === activeDetailService) detailTestRows.insertAdjacentHTML("afterbegin", listRow);
@@ -12740,9 +12834,69 @@ ${currentYamlPreview.innerHTML}
         replicas: "0",
         memory: "640Gi"
       };
-      const currentYaml = yamlFromValues(currentValues);
-      const targetYaml = yamlFromValues(targetValues);
+      const resourceYaml = values => `${yamlFromValues(values)}
+---
+apiVersion: inference.networking.k8s.io/v1
+kind: InferencePool
+metadata:
+  name: ${values.service || "model-service"}-pool
+  namespace: inferx-prod
+spec:
+  selector:
+    app: ${values.service || "model-service"}
+  replicas: ${values.replicas || "1"}
+---
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: ${values.service || "model-service"}-decode
+  namespace: inferx-prod
+spec:
+  replicas: ${values.replicas || "1"}
+  rolloutStrategy:
+    type: RollingUpdate`;
+      const currentYaml = resourceYaml(currentValues);
+      const targetYaml = resourceYaml(targetValues);
       return { currentYaml, targetYaml };
+    }
+
+    function splitSyncYamlResources(yaml) {
+      return String(yaml || "")
+        .split(/\n---+\s*(?:\n|$)/)
+        .map(text => text.trim())
+        .filter(Boolean)
+        .map((text, index) => {
+          const kind = text.match(/^kind:\s*([^\n#]+)/m)?.[1]?.trim() || "资源";
+          const name = text.match(/^\s*name:\s*([^\n#]+)/m)?.[1]?.trim() || `资源 ${index + 1}`;
+          const namespace = text.match(/^\s*namespace:\s*([^\n#]+)/m)?.[1]?.trim() || "default";
+          return {
+            key: `${kind}/${namespace}/${name}`,
+            title: `${kind}/${namespace}/${name}`,
+            yaml: text
+          };
+        });
+    }
+
+    function renderSyncRestoreResources(currentYaml, targetYaml) {
+      if (!syncRestoreResources) return;
+      const currentResources = splitSyncYamlResources(currentYaml);
+      const targetResources = splitSyncYamlResources(targetYaml);
+      const count = Math.max(currentResources.length, targetResources.length);
+      syncRestoreResources.innerHTML = Array.from({ length: count }, (_, index) => {
+        const current = currentResources[index];
+        const target = targetResources[index];
+        const title = (target?.title || current?.title || `资源 ${index + 1}`).split("/").pop();
+        const currentText = current?.yaml || "";
+        const targetText = target?.yaml || "";
+        const [currentDiff, targetDiff] = diffLines(currentText, targetText);
+        return `<details class="sync-resource-card" open>
+          <summary class="sync-resource-head"><span class="sync-resource-title">${escapeHtml(title)}</span><span class="sync-resource-toggle" aria-hidden="true">⌃</span></summary>
+          <div class="sync-resource-body">
+            <div class="sync-resource-yaml"><p class="yaml-diff-title">当前 YAML</p><pre class="code yaml-diff-code" aria-readonly="true">${currentDiff}</pre></div>
+            <div class="sync-resource-yaml"><p class="yaml-diff-title">目标 YAML</p><pre class="code yaml-diff-code" aria-readonly="true">${targetDiff}</pre></div>
+          </div>
+        </details>`;
+      }).join("");
     }
 
     function openSyncRestorePage(serviceId) {
@@ -12750,11 +12904,9 @@ ${currentYamlPreview.innerHTML}
       if (!service || service.sync[0] !== "OutOfSync") return;
       activeSyncRestoreService = service.id;
       const { currentYaml, targetYaml } = syncRestoreYamlPair(service.id);
-      const [currentDiff, targetDiff] = diffLines(currentYaml, targetYaml);
       closeModals();
       if (syncRestoreMeta) syncRestoreMeta.textContent = `服务 ${service.id} 处于 OutOfSync：左侧为集群当前 YAML，右侧为期望状态；确认后按目标 YAML 恢复。`;
-      if (syncCurrentYaml) syncCurrentYaml.innerHTML = currentDiff;
-      if (syncTargetYaml) syncTargetYaml.innerHTML = targetDiff;
+      renderSyncRestoreResources(currentYaml, targetYaml);
       if (syncRestoreResult) syncRestoreResult.hidden = true;
       showView("sync-restore");
     }
@@ -12940,7 +13092,7 @@ ${currentYamlPreview.innerHTML}
       const templateCardResource = item => item.resourceSummary || `${item.resource}，${item.replicas}`;
       const templates = templateLibraryItems();
       templateLibraryGrid.innerHTML = templates.map(item => `
-                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-model-name="${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
+                  <article class="library-card${item.selected ? " selected" : ""}" data-template-library-row data-template-id="${escapeHtml(item.id)}" data-template-type="${item.preset ? "builtin" : "custom"}" data-model="${escapeHtml(item.title)} ${escapeHtml(item.description || "")} ${escapeHtml(item.model)}" data-model-name="${escapeHtml(item.model)}" data-gpu="${escapeHtml(item.gpu)}" data-framework="${escapeHtml(item.framework)}" data-mode="${escapeHtml(item.mode)}" data-status="${escapeHtml(item.status)}" data-od-id="template-card-${escapeHtml(item.title)}">
                     <div class="lc-main">
                       <div class="lc-head">
                         <span class="lc-ic" aria-hidden="true">◎</span>
@@ -12984,12 +13136,14 @@ ${currentYamlPreview.innerHTML}
 
     function matchesTemplateLibraryFilter(row) {
       const search = (templateLibrarySearch?.value || "").trim().toLowerCase();
+      const type = templateLibraryTypeFilter?.value || "";
       const gpu = templateLibraryGpuFilter?.value || "";
       const framework = templateLibraryFrameworkFilter?.value || "";
       const mode = templateLibraryModeFilter?.value || "";
       const status = templateLibraryStatusFilter?.value || "";
       const searchable = `${row.dataset.model || ""} ${row.textContent || ""}`.toLowerCase();
       return (!search || searchable.includes(search))
+        && (!type || row.dataset.templateType === type)
         && (!gpu || (row.dataset.gpu || "").includes(gpu))
         && (!framework || row.dataset.framework === framework)
         && (!mode || row.dataset.mode === mode)
@@ -13003,7 +13157,67 @@ ${currentYamlPreview.innerHTML}
     }
 
     function templateImportValue(id) {
-      return (document.querySelector(`#${id}`)?.value || "").trim();
+      const field = document.querySelector(`#${id}`);
+      const value = (field?.value || "").trim();
+      if (value) return value;
+      if (id === "importTemplateYaml" && field?.dataset.edited !== "true") {
+        return (field.defaultValue || field.textContent || "").trim();
+      }
+      return "";
+    }
+
+    function orderTemplateImportPanels() {
+      const shell = document.querySelector("#template-import .template-import-shell");
+      const yamlPanel = document.querySelector("#templateImportYamlPanel");
+      const basicPanel = document.querySelector("#templateImportBasicPanel");
+      if (shell && yamlPanel && basicPanel) shell.insertBefore(yamlPanel, basicPanel);
+    }
+
+    function setTemplateImportStep(step) {
+      const showBasic = step === "basic";
+      if (templateImportYamlPanel) templateImportYamlPanel.hidden = showBasic;
+      if (templateImportBasicPanel) templateImportBasicPanel.hidden = !showBasic;
+      if (templateImportNext) templateImportNext.hidden = showBasic;
+      if (templateImportPrevious) templateImportPrevious.hidden = !showBasic;
+      if (submitTemplateImport) submitTemplateImport.hidden = !showBasic;
+      if (!showBasic && templateImportStatus) templateImportStatus.textContent = "";
+    }
+
+    function readYamlNestedValue(source, sectionName, key) {
+      const lines = String(source || "").split(/\r?\n/);
+      const dottedLine = lines.find(line => line.trim().startsWith(`${sectionName}.${key}:`));
+      if (dottedLine) return cleanYamlValue(dottedLine.split(":").slice(1).join(":"));
+      const sectionIndex = lines.findIndex(line => line.trim() === `${sectionName}:`);
+      if (sectionIndex < 0) return "";
+      const sectionIndent = lines[sectionIndex].match(/^\s*/)?.[0].length || 0;
+      for (let index = sectionIndex + 1; index < lines.length; index += 1) {
+        const line = lines[index];
+        if (!line.trim()) continue;
+        const indent = line.match(/^\s*/)?.[0].length || 0;
+        if (indent <= sectionIndent) break;
+        if (line.trim().startsWith(`${key}:`)) return cleanYamlValue(line.split(":").slice(1).join(":"));
+      }
+      return "";
+    }
+
+    function syncTemplateImportFieldsFromYaml() {
+      const yaml = templateImportValue("importTemplateYaml");
+      if (!yaml) return;
+      const yamlName = readYamlNestedValue(yaml, "metadata", "name") || readYamlValue(yaml, ["templateName", "name"]);
+      const yamlDescription = readYamlNestedValue(yaml, "metadata", "description") || readYamlValue(yaml, ["templateDescription", "description"]);
+      if (importTemplateName && (!importTemplateName.value.trim() || importTemplateName.dataset.yamlAutofilled === "true") && yamlName) {
+        importTemplateName.value = yamlName;
+        importTemplateName.dataset.yamlAutofilled = "true";
+      }
+      if (importTemplateDescription && (!importTemplateDescription.value.trim() || importTemplateDescription.dataset.yamlAutofilled === "true") && yamlDescription) {
+        importTemplateDescription.value = yamlDescription;
+        importTemplateDescription.dataset.yamlAutofilled = "true";
+      }
+    }
+
+    orderTemplateImportPanels();
+    if (importTemplateYaml && !importTemplateYaml.value.trim() && importTemplateYaml.defaultValue.trim()) {
+      importTemplateYaml.value = importTemplateYaml.defaultValue.trim();
     }
 
     function gpuBrandFilterValue(brand) {
@@ -13046,10 +13260,14 @@ ${currentYamlPreview.innerHTML}
     }
 
     function submitTemplateImportForm() {
-      const title = templateImportValue("importTemplateName");
-      const description = templateImportValue("importTemplateDescription");
       const status = templateImportValue("importTemplateStatus");
       const yaml = templateImportValue("importTemplateYaml");
+      const yamlTitle = readYamlNestedValue(yaml, "metadata", "name") || readYamlValue(yaml, ["templateName", "name"]);
+      const yamlDescription = readYamlNestedValue(yaml, "metadata", "description") || readYamlValue(yaml, ["templateDescription", "description"]);
+      const title = templateImportValue("importTemplateName") || yamlTitle;
+      const description = templateImportValue("importTemplateDescription") || yamlDescription;
+      if (importTemplateName && !importTemplateName.value.trim() && yamlTitle) importTemplateName.value = yamlTitle;
+      if (importTemplateDescription && !importTemplateDescription.value.trim() && yamlDescription) importTemplateDescription.value = yamlDescription;
       if (!title || !status || !yaml) {
         if (templateImportStatus) templateImportStatus.textContent = "请填写模板名称、模板状态和 YAML 配置。";
         return;
@@ -13245,6 +13463,7 @@ ${currentYamlPreview.innerHTML}
 
     [
       templateLibrarySearch,
+      templateLibraryTypeFilter,
       templateLibraryGpuFilter,
       templateLibraryFrameworkFilter,
       templateLibraryModeFilter,
@@ -14093,6 +14312,27 @@ llm-d-modelservice:
     if (submitTemplateImport) {
       submitTemplateImport.addEventListener("click", submitTemplateImportForm);
     }
+    templateImportNext?.addEventListener("click", () => {
+      const yaml = templateImportValue("importTemplateYaml");
+      if (!yaml) {
+        if (templateImportStatus) templateImportStatus.textContent = "请先填写 YAML 配置。";
+        return;
+      }
+      if (importTemplateYaml && !importTemplateYaml.value.trim()) importTemplateYaml.value = yaml;
+      syncTemplateImportFieldsFromYaml();
+      setTemplateImportStep("basic");
+    });
+    templateImportPrevious?.addEventListener("click", () => setTemplateImportStep("yaml"));
+    importTemplateYaml?.addEventListener("input", () => {
+      importTemplateYaml.dataset.edited = "true";
+      syncTemplateImportFieldsFromYaml();
+    });
+    importTemplateName?.addEventListener("input", () => {
+      importTemplateName.dataset.yamlAutofilled = "false";
+    });
+    importTemplateDescription?.addEventListener("input", () => {
+      importTemplateDescription.dataset.yamlAutofilled = "false";
+    });
 
     if (templateDetailPrimary) {
       templateDetailPrimary.addEventListener("click", submitTemplateDetail);
@@ -14386,6 +14626,7 @@ llm-d-modelservice:
       }
       if (detailAction && activeTestDetailRow) {
         if (detailAction.dataset.detailTestAction === "rerun") openTestStatusConfirm(activeTestDetailRow, "rerun");
+        if (detailAction.dataset.detailTestAction === "edit-config") openEditTestConfig(activeTestDetailRow);
         if (detailAction.dataset.detailTestAction === "copy") openCopyTest(activeTestDetailRow);
         if (detailAction.dataset.detailTestAction === "delete") openDeleteTest(activeTestDetailRow, activeTestDetailRow.closest("tbody"));
         return;
@@ -14415,6 +14656,10 @@ llm-d-modelservice:
       }
       if (event.target.closest("[data-copy-test]")) {
         openCopyTest(row);
+        return;
+      }
+      if (event.target.closest("[data-edit-test-config]")) {
+        openEditTestConfig(row);
         return;
       }
       if (event.target.closest("[data-open-test-report]")) {
