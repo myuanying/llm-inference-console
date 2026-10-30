@@ -1764,6 +1764,9 @@
     .template-mode-card strong { font-size: 14px; }
     .template-mode-card span { color: var(--muted); font-size: 12px; }
     .template-mode-card.active { border-color: var(--blue); background: var(--blue-2); box-shadow: 0 0 0 1px var(--info); }
+    .template-mode-card:disabled { cursor: not-allowed; opacity: .72; }
+    .template-library-picker.is-disabled { opacity: .72; }
+    .template-library-picker.is-disabled [data-template-card] { cursor: not-allowed; pointer-events: none; }
     /* 通用模板卡片右上角的「模板编辑」标记：仅从优化模板「编辑部署」进入时显示 */
     .template-mode-card { position: relative; }
     .template-mode-card .template-mode-flag {
@@ -9692,6 +9695,8 @@ llm-d-modelservice:
     const observeHeadTags = document.querySelector("#observeHeadTags");
     const deployClusterSelect = document.querySelector("#deployClusterSelect");
     const deployNamespaceSelect = document.querySelector("#deployNamespaceSelect");
+    const customDeployClusterSelect = document.querySelector("#customDeployClusterSelect");
+    const customDeployNamespaceSelect = document.querySelector("#customDeployNamespaceSelect");
     const serviceRows = document.querySelector("#serviceRows");
     const templateEmpty = document.querySelector("#templateEmpty");
     const templateModeButtons = Array.from(document.querySelectorAll("[data-deploy-template-mode]"));
@@ -10999,14 +11004,13 @@ llm-d-modelservice:
         }).join("");
       const resourceStatus = issueTags || (state[0] === "未知" ? "" : `<span class="${tagClass(state[1] || "green")}">${state[0] === "可用" ? "运行中" : escapeHtml(state[0])}</span>`);
       const availabilityStatus = `<span class="${tagClass(state[1] || "green")}">${escapeHtml(state[0] || "-")}</span>`;
-      const deploymentMethods = {
+      const deploymentMethod = {
         "deepseek-v4-flash-h800-prod": "优选模板 ｜ DeepSeek-V4-Flash",
         "qwen3-235b-prod": "通用模板",
         "dynamo-llama4-scout-lab": "优选模板 ｜ Llama-4-Scout",
-        "dynamo-qwen3-colocated-prod": "优选模板 ｜ Qwen3-32B",
+        "dynamo-qwen3-colocated-prod": "自定义部署",
         "external-qwen3-router-prod": "自定义部署"
-      };
-      const deploymentMethod = deploymentMethods[item.id] || "自定义部署";
+      }[item.id] || deploymentMethodForService(item.id);
       const field = (label, value, extraClass = "") => `<div class="detail-basic-item${extraClass ? ` ${extraClass}` : ""}"><div class="detail-basic-value">${value}</div><div class="detail-basic-label">${label}</div></div>`;
       detailBasicInfo.innerHTML = [
         field("模型服务名称", escapeHtml(item.id || "-"), "mono"),
@@ -11577,8 +11581,9 @@ llm-d-modelservice:
       if (!newTestModal) return;
       const service = serviceById(serviceId);
       editingTestRow = options.editRow || null;
-      if (newTestTitle) newTestTitle.textContent = editingTestRow ? "编辑测试配置" : "新建测试";
-      if (submitNewTest) submitNewTest.textContent = editingTestRow ? "保存并执行" : "创建测试";
+      const isCopy = Boolean(options.copy);
+      if (newTestTitle) newTestTitle.textContent = editingTestRow ? "编辑测试配置" : isCopy ? "复制任务" : "新建测试";
+      if (submitNewTest) submitNewTest.textContent = editingTestRow ? "保存并执行" : isCopy ? "复制任务" : "创建测试";
       const shortId = service?.id?.split("-")[0] || "model";
       populateNewTestServices(service?.id);
       if (newTestName) newTestName.disabled = Boolean(editingTestRow);
@@ -11613,7 +11618,7 @@ llm-d-modelservice:
       syncNewTestType();
       syncFunctionalCaseCounts();
       showView("new-test");
-      if (crumbLabel) crumbLabel.textContent = editingTestRow ? "编辑配置" : "新建测试";
+      if (crumbLabel) crumbLabel.textContent = editingTestRow ? "编辑配置" : isCopy ? "复制任务" : "新建测试";
     }
 
     function currentMinuteText(withSeconds = false) {
@@ -11887,7 +11892,8 @@ llm-d-modelservice:
         name: `${config.name || "test"}-copy`,
         type: config.type,
         caseIds: config.cases.split(","),
-        caseConfigs: config.caseConfigs
+        caseConfigs: config.caseConfigs,
+        copy: true
       });
     }
 
@@ -13658,11 +13664,31 @@ llm-d-modelservice:
     }
 
     function syncServiceConfigScopeLock() {
-      [deployClusterSelect, deployNamespaceSelect].forEach(control => {
+      [
+        deployClusterSelect,
+        deployNamespaceSelect,
+        customDeployClusterSelect,
+        customDeployNamespaceSelect
+      ].forEach(control => {
         if (control) control.disabled = isEditingServiceConfig;
       });
       if (serviceNameInput) serviceNameInput.disabled = isEditingServiceConfig;
       if (serviceAliasInput) serviceAliasInput.disabled = false;
+      const lockDeploymentMode = isEditingServiceConfig;
+      templateModeButtons.forEach(button => {
+        button.disabled = lockDeploymentMode;
+        button.setAttribute("aria-disabled", String(lockDeploymentMode));
+      });
+      const lockTemplateLibrary = isEditingServiceConfig && activeDeployTemplateMode === "preset";
+      if (templateLibraryPicker) {
+        templateLibraryPicker.classList.toggle("is-disabled", lockTemplateLibrary);
+        templateLibraryPicker.querySelectorAll("input, select").forEach(control => {
+          control.disabled = lockTemplateLibrary;
+        });
+        templateLibraryPicker.querySelectorAll("[data-template-card]").forEach(card => {
+          card.setAttribute("aria-disabled", String(lockTemplateLibrary));
+        });
+      }
     }
 
     function defaultKeyForService(serviceId) {
@@ -13785,14 +13811,33 @@ llm-d-modelservice:
       }
     }
 
+    function deploymentMethodForService(serviceId) {
+      return {
+        "deepseek-v4-flash-h800-prod": "优选模板",
+        "qwen3-235b-prod": "通用模板",
+        "dynamo-llama4-scout-lab": "优选模板",
+        "dynamo-qwen3-colocated-prod": "自定义部署",
+        "external-qwen3-router-prod": "自定义部署"
+      }[serviceId] || "自定义部署";
+    }
+
     function enterServiceConfigEdit(serviceId, options = {}) {
       const partial = Boolean(options.partial);
       const values = valuesForService(serviceId);
       setDeployMode("template");
       isEditingServiceConfig = true;
       const key = defaultKeyForService(serviceId);
-      selectTemplate(key);
-      editFromCurrentTemplate();
+      const deploymentMethod = deploymentMethodForService(serviceId);
+      if (deploymentMethod === "优选模板") {
+        setDeployTemplateMode("preset");
+        selectTemplate(key);
+      } else if (deploymentMethod === "通用模板") {
+        setDeployTemplateMode("blank");
+      } else {
+        setDeployTemplateMode("yaml");
+        if (customDeployClusterSelect) customDeployClusterSelect.value = values.cluster || "prod-gpu-beijing-01";
+        if (customDeployNamespaceSelect) customDeployNamespaceSelect.value = values.namespace || "inferx-prod";
+      }
       fillDeployForm(values);
       if (partial) {
         imageInput.value = "";
@@ -14949,10 +14994,12 @@ llm-d-modelservice:
     document.querySelectorAll("[data-template-card]").forEach(card => {
       card.addEventListener("click", event => {
         if (event.target.closest("[data-edit-from-template]")) return;
+        if (isEditingServiceConfig && activeDeployTemplateMode === "preset") return;
         selectTemplate(card.dataset.templateCard);
       });
       card.addEventListener("keydown", event => {
         if (event.key !== "Enter" && event.key !== " ") return;
+        if (isEditingServiceConfig && activeDeployTemplateMode === "preset") return;
         event.preventDefault();
         selectTemplate(card.dataset.templateCard);
       });
