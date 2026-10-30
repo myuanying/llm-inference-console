@@ -6370,8 +6370,13 @@
     .case-config-custom-thinking input { width: min(100%, 360px); height: 28px; padding: 0 9px; border: 1px solid var(--border-soft); border-radius: 3px; background: var(--bg); color: var(--fg-1); font-size: 12px; }
     .case-config-custom-thinking input:focus { outline: none; border-color: var(--info); box-shadow: var(--focus-ring); }
     .case-config-custom-thinking-list { display: grid; gap: 6px; min-width: 260px; }
+    .case-config-thinking-groups { display: grid; gap: 10px; min-width: 260px; }
+    .case-config-thinking-group { display: grid; gap: 5px; }
+    .case-config-thinking-group > strong { color: var(--fg-2); font-size: 12px; font-weight: 600; }
     .case-config-custom-thinking-row { display: flex; align-items: center; gap: 6px; }
     .case-config-custom-thinking-row input { width: min(100%, 360px); flex: 1 1 auto; }
+    .case-config-custom-thinking-row textarea { width: min(100%, 360px); min-height: 72px; flex: 1 1 auto; padding: 7px 9px; border: 1px solid var(--border-soft); border-radius: 3px; background: var(--bg); color: var(--fg-1); font: inherit; font-size: 12px; line-height: 18px; resize: vertical; }
+    .case-config-custom-thinking-row textarea:focus { outline: none; border-color: var(--info); box-shadow: var(--focus-ring); }
     .case-config-text-remove { width: 24px; height: 28px; padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 18px; line-height: 28px; cursor: pointer; }
     .case-config-text-remove:hover { color: var(--danger); }
     .case-config-add-text { justify-self: start; padding: 0; border: 0; background: transparent; color: var(--accent); font-size: 12px; line-height: 20px; cursor: pointer; }
@@ -10153,12 +10158,20 @@ llm-d-modelservice:
       if (detailVersionRows) {
         detailVersionRows.querySelectorAll("tr").forEach(row => {
           const cells = Array.from(row.children);
-          if (row.dataset.versionLayout === "current" || cells.length !== 7) return;
-          const [version, commit, template, summary, status, time, action] = cells;
-          const statusText = status.textContent.trim();
-          const changeType = /基础|创建|初始/.test(summary.textContent) ? "首次发布" : "配置更新";
-          const timestamp = escapeHtml(time.textContent.trim());
-          row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td>`;
+          if (cells.length !== 7) return;
+          if (row.dataset.versionLayout !== "current") {
+            const [version, commit, template, summary, status, time] = cells;
+            const statusText = status.textContent.trim();
+            const changeType = /基础|创建|初始/.test(summary.textContent) ? "首次发布" : "配置更新";
+            const timestamp = escapeHtml(time.textContent.trim());
+            row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"></td>`;
+          }
+          const actionCell = row.cells[6];
+          const isCurrent = row.cells[5]?.textContent.includes("当前版本");
+          if (actionCell) {
+            actionCell.className = "col-act";
+            actionCell.innerHTML = `<button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback=""${isCurrent ? " disabled title=\"当前版本不可回滚\"" : ""}>回滚</button>`;
+          }
         });
       }
     }
@@ -11326,13 +11339,19 @@ llm-d-modelservice:
       const configuredCustomValues = (selectedConfigs[item.id] || [])
         .filter(value => String(value).startsWith("custom:"))
         .map(value => String(value).slice(7));
+      const thinkingControl = single && /^thinking_control/.test(item.id);
+      const thinkingValues = mode => configuredCustomValues
+        .filter(value => value.startsWith(`${mode}:`) || (mode === "enabled" && !/^(enabled|disabled):/.test(value)))
+        .map(value => value.startsWith(`${mode}:`) ? value.slice(mode.length + 1) : value);
       const customValue = lengthInput
         ? configuredCustomValues[0] || options.filter(option => selected.has(option.id)).map(option => option.label.replace(/K$/i, "")).join(",")
         : "";
       const customThinkingRows = (configuredCustomValues.length ? configuredCustomValues : [""]).map(value => `<span class="case-config-custom-thinking-row"><input type="text" value="${escapeHtml(value)}" placeholder="输入自定义 Thinking 控制参数" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><button type="button" class="case-config-text-remove" data-case-config-text-remove title="删除配置项" aria-label="删除配置项">×</button></span>`).join("");
+      const thinkingRows = mode => (thinkingValues(mode).length ? thinkingValues(mode) : [""]).map(value => `<span class="case-config-custom-thinking-row"><textarea rows="3" placeholder="输入自定义 Thinking 控制参数" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}" data-case-config-thinking-mode="${mode}">${escapeHtml(value)}</textarea><button type="button" class="case-config-text-remove" data-case-config-text-remove title="删除配置项" aria-label="删除配置项">×</button></span>`).join("");
+      const thinkingPanel = `<span class="case-config-thinking-groups"><span class="case-config-thinking-group"><strong>Thinking 开</strong><span class="case-config-custom-thinking-list" data-case-config-thinking-list="enabled">${thinkingRows("enabled")}<button type="button" class="case-config-add-text" data-case-config-add-text>+ 添加</button></span></span><span class="case-config-thinking-group"><strong>Thinking 关</strong><span class="case-config-custom-thinking-list" data-case-config-thinking-list="disabled">${thinkingRows("disabled")}<button type="button" class="case-config-add-text" data-case-config-add-text>+ 添加</button></span></span></span>`;
       return `
         <span class="case-config-panel" data-case-config-for="${escapeHtml(item.id)}" data-case-config-panel="${escapeHtml(item.id)}" hidden>
-            ${single ? `<span class="case-config-custom-thinking-list">${customThinkingRows}<button type="button" class="case-config-add-text" data-case-config-add-text>+ 添加</button></span>` : lengthInput ? `<span class="case-config-custom-thinking case-config-length-input"><input type="text" value="${escapeHtml(customValue)}" placeholder="${escapeHtml(lengthHint)}" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><span class="case-config-help" tabindex="0" data-tooltip="${escapeHtml(lengthHint)}" aria-label="长度输入说明">?</span></span>` : `<span class="case-config-options">
+            ${thinkingControl ? thinkingPanel : single ? `<span class="case-config-custom-thinking-list">${customThinkingRows}<button type="button" class="case-config-add-text" data-case-config-add-text>+ 添加</button></span>` : lengthInput ? `<span class="case-config-custom-thinking case-config-length-input"><input type="text" value="${escapeHtml(customValue)}" placeholder="${escapeHtml(lengthHint)}" data-case-config-text data-case-config="${escapeHtml(item.id)}" data-case-config-name="${escapeHtml(inputName)}"><span class="case-config-help" tabindex="0" data-tooltip="${escapeHtml(lengthHint)}" aria-label="长度输入说明">?</span></span>` : `<span class="case-config-options">
               ${options.map(option => `<span class="case-config-option${String(option.id).startsWith("custom:") ? " is-custom" : ""}"><input type="checkbox" name="${inputName}" value="${escapeHtml(option.id)}" data-case-config="${escapeHtml(item.id)}" data-case-config-name="${inputName}"${selected.has(option.id) ? " checked" : ""}><span>${escapeHtml(option.label)}</span>${String(option.id).startsWith("custom:") ? `<button type="button" class="case-config-remove" data-case-config-remove title="删除自定义长度" aria-label="删除自定义长度">×</button>` : ""}</span>`).join("")}
             </span>`}
             ${single || lengthInput ? "" : `<span class="case-config-custom"><button type="button" data-case-config-start-add>添加长度</button><span class="case-config-custom-editor" hidden><input type="number" min="1" step="1" placeholder="输入长度" data-case-config-custom-input><span class="case-config-unit">K</span><button type="button" data-case-config-add>添加</button></span></span>`}
@@ -11638,11 +11657,12 @@ llm-d-modelservice:
         result[input.dataset.caseConfig].push(input.value);
         return result;
       }, {});
-      scope.querySelectorAll(`input[data-case-config-name='${inputName}'][data-case-config-text]`).forEach(input => {
+      scope.querySelectorAll(`[data-case-config-name='${inputName}'][data-case-config-text]`).forEach(input => {
         const value = input.value.trim();
         if (value) {
           if (!configs[input.dataset.caseConfig]) configs[input.dataset.caseConfig] = [];
-          configs[input.dataset.caseConfig].push(`custom:${value}`);
+          const mode = input.dataset.caseConfigThinkingMode;
+          configs[input.dataset.caseConfig].push(`custom:${mode ? `${mode}:${value}` : value}`);
         }
       });
       return configs;
@@ -11670,14 +11690,26 @@ llm-d-modelservice:
       scope.querySelectorAll(`[data-case-config-panel][data-case-config-for]`).forEach(panel => {
         const configured = configs[panel.dataset.caseConfigFor];
         const values = Array.isArray(configured) ? configured.filter(value => String(value).startsWith("custom:")).map(value => String(value).slice(7)) : [];
-        let inputs = Array.from(panel.querySelectorAll("input[data-case-config-text]"));
-        while (values.length > inputs.length && inputs[0]) {
-          const row = inputs[0].closest(".case-config-custom-thinking-row");
-          if (!row) break;
-          row.parentElement.insertBefore(row.cloneNode(true), panel.querySelector("[data-case-config-add-text]"));
-          inputs = Array.from(panel.querySelectorAll("input[data-case-config-text]"));
+        const lists = panel.querySelectorAll("[data-case-config-thinking-list]");
+        if (lists.length) {
+          lists.forEach(list => {
+            const mode = list.dataset.caseConfigThinkingList;
+            const modeValues = values
+              .filter(value => value.startsWith(`${mode}:`) || (mode === "enabled" && !/^(enabled|disabled):/.test(value)))
+              .map(value => value.startsWith(`${mode}:`) ? value.slice(mode.length + 1) : value);
+            let inputs = Array.from(list.querySelectorAll("[data-case-config-text]"));
+            while (modeValues.length > inputs.length && inputs[0]) {
+              const row = inputs[0].closest(".case-config-custom-thinking-row");
+              if (!row) break;
+              list.insertBefore(row.cloneNode(true), list.querySelector("[data-case-config-add-text]"));
+              inputs = Array.from(list.querySelectorAll("[data-case-config-text]"));
+            }
+            inputs.forEach((input, index) => { input.value = modeValues[index] || ""; });
+          });
+        } else {
+          const inputs = Array.from(panel.querySelectorAll("[data-case-config-text]"));
+          inputs.forEach((input, index) => { input.value = values[index] || ""; });
         }
-        inputs.forEach((input, index) => { input.value = values[index] || ""; });
       });
       syncCaseConfigVisibility(scope);
     }
@@ -13970,6 +14002,19 @@ llm-d-modelservice:
       openModal(valuesModal);
     }
 
+    function rollbackVersion(button) {
+      if (!button || button.disabled) return;
+      const row = button.closest("tr");
+      const version = row?.cells[0]?.textContent.trim() || "所选版本";
+      if (!window.confirm(`确认回滚到 ${version} 吗？`)) return;
+      button.disabled = true;
+      button.textContent = "回滚中";
+      window.setTimeout(() => {
+        button.textContent = "已提交回滚";
+        button.title = `${version} 回滚任务已提交`;
+      }, 500);
+    }
+
     function closeModals() {
       document.querySelectorAll(".modal").forEach(modal => {
         modal.classList.remove("active");
@@ -14446,6 +14491,11 @@ llm-d-modelservice:
         openVersionYamlDiff(versionButton);
         return;
       }
+      const rollbackButton = event.target.closest("[data-version-rollback]");
+      if (rollbackButton) {
+        rollbackVersion(rollbackButton);
+        return;
+      }
       if (event.target.closest("#downloadTestReportButton")) {
         downloadCurrentTestReport();
         return;
@@ -14548,7 +14598,7 @@ llm-d-modelservice:
         const rows = list?.querySelectorAll(".case-config-custom-thinking-row");
         if (rows?.length > 1) removeTextConfig.closest(".case-config-custom-thinking-row")?.remove();
         else {
-          const input = removeTextConfig.closest(".case-config-custom-thinking-row")?.querySelector("input");
+          const input = removeTextConfig.closest(".case-config-custom-thinking-row")?.querySelector("[data-case-config-text]");
           if (input) input.value = "";
         }
         return;
@@ -14559,10 +14609,10 @@ llm-d-modelservice:
         const source = list?.querySelector(".case-config-custom-thinking-row");
         if (source) {
           const row = source.cloneNode(true);
-          row.querySelector("input")?.setAttribute("value", "");
-          row.querySelector("input").value = "";
+          row.querySelector("[data-case-config-text]")?.setAttribute("value", "");
+          row.querySelector("[data-case-config-text]").value = "";
           list.insertBefore(row, addTextConfig);
-          row.querySelector("input")?.focus();
+          row.querySelector("[data-case-config-text]")?.focus();
         }
         return;
       }
