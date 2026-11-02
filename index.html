@@ -6859,6 +6859,7 @@
     #services .svc-head-state .state-dot { width: 8px; height: 8px; }
     #services .svc-ops .ops-trigger { min-width: 24px; padding: 0 4px; }
     #services .svc-ops .ops-menu { z-index: 1000; }
+    #services .svc-ops .ops-menu button[data-open-scale-service] { color: var(--muted); }
     #services .svc-card-body { grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.92fr); align-items: stretch; gap: 0; padding: 12px 16px 12px 28px; }
     #services .svc-kv--paired { grid-column: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; align-content: center; }
     #services .svc-kv > div { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; min-height: 16px; }
@@ -9957,6 +9958,7 @@ llm-d-modelservice:
     let activeTestReportFileName = "model-test-report.html";
     let activePauseUpdateService = "";
     let activeExportTemplateService = "";
+    let templateImportFlow = "import";
     let activeSyncRestoreService = "";
     let isEditingServiceConfig = false;
     const roleAdvancedStates = {};
@@ -12610,18 +12612,25 @@ llm-d-modelservice:
 
     function openExportTemplate(serviceId) {
       const service = serviceById(serviceId) || serviceById(activeDetailService);
-      if (!service || !exportTemplateModal) return;
+      if (!service) return;
       activeExportTemplateService = service.id;
-      if (exportTemplateService) exportTemplateService.textContent = service.id;
-      if (exportTemplateName) {
-        exportTemplateName.value = `${service.model || service.id}-template`;
+      templateImportFlow = "export";
+      if (importTemplateYaml) {
+        importTemplateYaml.value = yamlFromValues(valuesForService(service.id));
+        importTemplateYaml.dataset.edited = "true";
       }
-      document.querySelectorAll("input[name='exportTemplateStatus']").forEach(input => {
-        input.checked = input.value === "生产可用";
-      });
-      if (exportTemplateResult) exportTemplateResult.hidden = true;
-      openModal(exportTemplateModal);
-      window.setTimeout(() => exportTemplateName?.focus(), 0);
+      if (importTemplateName) {
+        importTemplateName.value = `${service.model || service.id}-template`;
+        importTemplateName.dataset.yamlAutofilled = "false";
+      }
+      if (importTemplateDescription) {
+        importTemplateDescription.value = `基于服务 ${service.id} 导出的模板配置`;
+        importTemplateDescription.dataset.yamlAutofilled = "false";
+      }
+      if (importTemplateStatus) importTemplateStatus.value = "生产可用";
+      showView("template-import");
+      if (crumbLabel) crumbLabel.textContent = "导出模板";
+      if (submitTemplateImport) submitTemplateImport.textContent = "导出模板";
     }
 
     function submitExportTemplateAction() {
@@ -13080,6 +13089,10 @@ spec:
       if (viewButton) {
         const row = viewButton.closest("[data-service-row]");
         if (viewButton.dataset.view === "detail" && row) renderDetail(row.dataset.serviceRow);
+        if (viewButton.dataset.view === "template-import") {
+          templateImportFlow = "import";
+          if (submitTemplateImport) submitTemplateImport.textContent = "导入模板";
+        }
         showView(viewButton.dataset.view);
       }
     });
@@ -13315,7 +13328,11 @@ spec:
       renderTemplateLibrary();
       bindGeneratedViewButtons();
       if (templateImportStatus) templateImportStatus.textContent = "";
+      const wasExport = templateImportFlow === "export";
+      templateImportFlow = "import";
+      if (submitTemplateImport) submitTemplateImport.textContent = "导入模板";
       showView("template-library");
+      if (wasExport && templateImportStatus) templateImportStatus.textContent = `已导出模板 ${title}。`;
     }
 
     // 「查看模板」只读展示，「编辑模板」可改名称 / 状态 / YAML，保存后回到模板库。
@@ -14439,6 +14456,10 @@ llm-d-modelservice:
         const row = button.closest("[data-service-row]");
         if (button.dataset.view === "detail" && row) {
           renderDetail(row.dataset.serviceRow);
+        }
+        if (button.dataset.view === "template-import") {
+          templateImportFlow = "import";
+          if (submitTemplateImport) submitTemplateImport.textContent = "导入模板";
         }
         showView(button.dataset.view);
       });
