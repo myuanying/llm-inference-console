@@ -5648,6 +5648,12 @@
     .shell.immersive-detail #detail .list-block .table-scroll, .shell.immersive-detail #detail .resource-group .table-scroll { border-radius: 0 0 10px 10px; box-shadow: none; }
     .shell.immersive-detail #detail .list-block { border-radius: 0 0 8px 8px; }
     .shell.immersive-detail #detail table th.col-act, .shell.immersive-detail #detail table td.col-act { width: 60px; padding: 0; text-align: center; }
+    .shell.immersive-detail #detail #detail-tab-versions table th.col-act,
+    .shell.immersive-detail #detail #detail-tab-versions table td.col-act {
+      width: 132px;
+      padding: 0 18px 0 10px;
+      text-align: left;
+    }
     .shell.immersive-detail #detail #detail-tab-tests table th.col-act,
     .shell.immersive-detail #detail #detail-tab-tests table td.col-act { width: 132px; padding: 0 10px; }
     .shell.immersive-detail #detailResources table th.col-act,
@@ -6843,6 +6849,7 @@
       color: var(--blue) !important;
       background: var(--accent-soft) !important;
     }
+    #detail .rail-nav button[data-detail-tab="events"] { display: none; }
     #detail .rail-nav button[data-detail-tab="scaling"]:not(.active) {
       color: var(--meta) !important;
     }
@@ -6860,6 +6867,7 @@
     #services .svc-ops .ops-trigger { min-width: 24px; padding: 0 4px; }
     #services .svc-ops .ops-menu { z-index: 1000; }
     #services .svc-ops .ops-menu button[data-open-scale-service] { color: var(--muted); }
+    #services .service-publish-jump-icon { margin-left: 3px; font-size: 14px; line-height: 1; }
     #detail-tab-versions button[data-version-rollback] { color: var(--muted); }
     #services .svc-card-body { grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.92fr); align-items: stretch; gap: 0; padding: 12px 16px 12px 28px; }
     #services .svc-kv--paired { grid-column: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; align-content: center; }
@@ -9051,11 +9059,11 @@ llm-d-modelservice:
                 </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>版本</th><th>Commit</th><th>变更类型</th><th>开始时间</th><th>发布时间</th><th>状态</th><th class="col-act">操作</th></tr></thead>
+                    <thead><tr><th>更新时间</th><th>更新时长</th><th>版本</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailVersionRows">
-                      <tr data-version-layout="current"><td>v1.3.2</td><td class="mono">a81c42f</td><td>配置更新</td><td>2026-08-31 16:21</td><td>2026-08-31 16:28</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
-                      <tr data-version-layout="current"><td>v1.3.1</td><td class="mono">9b7e13a</td><td>配置更新</td><td>2026-08-30 21:09</td><td>2026-08-30 21:16</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
-                      <tr data-version-layout="current"><td>v1.2.8</td><td class="mono">6f12d2e</td><td>首次发布</td><td>2026-08-28 10:31</td><td>2026-08-28 10:42</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.3.2"><td>2026-08-31 16:28</td><td>7分钟</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="" disabled title="当前版本不可回滚">回滚</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.3.1"><td>2026-08-30 21:16</td><td>7分钟</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.2.8"><td>2026-08-28 10:42</td><td>11分钟</td><td><span class="tag">初始版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -10162,19 +10170,24 @@ llm-d-modelservice:
         detailVersionRows.querySelectorAll("tr").forEach(row => {
           const cells = Array.from(row.children);
           if (cells.length !== 7) return;
-          if (row.dataset.versionLayout !== "current") {
-            const [version, commit, template, summary, status, time] = cells;
-            const statusText = status.textContent.trim();
-            const changeType = /基础|创建|初始/.test(summary.textContent) ? "首次发布" : "配置更新";
-            const timestamp = escapeHtml(time.textContent.trim());
-            row.innerHTML = `<td>${escapeHtml(version.textContent.trim())}</td><td class="mono">${escapeHtml(commit.textContent.trim())}</td><td>${changeType}</td><td>${timestamp}</td><td>${timestamp}</td><td>${status.innerHTML || `<span class="tag">${escapeHtml(statusText)}</span>`}</td><td class="col-act"></td>`;
-          }
-          const actionCell = row.cells[6];
-          const isCurrent = row.cells[5]?.textContent.includes("当前版本");
-          if (actionCell) {
-            actionCell.className = "col-act";
-            actionCell.innerHTML = `<button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback=""${isCurrent ? " disabled title=\"当前版本不可回滚\"" : ""}>回滚</button>`;
-          }
+          const [version, commit, changeType, updatedAt, publishedAt, status] = cells;
+          const versionLabel = version.textContent.trim();
+          const changeLabel = changeType.textContent.trim();
+          const updatedText = updatedAt.textContent.trim();
+          const publishedText = publishedAt.textContent.trim();
+          const statusText = status.textContent.trim();
+          const isCurrent = statusText.includes("当前版本");
+          const isInitial = /首次发布|初始/.test(changeLabel);
+          const updatedDate = new Date(updatedText.replace(" ", "T"));
+          const publishedDate = new Date(publishedText.replace(" ", "T"));
+          const durationMinutes = Number.isNaN(updatedDate.getTime()) || Number.isNaN(publishedDate.getTime())
+            ? 0
+            : Math.max(0, Math.round((publishedDate - updatedDate) / 60000));
+          const durationText = durationMinutes >= 60
+            ? `${Math.floor(durationMinutes / 60)}小时${durationMinutes % 60 ? `${durationMinutes % 60}分钟` : ""}`
+            : `${durationMinutes}分钟`;
+          row.dataset.versionLabel = versionLabel;
+          row.innerHTML = `<td>${escapeHtml(updatedText)}</td><td>${durationText}</td><td>${isCurrent ? '<span class="tag green">当前版本</span>' : `<span class="tag">${isInitial ? "初始版本" : "历史版本"}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback=""${isCurrent ? " disabled title=\"当前版本不可回滚\"" : ""}>回滚</button></td>`;
         });
       }
     }
@@ -13042,6 +13055,7 @@ spec:
                   <button type="button" data-export-template-action${externalDisabled}>导出模板</button>
                   <button type="button" data-update-service-action${editDisabled}>更新服务</button>
                   <button type="button" data-open-scale-service${externalDisabled}>扩缩容</button>
+                  <button type="button" data-service-publish-action="${escapeHtml(item.id)}"${item.serviceState?.[0] === "可用" ? "" : " disabled title=\"服务状态为可用时才可发布\""}>服务发布 <span class="service-publish-jump-icon" aria-hidden="true">↗</span></button>
                   <button type="button" class="danger" data-open-delete-service="${escapeHtml(item.id)}"${externalDisabled}>删除服务</button>
                 </span>
               </span>
@@ -13999,8 +14013,8 @@ llm-d-modelservice:
       const rows = Array.from(detailVersionRows?.querySelectorAll("tr") || []);
       const index = rows.indexOf(row);
       if (index < 0) return;
-      const version = row.cells[0]?.textContent.trim() || "所选版本";
-      const currentVersion = rows[0]?.cells[0]?.textContent.trim() || "当前版本";
+      const version = row.dataset.versionLabel || row.cells[0]?.textContent.trim() || "所选版本";
+      const currentVersion = rows[0]?.dataset.versionLabel || rows[0]?.cells[0]?.textContent.trim() || "当前版本";
       const snapshots = versionYamlSnapshots(activeDetailService);
       const selectedYaml = snapshots[Math.min(index, snapshots.length - 1)];
       const currentYaml = snapshots[0];
@@ -14023,7 +14037,7 @@ llm-d-modelservice:
     function rollbackVersion(button) {
       if (!button || button.disabled) return;
       const row = button.closest("tr");
-      const version = row?.cells[0]?.textContent.trim() || "所选版本";
+      const version = row?.dataset.versionLabel || row?.cells[0]?.textContent.trim() || "所选版本";
       if (!window.confirm(`确认回滚到 ${version} 吗？`)) return;
       button.disabled = true;
       button.textContent = "回滚中";
