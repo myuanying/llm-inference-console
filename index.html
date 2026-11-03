@@ -5460,6 +5460,22 @@
     .service-inline-link:hover { color: var(--accent-hover); text-decoration: underline; }
     th.col-act, td.col-act { width: 60px; padding: 0; text-align: center; }
     td.col-act .ops { display: inline-flex; }
+    .table-sort-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      cursor: pointer;
+    }
+    .table-sort-button:hover,
+    .table-sort-button:focus-visible,
+    .table-sort-button.is-active { color: var(--accent); }
+    .table-sort-icon { font-size: 12px; line-height: 1; }
     .tb--wrap { flex-wrap: wrap; row-gap: 8px; }
     .tb--wrap .search { flex-basis: 220px; }
     .concept--pane { margin-bottom: 16px; }
@@ -6869,6 +6885,7 @@
     #services .svc-ops .ops-menu button[data-open-scale-service] { color: var(--muted); }
     #services .service-publish-jump-icon { margin-left: 3px; font-size: 14px; line-height: 1; }
     #detail-tab-versions button[data-version-rollback] { color: var(--muted); }
+    #testStatusMessage { white-space: pre-line; }
     #services .svc-card-body { grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.92fr); align-items: stretch; gap: 0; padding: 12px 16px 12px 28px; }
     #services .svc-kv--paired { grid-column: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; align-content: center; }
     #services .svc-kv > div { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; min-height: 16px; }
@@ -9053,17 +9070,13 @@ llm-d-modelservice:
             </div>
             <div class="concept-body" id="concept-detail-versions-body" hidden="">历史版本保存每次发布后的配置快照及发布时间；可查看版本详情，或将服务回滚到任一已发布版本。</div>
           </div>
-                <!-- map: <dao-toolbar> · src: dao-style/src/components/toolbar -->
-                <div class="tb tb--detail" data-dao="toolbar">
-                  <input class="search" type="search" placeholder="输入版本或 Commit 搜索" aria-label="输入版本或 Commit 搜索">
-                </div>
                 <div class="list-block" data-dao="table"><div class="table-scroll">
                   <table>
-                    <thead><tr><th>更新时间</th><th>更新时长</th><th>版本</th><th class="col-act">操作</th></tr></thead>
+                    <thead><tr><th><button type="button" class="table-sort-button" data-version-sort="updated" aria-label="按更新时间排序">更新时间 <span class="table-sort-icon" aria-hidden="true">↕</span></button></th><th>更新时长</th><th>版本</th><th class="col-act">操作</th></tr></thead>
                     <tbody id="detailVersionRows">
-                      <tr data-version-layout="current" data-version-label="v1.3.2"><td>2026-08-31 16:28</td><td>7分钟</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="" disabled title="当前版本不可回滚">回滚</button></td></tr>
-                      <tr data-version-layout="current" data-version-label="v1.3.1"><td>2026-08-30 21:16</td><td>7分钟</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
-                      <tr data-version-layout="current" data-version-label="v1.2.8"><td>2026-08-28 10:42</td><td>11分钟</td><td><span class="tag">初始版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.3.2"><td>2026-08-31 16:21</td><td>7分钟</td><td><span class="tag green">当前版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看 YAML</button> <button type="button" class="btn text" data-version-rollback="" disabled title="当前版本不可回滚">回滚</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.3.1"><td>2026-08-30 21:09</td><td>7分钟</td><td><span class="tag">历史版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看 YAML</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
+                      <tr data-version-layout="current" data-version-label="v1.2.8"><td>2026-08-28 10:31</td><td>11分钟</td><td><span class="tag">初始版本</span></td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看 YAML</button> <button type="button" class="btn text" data-version-rollback="">回滚</button></td></tr>
                     </tbody>
                   </table>
                 </div></div>
@@ -10187,7 +10200,7 @@ llm-d-modelservice:
             ? `${Math.floor(durationMinutes / 60)}小时${durationMinutes % 60 ? `${durationMinutes % 60}分钟` : ""}`
             : `${durationMinutes}分钟`;
           row.dataset.versionLabel = versionLabel;
-          row.innerHTML = `<td>${escapeHtml(updatedText)}</td><td>${durationText}</td><td>${isCurrent ? '<span class="tag green">当前版本</span>' : `<span class="tag">${isInitial ? "初始版本" : "历史版本"}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看详情</button> <button type="button" class="btn text" data-version-rollback=""${isCurrent ? " disabled title=\"当前版本不可回滚\"" : ""}>回滚</button></td>`;
+          row.innerHTML = `<td>${escapeHtml(updatedText)}</td><td>${durationText}</td><td>${isCurrent ? '<span class="tag green">当前版本</span>' : `<span class="tag">${isInitial ? "初始版本" : "历史版本"}</span>`}</td><td class="col-act"><button type="button" class="btn text" data-version-diff="">查看 YAML</button> <button type="button" class="btn text" data-version-rollback=""${isCurrent ? " disabled title=\"当前版本不可回滚\"" : ""}>回滚</button></td>`;
         });
       }
     }
@@ -11778,8 +11791,8 @@ llm-d-modelservice:
 
     const testStatusActionMeta = {
       pause: { label: "暂停", nextStatus: "暂停", title: "暂停测试", message: "暂停后，该测试任务将停止继续执行，后续可通过「启动」恢复执行。" },
-      start: { label: "启动", nextStatus: "进行中", title: "启动测试", message: "启动后，该测试任务将从暂停状态恢复为进行中。" },
-      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。未通过任务重试仅重新执行上次结果未通过的测试项；全部重试会重新执行全部测试项，并覆盖上次执行的全部结果。" }
+      start: { label: "启动", nextStatus: "进行中", title: "启动测试", message: "启动后，该测试任务将从暂停状态恢复为进行中。\n若目标服务版本已更新，将强制重新执行全部测试项目，并覆盖上次的测试结果。" },
+      rerun: { label: "重新执行", nextStatus: "进行中", title: "重新执行测试", message: "请选择重新执行方式。若目标服务版本已更新，将强制重新执行全部测试项目，并覆盖上次的测试结果。" }
     };
 
     let pendingTestStatusRow = null;
@@ -12336,6 +12349,7 @@ llm-d-modelservice:
       modelTestDetailSummary.innerHTML = `
         <div><span>测试名称</span><strong>${escapeHtml(config.name)}</strong></div>
         <div><span>目标服务</span><strong class="mono">${escapeHtml(config.service)}</strong></div>
+        <div><span>目标服务更新时间</span><strong>${escapeHtml(service?.updatedAt || service?.createdAt || "-")}</strong></div>
         <div><span>请求模型名</span><strong class="mono">${escapeHtml(requestModelName(service))}</strong></div>
         <div><span>服务端点</span><strong class="mono">${escapeHtml(service?.endpoint || `${config.service}-istio.inferx-prod.svc`)}</strong></div>
         <div><span>测试范围</span><strong>${escapeHtml(config.type)}</strong></div>
@@ -14034,6 +14048,30 @@ llm-d-modelservice:
       openModal(valuesModal);
     }
 
+    function sortDetailVersions(key, button) {
+      if (!detailVersionRows) return;
+      const currentKey = detailVersionRows.dataset.versionSortKey;
+      const currentDirection = detailVersionRows.dataset.versionSortDirection || "desc";
+      const direction = currentKey === key && currentDirection === "desc" ? "asc" : "desc";
+      const cellIndex = key === "published" ? 1 : 0;
+      const rows = Array.from(detailVersionRows.querySelectorAll("tr"));
+      rows.sort((left, right) => {
+        const leftTime = new Date(left.cells[cellIndex]?.textContent.trim().replace(" ", "T") || "").getTime();
+        const rightTime = new Date(right.cells[cellIndex]?.textContent.trim().replace(" ", "T") || "").getTime();
+        const result = (Number.isNaN(leftTime) ? 0 : leftTime) - (Number.isNaN(rightTime) ? 0 : rightTime);
+        return direction === "asc" ? result : -result;
+      });
+      rows.forEach(row => detailVersionRows.appendChild(row));
+      detailVersionRows.dataset.versionSortKey = key;
+      detailVersionRows.dataset.versionSortDirection = direction;
+      document.querySelectorAll("[data-version-sort]").forEach(item => {
+        const active = item === button;
+        item.classList.toggle("is-active", active);
+        item.querySelector(".table-sort-icon")?.replaceChildren(document.createTextNode(active ? (direction === "asc" ? "↑" : "↓") : "↕"));
+        item.setAttribute("aria-sort", active ? (direction === "asc" ? "ascending" : "descending") : "none");
+      });
+    }
+
     function rollbackVersion(button) {
       if (!button || button.disabled) return;
       const row = button.closest("tr");
@@ -14520,6 +14558,11 @@ llm-d-modelservice:
       const rangeButton = event.target.closest("[data-log-range]");
       if (rangeButton) {
         document.querySelectorAll("[data-log-range]").forEach(item => item.classList.toggle("active", item === rangeButton));
+        return;
+      }
+      const versionSortButton = event.target.closest("[data-version-sort]");
+      if (versionSortButton) {
+        sortDetailVersions(versionSortButton.dataset.versionSort, versionSortButton);
         return;
       }
       const versionButton = event.target.closest("[data-version-diff]");
